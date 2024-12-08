@@ -1,0 +1,13 @@
+# Ignore build directories
+Graduation_Project.Api/bin/
+Graduation_Project.Api/obj/
+Graduation_Project.Core/bin/
+Graduation_Project.Core/obj/
+Graduation_Project.Repository/bin/
+Graduation_Project.Repository/obj/
+Graduation_Project.Service/bin/
+Graduation_Project.Service/obj/
+
+# Ignore Visual Studio files
+.vs/
+
