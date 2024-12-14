@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Notifications
 {
-    public class NotificationRecipient
+    public class NotificationRecipient : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the NotificationRecipient entity
 
         [Required]
         [StringLength(50)]
@@ -22,7 +20,7 @@
         public int DoctorId { get; set; }
 
         [ForeignKey("DoctorId")]
-        public Doctor doctor { get; set; }
+        public Doctor Doctor { get; set; }
 
         //With Patient
         public int patientId { get; set; }

@@ -1,10 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Notifications
 {
-    public class Notification
+    public class Notification : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the notification entity
-
         [Required]
         public string Message { get; set; } // The notification message content
 

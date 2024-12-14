@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
-    public class Prescription
+    public class Prescription : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string MedicationDetails { get; set; }
         public string Dosage { get; set; }
         public DateTime IssuedDate { get; set; }

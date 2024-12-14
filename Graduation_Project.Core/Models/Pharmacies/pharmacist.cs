@@ -2,8 +2,6 @@
 {
     public class Pharmacist: Person
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the pharmacist entity
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }

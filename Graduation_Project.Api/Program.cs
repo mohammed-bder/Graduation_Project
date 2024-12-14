@@ -12,6 +12,7 @@ namespace Graduation_Project.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            #region Configure Service
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -25,7 +26,7 @@ namespace Graduation_Project.Api
             /****************************** Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             /****************************** Identityuser and IdentityRole Services ********************************/
@@ -37,7 +38,7 @@ namespace Graduation_Project.Api
             {
                 options.User.RequireUniqueEmail = true;
             });
-
+            #endregion
 
             var app = builder.Build();
 
@@ -61,6 +62,7 @@ namespace Graduation_Project.Api
             }
             #endregion
 
+            #region Configure kestrel Middlewares
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -72,6 +74,7 @@ namespace Graduation_Project.Api
 
 
             app.MapControllers();
+            #endregion
 
             app.Run();
         }

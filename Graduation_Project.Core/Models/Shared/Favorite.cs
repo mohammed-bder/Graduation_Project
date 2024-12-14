@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
-    public class Favorite
+    public class Favorite : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the favorite entity
 
         [Required]
         public int PatientId { get; set; } // Foreign key referencing the Patient

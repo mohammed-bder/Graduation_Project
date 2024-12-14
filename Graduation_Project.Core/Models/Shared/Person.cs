@@ -1,8 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
-    public class Person
-    {
-
+    public class Person : BaseEntity
+    {        
         //[Required(ErrorMessage = "First name is required.")]
         [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters.")]
         public string? FirstName { get; set; }

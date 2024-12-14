@@ -1,9 +1,8 @@
 ﻿namespace Graduation_Project.Core.Models.Patients
 {
-    public class MedicalCategory
+    public class MedicalCategory : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the medical category
+
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]

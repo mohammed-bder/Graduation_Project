@@ -2,7 +2,6 @@
 {
     public class Doctor: Person
     {
-         public int Id { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }

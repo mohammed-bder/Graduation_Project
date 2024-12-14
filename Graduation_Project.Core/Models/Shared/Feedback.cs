@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
-    public class Feedback
+    public class Feedback : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string Comment { get; set; }
         public int Score { get; set; }
         public DateTime Date { get; set; }

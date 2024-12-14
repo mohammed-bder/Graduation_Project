@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Patients
 {
-    public class RadiologyReport
+    public class RadiologyReport : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
 
         [StringLength(500, ErrorMessage = "Diagnosis cannot be longer than 500 characters.")]
         public string? Diagnosis { get; set; }

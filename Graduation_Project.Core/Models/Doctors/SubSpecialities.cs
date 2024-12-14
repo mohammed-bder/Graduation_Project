@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Doctors
 {
-    public class SubSpecialities
+    public class SubSpecialities : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Subspeciality name is required.")]
         [StringLength(50, ErrorMessage = "Subspeciality name cannot exceed 50 characters.")]
         public string Name { get; set; }

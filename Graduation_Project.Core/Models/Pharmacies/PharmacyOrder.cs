@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Pharmacies
 {
-    public class PharmacyOrder
+    public class PharmacyOrder : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
         [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]

@@ -1,9 +1,8 @@
 ﻿namespace Graduation_Project.Core.Models.Patients
 {
-    public class AI_QuickDiagnosis
+    public class AI_QuickDiagnosis : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
+
         [Required(ErrorMessage = "Symptoms are required.")]
         [StringLength(500, ErrorMessage = "Symptoms cannot be longer than 500 characters.")]
         public string Symptoms { get; set; }

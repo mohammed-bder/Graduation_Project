@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Pharmacies
 {
-    public class Medicine
+    public class Medicine : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
 
         [Required(ErrorMessage = "The medicine name is required.")]
         [StringLength(100, ErrorMessage = "The medicine name cannot exceed 100 characters.")]

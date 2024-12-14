@@ -1,8 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Doctors
 {
-    public class Education
+    public class Education :  BaseEntity
     {
-        public int Id { get; set; }
 
         [Required(ErrorMessage = "Degree is required.")]
         public DoctorDegree Degree { get; set; }

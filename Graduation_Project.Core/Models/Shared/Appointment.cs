@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
-    public class Appointment
+    public class Appointment : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
 
         [Required]
         public DateTime Date { get; set; } // Appointment date

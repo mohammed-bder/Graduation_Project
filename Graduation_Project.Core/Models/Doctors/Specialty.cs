@@ -1,9 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Doctors
 {
-    public class Specialty
+    public class Specialty : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Specialty name is required.")]
         [StringLength(50, ErrorMessage = "Specialty name cannot exceed 50 characters.")]
         public string Name { get; set; }

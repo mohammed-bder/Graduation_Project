@@ -2,8 +2,6 @@
 {
     public class Secretary: Person
     {
-        [Key]
-        public int Id { get; set; } // Primary key for the secretary entity
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }

@@ -2,10 +2,8 @@
 {
     // M-M relationship (Medicine <=> PharmacyOrders)
 
-    public class MedicinePharmacyOrder
+    public class MedicinePharmacyOrder : BaseEntity
     {
-
-        public int Id { get; set; }
         public int MedicineId { get; set; }
         public Medicine? Medicine { get; set; }
 

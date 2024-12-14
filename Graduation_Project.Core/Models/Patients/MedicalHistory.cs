@@ -1,9 +1,8 @@
 ﻿namespace Graduation_Project.Core.Models.Patients
 {
-    public class MedicalHistory
+    public class MedicalHistory : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
+
         [StringLength(1000, ErrorMessage = "Details cannot be longer than 1000 characters.")]
         public string Details { get; set; }
 

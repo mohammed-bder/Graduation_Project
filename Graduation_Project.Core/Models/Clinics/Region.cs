@@ -1,8 +1,7 @@
 ﻿namespace Graduation_Project.Core.Models.Clinics
 {
-    public class Region
+    public class Region : BaseEntity
     {
-        public int id { get; set; }
         [Required(ErrorMessage = "Region name is required. Please provide a name.")]
         public string Name { get; set; }
 

@@ -2,9 +2,8 @@
 
 namespace Graduation_Project.Core.Models.Clinics
 {
-    public class Clinic
+    public class Clinic : BaseEntity
     {
-        public int Id { get; set; } // Primary key for the clinic entity
         public string Name { get; set; } // Name of the clinic
         public byte[]? DbImgData { get; set; }
         public IFormFile? ImgFile { get; set; }

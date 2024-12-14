@@ -2,8 +2,6 @@
 {
     public class Patient: Person
     {
-        [Key]
-        public int Id { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
