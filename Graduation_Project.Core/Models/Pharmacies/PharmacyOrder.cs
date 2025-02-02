@@ -11,14 +11,18 @@
         [DataType(DataType.DateTime, ErrorMessage = "Please provide a valid date and time.")]
         public DateTime OrderDate { get; set; }
 
+        //[Required(ErrorMessage = "Prescription image is required.")]
+        //[DataType(DataType.Upload, ErrorMessage = "Please upload a valid prescription image.")]
+        //public byte[]? PrescriptionImgData { get; set; }
+
+        //[NotMapped]
+        //[DataType(DataType.Upload, ErrorMessage = "Please upload a valid Prescription image.")]
+        //[FileExtensions(Extensions = "jpg,jpeg,png,pdf", ErrorMessage = "Please upload a valid image or PDF file.")]
+        //public IFormFile? PrescriptionFile { get; set; }
+
         [Required(ErrorMessage = "Prescription image is required.")]
         [DataType(DataType.Upload, ErrorMessage = "Please upload a valid prescription image.")]
-        public byte[]? PrescriptionImgData { get; set; }
-
-        [NotMapped]
-        [DataType(DataType.Upload, ErrorMessage = "Please upload a valid Prescription image.")]
-        [FileExtensions(Extensions = "jpg,jpeg,png,pdf", ErrorMessage = "Please upload a valid image or PDF file.")]
-        public IFormFile? PrescriptionFile { get; set; }
+        public string? PrescriptionPictureUrl { get; set; }
 
         // M-M relationship (Medicine <=> PharmacyOrders)
         public ICollection<MedicinePharmacyOrder>? MedicinePharmacyOrders { get; set; }

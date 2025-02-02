@@ -45,7 +45,8 @@ namespace Graduation_Project.Api
 
             try
             {
-                await applicationDbContext.Database.MigrateAsync();
+                await applicationDbContext.Database.MigrateAsync(); // for automatically update database
+                await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
             }
             catch (Exception ex)
             {
@@ -67,6 +68,8 @@ namespace Graduation_Project.Api
             {
                 app.UseSwaggerMiddleware();
             }
+
+            app.UseStaticFiles();
 
             app.UseStaticFiles();
 

@@ -7,7 +7,7 @@
         public string? Diagnosis { get; set; }
 
         [Required(ErrorMessage = "Image data is required.")]
-        public string ImageData { get; set; }
+        public string? PictureUrl { get; set; }
 
         [StringLength(1000, ErrorMessage = "AI Analysis cannot be longer than 1000 characters.")]
         public string? AIAnalysis { get; set; }

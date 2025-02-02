@@ -13,7 +13,8 @@ namespace Graduation_Project.Api.Extensions
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             /****************************** add services for AutoMapper ********************************/
-            services.AddAutoMapper(typeof(MappingProfiles)); //Can Use That: services.AddAutoMapper(M => M.AddProfile(MappingProfiles));
+            services.AddAutoMapper(typeof(MappingProfiles)); 
+            //Can Use That: services.AddAutoMapper(M => M.AddProfile(MappingProfiles));
 
             /****************************** add services for Validation Error ********************************/
             services.Configure<ApiBehaviorOptions>(options =>
