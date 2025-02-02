@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.Models;
+using Graduation_Project.Core.Specifications;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
 
 namespace Graduation_Project.Repository
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext dbContext;
 
@@ -25,26 +28,14 @@ namespace Graduation_Project.Repository
             dbContext.Set<T>().Remove(entity);
         }
 
-        public async Task<IEnumerable<T>?> GetAllAsync()
+        public async Task<IEnumerable<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)
         {
-            if(typeof(T) is Education)
-                return (IEnumerable<T>?) await dbContext.Set<Education>().Include(e=>e.Doctor).ToListAsync();
-
-            if (typeof(T) is Doctor)
-                return (IEnumerable<T>?)await dbContext.Set<Doctor>().Include(d => d.Educations).Include(d => d.Specialty).ToListAsync();
-
-            return await dbContext.Set<T>().ToListAsync();
+            return await ApplyQuery(specs).ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetWithSpecsAsync(ISpecifications<T> specs)
         {
-            if (typeof(T) is Education)
-                return await dbContext.Set<Education>().Where(e => e.Id == id).Include(e => e.Doctor).FirstOrDefaultAsync() as T;
-
-            if (typeof(T) is Doctor)
-                return await dbContext.Set<Doctor>().Where(e => e.Id == id).Include(e => e.Specialty).Include(e => e.Educations).FirstOrDefaultAsync() as T;
-
-            return await dbContext.FindAsync<T>(id);
+            return await ApplyQuery(specs).FirstOrDefaultAsync();
         }
 
         public async Task SaveAsync()
@@ -55,6 +46,11 @@ namespace Graduation_Project.Repository
         public void Update(T entity)
         {
             dbContext.Set<T>().Update(entity);
+        }
+
+        public IQueryable<T> ApplyQuery(ISpecifications<T> specs) //Helper Method
+        {
+            return SpecificationsEvaluator<T>.GetQuery(dbContext.Set<T>(), specs);
         }
     }
 }
