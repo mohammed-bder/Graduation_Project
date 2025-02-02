@@ -5,7 +5,7 @@ namespace Graduation_Project.APIs.Helpers
     {
         public MappingProfiles()
         {
-
+            // mapping pictrue url
         }
     }
 }

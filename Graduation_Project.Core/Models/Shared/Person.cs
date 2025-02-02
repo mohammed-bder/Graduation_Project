@@ -19,13 +19,7 @@
         [Required(ErrorMessage = "Gender is required.")]
         public Gender Gender { get; set; }
 
-
-        //public string Image { get; set; }
-        public byte[]? ImageImgData { get; set; }
-
-        [NotMapped]
-        public IFormFile? ImageFile { get; set; }
-
+        public string? Image { get; set; }
 
     }
 }
