@@ -1,4 +1,4 @@
-using Graduation_Project.Api.Controllers.Account;
+using Graduation_Project.Api.Extensions;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +16,9 @@ namespace Graduation_Project.Api
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
-            /****************************** Generic Respository Register ********************************/
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            /****************************** Add Swagger Services********************************/
+            builder.Services.AddSwaggerServices();
 
             /****************************** Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -29,15 +26,9 @@ namespace Graduation_Project.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            /****************************** Identityuser and IdentityRole Services ********************************/
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            /****************************** Add Application Services ********************************/
+            builder.Services.AddApplicationServices();
 
-            builder.Services.Configure<IdentityOptions>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-            });
             #endregion
 
             var app = builder.Build();
@@ -66,8 +57,7 @@ namespace Graduation_Project.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleware();
             }
 
             app.UseAuthorization();
