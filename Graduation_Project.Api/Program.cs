@@ -1,4 +1,5 @@
 using Graduation_Project.Api.Extensions;
+using Graduation_Project.Api.Middlewares;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -54,14 +55,22 @@ namespace Graduation_Project.Api
             #endregion
 
             #region Configure kestrel Middlewares
+
+            //Middlewares of Exception Handling 
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            // Not found Endpoint
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwaggerMiddleware();
             }
 
-            app.UseAuthorization();
+            app.UseStaticFiles();
 
+            app.UseAuthorization();
 
             app.MapControllers();
             #endregion
