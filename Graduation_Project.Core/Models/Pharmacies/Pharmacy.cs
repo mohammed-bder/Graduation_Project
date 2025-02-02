@@ -21,11 +21,10 @@
 
         [Required(ErrorMessage = "Pharmacy license image is required.")]
         [DataType(DataType.Upload)]
-        public byte[]? PharmacyLicenseImgData { get; set; }
+       
+        public string? PharmacyLicensePictureUrl { get; set; }
 
-        [NotMapped]
-        [DataType(DataType.Upload, ErrorMessage = "Please upload a valid license image.")]
-        public IFormFile? PharmacyLicenseFile { get; set; }
+    
 
         // M-M relationship (Medicine <=> Pharmacies)
         public ICollection<MedicinePharmacy> MedicinePharmacies { get; set; }

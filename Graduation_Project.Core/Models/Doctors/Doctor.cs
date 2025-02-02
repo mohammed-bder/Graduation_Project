@@ -15,7 +15,8 @@
         //public string MedicalLicence { get; set; } // we want to talk about this
 
         //[Required(ErrorMessage = "Medical License is required.")]
-        public byte[]? MedicalLicenseImgData { get; set; }
+     
+        public string? MedicalLicensePictureUrl { get; set; }
 
         [NotMapped]
         public IFormFile? MedicalLicenseFile { get; set; }

@@ -5,8 +5,7 @@ namespace Graduation_Project.Core.Models.Clinics
     public class Clinic : BaseEntity
     {
         public string Name { get; set; } // Name of the clinic
-        public byte[]? DbImgData { get; set; }
-        public IFormFile? ImgFile { get; set; }
+        public string? PictureUrl { get; set; }
         public string? LocationLink { get; set; } //  locationLink of the clinic
         public string Location { get; set; }     //  Address or location of the clinic
         public ClinicType Type { get; set; }
