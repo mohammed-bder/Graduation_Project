@@ -2,6 +2,9 @@ using Graduation_Project.Api.Extensions;
 using Graduation_Project.Api.Middlewares;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Repository;
+using Graduation_Project.Repository.Identity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -27,17 +30,25 @@ namespace Graduation_Project.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
             /****************************** Add Application Services ********************************/
             builder.Services.AddApplicationServices();
+
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             #endregion
 
             var app = builder.Build();
 
             #region Update-Database auto 
-            var scope = app.Services.CreateScope();
+             var scope = app.Services.CreateScope();
 
             var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var _identityDbContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
             //Create Object from ApplicationDbContext using CLR Exiplicitly
 
             var factoryLogger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -46,7 +57,10 @@ namespace Graduation_Project.Api
             try
             {
                 await applicationDbContext.Database.MigrateAsync(); // for automatically update database
-                await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
+                //await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
+
+                // ----------
+                await _identityDbContext.Database.MigrateAsync(); // for automatically update database
             }
             catch (Exception ex)
             {
@@ -73,9 +87,13 @@ namespace Graduation_Project.Api
 
             app.UseStaticFiles();
 
-            app.UseAuthorization();
+          
 
             app.MapControllers();
+
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             #endregion
 
             app.Run();

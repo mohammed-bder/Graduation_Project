@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Graduation_Project.Core\Graduation_Project.Core.csproj" />
     <ProjectReference Include="..\Graduation_Project.Repository\Graduation_Project.Repository.csproj" />
+    <ProjectReference Include="..\Graduation_Project.Service\Graduation_Project.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

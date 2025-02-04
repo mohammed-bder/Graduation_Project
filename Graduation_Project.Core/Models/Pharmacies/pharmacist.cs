@@ -3,9 +3,9 @@
     public class Pharmacist: Person
     {
 
-        [ForeignKey("ApplicationUser")]
-        public string UserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+        //[ForeignKey("ApplicationUser")]
+        //public string UserId { get; set; }
+        //public ApplicationUser? ApplicationUser { get; set; }
 
         //[Required(ErrorMessage = "National ID is required.")]
         [StringLength(14, ErrorMessage = "National ID must be 14 characters.")]

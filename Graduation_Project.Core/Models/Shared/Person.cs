@@ -1,7 +1,10 @@
 ﻿namespace Graduation_Project.Core.Models.Shared
 {
     public class Person : BaseEntity
-    {        
+    {
+
+        public string ApplicationUserId { get; set; } // Link to Identity DB
+
         //[Required(ErrorMessage = "First name is required.")]
         [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters.")]
         public string? FirstName { get; set; }
@@ -21,10 +24,7 @@
 
 
         public string? PictureUrl { get; set; }
-        //public byte[]? ImageImgData { get; set; }
 
-        //[NotMapped]
-        //public IFormFile? ImageFile { get; set; }
 
 
     }

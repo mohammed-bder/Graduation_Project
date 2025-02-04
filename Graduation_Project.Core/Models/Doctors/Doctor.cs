@@ -3,9 +3,7 @@
     public class Doctor: Person
     {
 
-        [ForeignKey("ApplicationUser")]
-        public string UserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+       
 
         //[Required(ErrorMessage = "National ID is required.")]
         [StringLength(14, ErrorMessage = "National ID must be 14 characters.")]
@@ -18,8 +16,8 @@
      
         public string? MedicalLicensePictureUrl { get; set; }
 
-        [NotMapped]
-        public IFormFile? MedicalLicenseFile { get; set; }
+        //[NotMapped]
+        //public IFormFile? MedicalLicenseFile { get; set; }
 
 
 
@@ -44,8 +42,8 @@
         public ICollection<DoctorSubspeciality> DoctorSubspeciality { get; set; }
 
         // (M Doctor ==> 1 Specialty)
-        public int SpecialtyId { get; set; }
-        public Specialty Specialty { get; set; } 
+        public int? SpecialtyId { get; set; }
+        public Specialty? Specialty { get; set; } 
 
         // (1 Doctor ==> M NotificationRecipient)
         public ICollection<NotificationRecipient> NotificationRecipients { get; set; }

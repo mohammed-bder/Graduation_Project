@@ -1,8 +1,8 @@
 ﻿namespace Graduation_Project.Repository.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
@@ -67,26 +67,33 @@
             modelBuilder.Entity<MedicinePharmacy>()
                 .HasKey(ds => new { ds.MedicineId, ds.PharmacyId });
 
-            /************** Relation with Identity Table **************/
-            modelBuilder.Entity<Doctor>()
-            .HasOne(d => d.ApplicationUser)
-            .WithOne()
-            .HasForeignKey<Doctor>(d => d.UserId);
 
-            modelBuilder.Entity<Patient>()
-            .HasOne(d => d.ApplicationUser)
-            .WithOne()
-            .HasForeignKey<Patient>(d => d.UserId);
+            modelBuilder.Entity<Doctor>(entity =>
+            {
+                entity.Property(d => d.ConsultationFees)
+                      .HasColumnType("decimal(18,2)"); // specify precision and scale
+            });
 
-            modelBuilder.Entity<Pharmacist>()
-            .HasOne(d => d.ApplicationUser)
-            .WithOne()
-            .HasForeignKey<Pharmacist>(d => d.UserId);
+            ///************** Relation with Identity Table **************/
+            //modelBuilder.Entity<Doctor>()
+            //.HasOne(d => d.ApplicationUser)
+            //.WithOne()
+            //.HasForeignKey<Doctor>(d => d.UserId);
 
-            modelBuilder.Entity<Secretary>()
-            .HasOne(d => d.ApplicationUser)
-            .WithOne()
-            .HasForeignKey<Secretary>(d => d.UserId);
+            //modelBuilder.Entity<Patient>()
+            //.HasOne(d => d.ApplicationUser)
+            //.WithOne()
+            //.HasForeignKey<Patient>(d => d.UserId);
+
+            //modelBuilder.Entity<Pharmacist>()
+            //.HasOne(d => d.ApplicationUser)
+            //.WithOne()
+            //.HasForeignKey<Pharmacist>(d => d.UserId);
+
+            //modelBuilder.Entity<Secretary>()
+            //.HasOne(d => d.ApplicationUser)
+            //.WithOne()
+            //.HasForeignKey<Secretary>(d => d.UserId);
 
             base.OnModelCreating(modelBuilder);
         }

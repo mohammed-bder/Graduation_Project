@@ -3,9 +3,8 @@
     public class Patient: Person
     {
 
-        [ForeignKey("ApplicationUser")]
-        public string UserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+      
+
         public int? Points { get; set; }
         public BloodType? BloodType { get; set; }
 
