@@ -13,11 +13,15 @@ namespace Talabat.API.Dtos.Account
         public string Email { get; set; }
 
         [Required]
-        public string PhoneNumber { get; set; }
-
-        [Required]
         //[RegularExpression("(?=^.{6,10}$)(?=.*\\d)( ?=.* [a-z])( ?=.* [A-Z]) ( ?=.* [!@#$%^&amp ;* ()_+}{&quot ;:; '?/&gt; .&lt;, ])( ?!.* \\\\s) .* $\",")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Gender is required.")]
+        public Gender Gender { get; set; }
+
+        [Required]
+        public string PhoneNumber { get; set; }
+
 
 
         [StringLength(14, ErrorMessage = "National ID must be 14 characters.")]

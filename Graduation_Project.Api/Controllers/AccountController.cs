@@ -51,8 +51,8 @@ namespace Graduation_Project.Api.Controllers
 
 
 
-        [HttpPost("register")] // post: api/account/register
-        public async Task<ActionResult<UserDTO>> Register(DoctorRegisterDTO model)
+        [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
+        public async Task<ActionResult<UserDTO>> DoctorRegister(DoctorRegisterDTO model)
         {
             var user = new AppUser()
             {
@@ -73,11 +73,13 @@ namespace Graduation_Project.Api.Controllers
 
             var newDoctor = new Doctor()
             {
+                FirstName = model.FullName.Split(" ")[0],
+                LastName = model.FullName.Split(" ")[1],
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
                 NationalID = model.NationalID,
                 Gender = Gender.Male
-                
+
             };
 
            await _applicationDbContext.Doctors.AddAsync(newDoctor);
