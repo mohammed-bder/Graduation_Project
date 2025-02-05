@@ -3,6 +3,7 @@ using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Talabat.API.Dtos.Account;
 
 namespace Graduation_Project.Api.Controllers
@@ -57,11 +58,10 @@ namespace Graduation_Project.Api.Controllers
             var user = new AppUser()
             {
                 FullName = model.FullName,
-                PhoneNumber = model.PhoneNumber,
+                //PhoneNumber = model.PhoneNumber,
                 Email = model.Email,
                 UserName = model.Email.Split("@")[0],
                 UserType = UserType.Doctor,
-                
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -69,17 +69,16 @@ namespace Graduation_Project.Api.Controllers
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(400));
 
-            var registeredUser = await _userManager.FindByEmailAsync(user.Email);
-
+            var registeredUser = await _userManager.FindByEmailAsync(model.Email);
+            //var registeredUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var newDoctor = new Doctor()
             {
                 FirstName = model.FullName.Split(" ")[0],
                 LastName = model.FullName.Split(" ")[1],
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
-                NationalID = model.NationalID,
-                Gender = Gender.Male
-
+                //NationalID = model.NationalID,
+                Gender = model.Gender
             };
 
            await _applicationDbContext.Doctors.AddAsync(newDoctor);

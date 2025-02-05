@@ -13,5 +13,4 @@ namespace Graduation_Project.Core.Enums
         Secretary,
         Pharmacist
     }
-
 }

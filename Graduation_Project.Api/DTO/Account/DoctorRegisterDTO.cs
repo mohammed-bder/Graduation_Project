@@ -19,21 +19,21 @@ namespace Talabat.API.Dtos.Account
         [Required(ErrorMessage = "Gender is required.")]
         public Gender Gender { get; set; }
 
-        [Required]
-        public string PhoneNumber { get; set; }
+        //[Required]
+        //public string PhoneNumber { get; set; }
 
 
 
-        [StringLength(14, ErrorMessage = "National ID must be 14 characters.")]
-        public string? NationalID { get; set; }
+        //[StringLength(14, ErrorMessage = "National ID must be 14 characters.")]
+        //public string? NationalID { get; set; }
 
 
         public string? MedicalLicensePictureUrl { get; set; }
 
 
 
-        [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
-        public double? Rating { get; set; }
+        //[Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
+        //public double? Rating { get; set; }
 
 
         [Required(ErrorMessage = "Consultation fees are required.")]
