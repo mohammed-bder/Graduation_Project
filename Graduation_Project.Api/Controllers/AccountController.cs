@@ -1,4 +1,5 @@
-﻿using Graduation_Project.Api.ErrorHandling;
+﻿using Graduation_Project.Api.DTO.Account;
+using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,14 +18,19 @@ namespace Graduation_Project.Api.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authServices;
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IAuthService authServices , ApplicationDbContext applicationDbContext)
+        public AccountController(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            IAuthService authServices , 
+            ApplicationDbContext applicationDbContext,
+            ILogger<AccountController> logger)
         {
-
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
            _applicationDbContext = applicationDbContext;
+            _logger = logger;
         }
 
         // login End Point
@@ -57,10 +63,12 @@ namespace Graduation_Project.Api.Controllers
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
         public async Task<ActionResult<UserDTO>> DoctorRegister(DoctorRegisterDTO model)
         {
+            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
+                return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
+
             var user = new AppUser()
             {
                 FullName = model.FullName,
-                //PhoneNumber = model.PhoneNumber,
                 Email = model.Email,
                 UserName = model.Email.Split("@")[0],
                 UserType = UserType.Doctor,
@@ -69,32 +77,44 @@ namespace Graduation_Project.Api.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             
             if (!result.Succeeded)
-                return BadRequest(new ApiResponse(400));
+                return BadRequest(new ApiResponse(400, "Failed to create user."));
 
+
+            // Fetch registered user
             var registeredUser = await _userManager.FindByEmailAsync(model.Email);
-            //var registeredUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (registeredUser == null)
+                return BadRequest(new ApiResponse(400, "User registration failed."));
+
+
+            
             var newDoctor = new Doctor()
             {
                 FirstName = model.FullName.Split(" ")[0],
                 LastName = model.FullName.Split(" ")[1],
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
-                //NationalID = model.NationalID,
                 Gender = model.Gender
             };
 
-           await _applicationDbContext.Doctors.AddAsync(newDoctor);
             try
             {
-                
-            await _applicationDbContext.SaveChangesAsync();
+                // Add Doctor to the application database
+                await _applicationDbContext.Doctors.AddAsync(newDoctor);
+                await _applicationDbContext.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
-                // Log exception
-                Console.WriteLine(ex.Message);
-                // Optionally, rethrow or handle accordingly
+                _logger.LogError(ex, "Database update error while creating doctor for user: {Email}", model.Email);
+
+
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
+
+                return BadRequest(new ApiResponse(500, "An unexpected error occurred."));
+
             }
+            _logger.LogInformation("Doctor registered successfully: {Email}", model.Email);
 
             return Ok(new UserDTO()
             {
@@ -104,6 +124,72 @@ namespace Graduation_Project.Api.Controllers
             });
 
         }
+
+
+        [HttpPost("PatientRegister")] // post: api/account/PatientRegister
+        public async Task<ActionResult<UserDTO>> PatientRegister(PatientRegisterDTO model)
+        {
+            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(' ').Length != 2)
+                return BadRequest(new ApiResponse(500, "you must enter first name and last name."));
+
+            var user = new AppUser()
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                UserName = model.Email.Split('@')[0],
+                UserType = UserType.Patient,
+                
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(new ApiResponse(400, "Failed to create user."));
+
+
+            // Fetch registered user
+            var registeredPatient = await _userManager.FindByEmailAsync(model.Email);
+
+            if (registeredPatient == null)
+                return BadRequest(new ApiResponse(400, "User registration failed."));
+
+
+            var newPatient = new Patient()
+            {
+                FirstName = model.FullName.Split(' ')[0],
+                LastName = model.FullName.Split(' ')[1],
+                Gender = model.Gender,
+                ApplicationUserId = registeredPatient.Id
+            };
+
+            try
+            {
+                await _applicationDbContext.Patients.AddAsync(newPatient);
+                await _applicationDbContext.SaveChangesAsync();
+
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Database update error while creating patient for user: {Email}", model.Email);
+
+
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredPatient);
+
+                return BadRequest(new ApiResponse(500, "An unexpected error occurred."));
+            }
+
+            _logger.LogInformation("Patient registered successfully: {Email}", model.Email);
+
+            return Ok(new UserDTO
+                {
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    Token = await _authServices.CreateTokenAsync(user, _userManager),
+                });
+        }
+
+
 
         [Authorize]
         [HttpGet] // GET: api/Account/GetCurrentUser
