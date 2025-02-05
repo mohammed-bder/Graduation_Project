@@ -1,5 +1,7 @@
 ﻿using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +103,21 @@ namespace Graduation_Project.Api.Controllers
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
             });
 
+        }
+
+        [Authorize]
+        [HttpGet] // GET: api/Account/GetCurrentUser
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+
+            return Ok(new UserDTO
+            {
+                FullName = user.FullName,
+                Email = user.Email,
+                Token = await _authServices.CreateTokenAsync(user, _userManager),
+            });
         }
     }
 }
