@@ -63,6 +63,10 @@ namespace Graduation_Project.Api.Controllers
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
         public async Task<ActionResult<UserDTO>> DoctorRegister(DoctorRegisterDTO model)
         {
+
+            if (CheckEmailExists(model.Email).Result.Value)
+                return BadRequest(new ApiValidationErrorResponse() {Errors = new string[] { "This Email is Already Exist" } });
+
             if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
                 return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
 
@@ -204,6 +208,12 @@ namespace Graduation_Project.Api.Controllers
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
             });
+        }
+
+        [HttpGet("EmailExists")]
+        public async Task<ActionResult<bool>> CheckEmailExists(string email)
+        {
+            return await _userManager.FindByEmailAsync(email) is not null;
         }
     }
 }
