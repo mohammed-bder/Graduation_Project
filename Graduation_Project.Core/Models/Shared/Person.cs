@@ -22,7 +22,6 @@
         [Required(ErrorMessage = "Gender is required.")]
         public Gender Gender { get; set; }
 
-
         public string? PictureUrl { get; set; }
 
 
