@@ -9,6 +9,13 @@ namespace Graduation_Project.Api.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+
+            services.AddLogging(config =>
+            {
+                config.AddConsole(); // Enables console logging
+                config.AddDebug();   // Enables debug output
+            });
+
             /****************************** Generic Respository Register ********************************/
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
