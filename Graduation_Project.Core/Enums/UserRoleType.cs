@@ -8,6 +8,7 @@ namespace Graduation_Project.Core.Enums
 {
     public enum UserRoleType
     {
+        Admin,
         Doctor,
         Patient,
         Secretary,
