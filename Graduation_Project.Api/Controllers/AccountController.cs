@@ -83,19 +83,20 @@ namespace Graduation_Project.Api.Controllers
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(400, "Failed to create user."));
 
-
             // Fetch registered user
             var registeredUser = await _userManager.FindByEmailAsync(model.Email);
 
             if (registeredUser == null)
                 return BadRequest(new ApiResponse(400, "User registration failed."));
 
+           
+            // split the full name into first and last name
+            var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
-            
             var newDoctor = new Doctor()
             {
-                FirstName = model.FullName.Split(" ")[0],
-                LastName = model.FullName.Split(" ")[1],
+                FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
+                LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
                 Gender = model.Gender
@@ -133,8 +134,11 @@ namespace Graduation_Project.Api.Controllers
         [HttpPost("PatientRegister")] // post: api/account/PatientRegister
         public async Task<ActionResult<UserDTO>> PatientRegister(PatientRegisterDTO model)
         {
-            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(' ').Length != 2)
-                return BadRequest(new ApiResponse(500, "you must enter first name and last name."));
+            if (CheckEmailExists(model.Email).Result.Value)
+                return BadRequest(new ApiValidationErrorResponse() { Errors = new string[] { "This Email is Already Exist" } });
+
+            //if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(' ').Length != 2)
+            //    return BadRequest(new ApiResponse(500, "you must enter first name and last name."));
 
             var user = new AppUser()
             {
@@ -157,11 +161,13 @@ namespace Graduation_Project.Api.Controllers
             if (registeredPatient == null)
                 return BadRequest(new ApiResponse(400, "User registration failed."));
 
+            // split the full name into first and last name
+            var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
             var newPatient = new Patient()
             {
-                FirstName = model.FullName.Split(' ')[0],
-                LastName = model.FullName.Split(' ')[1],
+                FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
+                LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 Gender = model.Gender,
                 ApplicationUserId = registeredPatient.Id
             };
