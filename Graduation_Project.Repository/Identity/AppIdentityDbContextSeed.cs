@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Graduation_Project.Core.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +24,10 @@ namespace Graduation_Project.Repository.Identity
                 };
 
                 var result = await userManager.CreateAsync(user, "Pa$$w0rd");
-
+                
                 if (result.Succeeded)
                 {
+                    await userManager.AddToRoleAsync(user, UserRoleType.Admin.ToString());
                     Console.WriteLine("User created successfully");
                 }
 

@@ -48,12 +48,14 @@ namespace Graduation_Project.Api.Controllers
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(401));
 
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
             var userDto = new UserDTO()
             {
                 FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
-                
+                Role = role
             };
 
             return Ok(userDto);
@@ -68,8 +70,8 @@ namespace Graduation_Project.Api.Controllers
             if (CheckEmailExists(model.Email).Result.Value)
                 return BadRequest(new ApiValidationErrorResponse() {Errors = new string[] { "This Email is Already Exist" } });
 
-            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
-                return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
+            //if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
+            //    return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
 
             var user = new AppUser()
             {
@@ -125,9 +127,10 @@ namespace Graduation_Project.Api.Controllers
 
             return Ok(new UserDTO()
             {
-                FullName = user.UserName,
+                FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
+                Role = UserRoleType.Doctor.ToString()
             });
 
         }
@@ -198,6 +201,7 @@ namespace Graduation_Project.Api.Controllers
                     FullName = model.FullName,
                     Email = model.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Role = UserRoleType.Patient.ToString()
                 });
         }
 
@@ -210,18 +214,28 @@ namespace Graduation_Project.Api.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
 
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
             return Ok(new UserDTO
             {
                 FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
+                Role = role
             });
         }
 
-        [HttpGet("EmailExists")]
+        [HttpGet("EmailExists")] // GET: api/Account/EmailExists
         public async Task<ActionResult<bool>> CheckEmailExists(string email)
         {
             return await _userManager.FindByEmailAsync(email) is not null;
+        }
+
+        [HttpPost("logout")] // POST: api/Account/logout
+        public async Task<ActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new ApiResponse(200, "Logged out successfully."));
         }
     }
 }
