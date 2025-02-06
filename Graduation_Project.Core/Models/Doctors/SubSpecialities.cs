@@ -4,7 +4,7 @@
     {
         [Required(ErrorMessage = "Subspeciality name is required.")]
         [StringLength(50, ErrorMessage = "Subspeciality name cannot exceed 50 characters.")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /* ----------------- Relationships ----------------- */
 

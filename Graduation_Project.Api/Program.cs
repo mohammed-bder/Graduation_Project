@@ -47,6 +47,8 @@ namespace Graduation_Project.Api
             #region Update-Database auto 
              var scope = app.Services.CreateScope();
 
+            var services = scope.ServiceProvider;
+
             var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var _identityDbContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
             //Create Object from ApplicationDbContext using CLR Exiplicitly
@@ -57,10 +59,13 @@ namespace Graduation_Project.Api
             try
             {
                 await applicationDbContext.Database.MigrateAsync(); // for automatically update database
-                //await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
+                await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
 
                 // ----------
                 await _identityDbContext.Database.MigrateAsync(); // for automatically update database
+
+                //var userManager = services.GetRequiredService<UserManager<AppUser>>();   //Explicitly ask CLR to create object from UserManager
+                //await AppIdentityDbContextSeed.SeedUsersAsync(userManager);   //Identity Data seeding
             }
             catch (Exception ex)
             {
