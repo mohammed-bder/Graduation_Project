@@ -45,7 +45,7 @@ namespace Graduation_Project.Api
             var app = builder.Build();
 
             #region Update-Database auto 
-            var scope = app.Services.CreateScope();
+             var scope = app.Services.CreateScope();
 
             var services = scope.ServiceProvider;
 
@@ -61,7 +61,7 @@ namespace Graduation_Project.Api
             try
             {
                 await applicationDbContext.Database.MigrateAsync(); // for automatically update database
-                // await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
+                await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
 
                 await _identityDbContext.Database.MigrateAsync(); // for automatically update database
 

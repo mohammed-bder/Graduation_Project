@@ -13,6 +13,7 @@ namespace Graduation_Project.Repository.Identity
     {
         public async static Task SeedUserAsync(UserManager<AppUser> userManager)
         {
+            // Seed, if necessary
             if (userManager.Users.Count() == 0)
             {
                 var user = new AppUser
