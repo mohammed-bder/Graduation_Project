@@ -53,6 +53,7 @@ namespace Graduation_Project.Api.Controllers
                 FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
+                
             };
 
             return Ok(userDto);
@@ -75,10 +76,11 @@ namespace Graduation_Project.Api.Controllers
                 FullName = model.FullName,
                 Email = model.Email,
                 UserName = model.Email.Split("@")[0],
-                UserType = UserType.Doctor,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+
+           await _userManager.AddToRoleAsync(user, UserRoleType.Doctor.ToString());
             
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(400, "Failed to create user."));
@@ -145,8 +147,6 @@ namespace Graduation_Project.Api.Controllers
                 FullName = model.FullName,
                 Email = model.Email,
                 UserName = model.Email.Split('@')[0],
-                UserType = UserType.Patient,
-                
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -157,6 +157,8 @@ namespace Graduation_Project.Api.Controllers
 
             // Fetch registered user
             var registeredPatient = await _userManager.FindByEmailAsync(model.Email);
+
+            await _userManager.AddToRoleAsync(user, UserRoleType.Patient.ToString());
 
             if (registeredPatient == null)
                 return BadRequest(new ApiResponse(400, "User registration failed."));

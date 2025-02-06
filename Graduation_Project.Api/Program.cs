@@ -51,6 +51,8 @@ namespace Graduation_Project.Api
 
             var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
             var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+
+           
             //Create Object from ApplicationDbContext using CLR Exiplicitly
 
             var factoryLogger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -62,8 +64,14 @@ namespace Graduation_Project.Api
                 // await ApplicationDbContextSeed.SeedAsync(applicationDbContext); // for seeding entered data
 
                 await _identityDbContext.Database.MigrateAsync(); // for automatically update database
+
+
                 var _userManager = services.GetRequiredService<UserManager<AppUser>>(); // Ask CLR to create object from UserManager Explicitly
                 await AppIdentityDbContextSeed.SeedUserAsync(_userManager); // for seeding entered data
+
+
+                var _roleDbContext = services.GetRequiredService<RoleManager<IdentityRole>>();
+                await RoleSeed.RoleSeedAsync(_roleDbContext); // for seeding entered role
             }
             catch (Exception ex)
             {

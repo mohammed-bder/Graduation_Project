@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Enums
 {
-    public enum UserType
+    public enum UserRoleType
     {
         Doctor,
         Patient,

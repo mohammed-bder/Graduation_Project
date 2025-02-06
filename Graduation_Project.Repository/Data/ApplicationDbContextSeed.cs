@@ -33,5 +33,7 @@ namespace Graduation_Project.Repository.Data
 
             // repeat this for each entity
         }
+
+
     }
 }
