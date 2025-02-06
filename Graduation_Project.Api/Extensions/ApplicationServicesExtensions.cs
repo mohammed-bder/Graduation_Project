@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.APIs.Helpers;
+using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Repository;
 
@@ -17,6 +18,10 @@ namespace Graduation_Project.Api.Extensions
             });
 
             /****************************** Generic Respository Register ********************************/
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //unitOfWork replaces GenericRepository
+            //this line is equivalent to the following line
+
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             /****************************** add services for AutoMapper ********************************/

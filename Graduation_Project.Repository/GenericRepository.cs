@@ -7,6 +7,7 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models;
 using Graduation_Project.Core.Specifications;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Graduation_Project.Repository
 {
@@ -36,6 +37,18 @@ namespace Graduation_Project.Repository
         public async Task<T?> GetWithSpecsAsync(ISpecifications<T> specs)
         {
             return await ApplyQuery(specs).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+
+            return await dbContext.Set<T>().ToListAsync();
+        }
+
+
+        public async Task<T?> GetAsync(int id)
+        {
+            return await dbContext.Set<T>().FindAsync(id);
         }
 
         public async Task SaveAsync()

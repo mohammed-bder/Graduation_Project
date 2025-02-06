@@ -12,7 +12,7 @@
         public ICollection<DoctorSubspeciality>? DoctorSubspeciality { get; set; }
 
         // (M SubSpecialities ==> 1 Specialty)
-        public int? SpecialtyId { get; set; }
-        public Specialty? Specialty { get; set; }
+        public required int SpecialtyId { get; set; }
+        public required Specialty Specialty { get; set; }
     }
 }
