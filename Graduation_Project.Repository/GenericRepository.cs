@@ -29,7 +29,7 @@ namespace Graduation_Project.Repository
             dbContext.Set<T>().Remove(entity);
         }
 
-        public async Task<IEnumerable<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)
+        public async Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)
         {
             return await ApplyQuery(specs).ToListAsync();
         }
@@ -39,7 +39,7 @@ namespace Graduation_Project.Repository
             return await ApplyQuery(specs).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IReadOnlyList<T>> GetAllAsync()
         {
 
             return await dbContext.Set<T>().ToListAsync();
