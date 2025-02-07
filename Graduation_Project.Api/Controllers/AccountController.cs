@@ -20,6 +20,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IAuthService _authServices;
         private readonly IGenericRepository<Doctor> _doctorRepo;
         private readonly IGenericRepository<Patient> _patientRepo;
+        private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<AppUser> userManager,
@@ -27,6 +28,7 @@ namespace Graduation_Project.Api.Controllers
             IAuthService authServices , 
             IGenericRepository<Doctor> doctorRepo,
             IGenericRepository<Patient> patientRepo,
+            IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
@@ -35,6 +37,7 @@ namespace Graduation_Project.Api.Controllers
             _logger = logger;
             _doctorRepo = doctorRepo;
             _patientRepo = patientRepo;
+            _specialtyRepo = specialtyRepo;
         }
 
         // login End Point
@@ -102,7 +105,12 @@ namespace Graduation_Project.Api.Controllers
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
 
+           var specialty = await _specialtyRepo.GetAsync(model.SpecialtyId);
             
+            if(specialty is  null)
+            {
+                return BadRequest(new ApiResponse(400, "please enter valid specialty"));
+            }
             var newDoctor = new Doctor()
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
@@ -111,7 +119,7 @@ namespace Graduation_Project.Api.Controllers
                 ConsultationFees = model.ConsultationFees,
                 Gender = model.Gender,
                 SpecialtyId = model.SpecialtyId,
-
+                Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
             };
 
             try
