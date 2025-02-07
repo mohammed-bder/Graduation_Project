@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Api.DTO.Account;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,20 +18,23 @@ namespace Graduation_Project.Api.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authServices;
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IGenericRepository<Doctor> _doctorRepo;
+        private readonly IGenericRepository<Patient> _patientRepo;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IAuthService authServices , 
-            ApplicationDbContext applicationDbContext,
+            IGenericRepository<Doctor> doctorRepo,
+            IGenericRepository<Patient> patientRepo,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
-           _applicationDbContext = applicationDbContext;
             _logger = logger;
+            _doctorRepo = doctorRepo;
+            _patientRepo = patientRepo;
         }
 
         // login End Point
@@ -97,20 +101,24 @@ namespace Graduation_Project.Api.Controllers
             // split the full name into first and last name
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
+
+            
             var newDoctor = new Doctor()
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
                 LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
-                Gender = model.Gender
+                Gender = model.Gender,
+                SpecialtyId = model.SpecialtyId,
+
             };
 
             try
             {
                 // Add Doctor to the application database
-                await _applicationDbContext.Doctors.AddAsync(newDoctor);
-                await _applicationDbContext.SaveChangesAsync();
+                await _doctorRepo.AddAsync(newDoctor);
+                await _doctorRepo.SaveAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -179,8 +187,8 @@ namespace Graduation_Project.Api.Controllers
 
             try
             {
-                await _applicationDbContext.Patients.AddAsync(newPatient);
-                await _applicationDbContext.SaveChangesAsync();
+                await _patientRepo.AddAsync(newPatient);
+                await _patientRepo.SaveAsync();
 
             }
             catch (DbUpdateException ex)

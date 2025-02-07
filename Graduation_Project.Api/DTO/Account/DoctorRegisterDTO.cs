@@ -22,6 +22,8 @@ namespace Talabat.API.Dtos.Account
         [Required(ErrorMessage = "Gender is required.")]
         public Gender Gender { get; set; }
 
+        public int SpecialtyId { get; set; }
+
         //[Required]
         //public string PhoneNumber { get; set; }
 
