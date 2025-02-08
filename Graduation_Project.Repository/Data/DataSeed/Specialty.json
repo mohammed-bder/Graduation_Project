@@ -1,117 +1,117 @@
 [
-    {
-      "Name": "Internal Medicine",
-      "SubSpecialties": [
-        {"Name": "Cardiology" },
-        {"Name": "Gastroenterology and Hepatology" },
-        {"Name": "Endocrinology and Diabetes" },
-        {"Name": "Nephrology" },
-        {"Name": "Hematology and Oncology" },
-        {"Name": "Rheumatology and Immunology" },
-        {"Name": "Pulmonology" },
-        {"Name": "Infectious Diseases and Tropical Medicine" }
-      ]
-    },
-    {
-      "Name": "General Surgery",
-      "SubSpecialties": [
-        {"Name": "Cardiothoracic Surgery" },
-        {"Name": "Vascular Surgery" },
-        {"Name": "Neurosurgery" },
-        {"Name": "Orthopedic Surgery" },
-        {"Name": "Plastic and Burn Surgery" },
-        {"Name": "Pediatric Surgery" },
-        {"Name": "Urology" }
-      ]
-    },
-    {
-      "Name": "Pediatrics",
-      "SubSpecialties": [
-        {"Name": "General Pediatrics" },
-        {"Name": "Pediatric Cardiology" },
-        {"Name": "Pediatric Pulmonology" },
-        {"Name": "Pediatric Gastroenterology" },
-        {"Name": "Pediatric Hematology and Oncology" },
-        {"Name": "Pediatric Endocrinology and Diabetes" },
-        {"Name": "Pediatric Nephrology" },
-        {"Name": "Pediatric Neurology" }
-      ]
-    },
-    {
-      "Name": "Obstetrics and Gynecology",
-      "SubSpecialties": [
-        {"Name": "Maternal and Fetal Medicine" },
-        {"Name": "General Gynecology" },
-        {"Name": "Gynecologic Oncology" },
-        {"Name": "Infertility and IVF" }
-      ]
-    },
-    {
-      "Name": "Ophthalmology",
-      "SubSpecialties": [
-        {"Name": "Eye Surgery" },
-        {"Name": "Retinal Diseases" },
-        {"Name": "Corneal Diseases" },
-        {"Name": "Glaucoma" },
-        {"Name": "Strabismus and Pediatric Ophthalmology" }
-      ]
-    },
-    {
-      "Name": "Otolaryngology (ENT)",
-      "SubSpecialties": [
-        {"Name": "Ear Surgery" },
-        {"Name": "Nasal and Sinus Surgery" },
-        {"Name": "Laryngeal and Voice Disorders" },
-        {"Name": "Audiology and Balance Disorders" }
-      ]
-    },
-    {
-      "Name": "Dermatology and Venereology",
-      "SubSpecialties": [
-        {"Name": "General Dermatology" },
-        {"Name": "Andrology and Infertility" },
-        {"Name": "Allergic and Immunologic Skin Diseases" },
-        {"Name": "Hair and Nail Disorders" }
-      ]
-    },
-    {
-      "Name": "Psychiatry",
-      "SubSpecialties": [
-        {"Name": "General Psychiatry" },
-        {"Name": "Child and Adolescent Psychiatry" },
-        {"Name": "Geriatric Psychiatry" },
-        {"Name": "Addiction Psychiatry" }
-      ]
-    },
-    {
-      "Name": "Neurology",
-      "SubSpecialties": [
-        {"Name": "General Neurology" },
-        {"Name": "Neuromuscular Disorders" },
-        {"Name": "Epilepsy" },
-        {"Name": "Stroke Medicine" }
-      ]
-    },
-    {
-      "Name": "Diagnostic Radiology",
-      "SubSpecialties": [
-        {"Name": "X-ray Imaging" },
-        {"Name": "CT Imaging" },
-        {"Name": "MRI Imaging" },
-        {"Name": "Interventional Radiology" }
-      ]
-    },
-    {
-      "Name": "Nuclear Medicine",
-      "SubSpecialties": []
-    },
-    {
-      "Name": "Physical Medicine, Rheumatology, and Rehabilitation",
-      "SubSpecialties": [
-        {"Name": "Physical Medicine" },
-        {"Name": "Rheumatology" },
-        {"Name": "Medical Rehabilitation" }
-      ]
-    }
-  ]
+  {
+    "Name": "Internal Medicine",
+    "SubSpecialties": [
+      { "Name": "Cardiology" },
+      { "Name": "Gastroenterology and Hepatology" },
+      { "Name": "Endocrinology and Diabetes" },
+      { "Name": "Nephrology" },
+      { "Name": "Hematology and Oncology" },
+      { "Name": "Rheumatology and Immunology" },
+      { "Name": "Pulmonology" },
+      { "Name": "Infectious Diseases and Tropical Medicine" }
+    ]
+  },
+  {
+    "Name": "General Surgery",
+    "SubSpecialties": [
+      { "Name": "Cardiothoracic Surgery" },
+      { "Name": "Vascular Surgery" },
+      { "Name": "Neurosurgery" },
+      { "Name": "Orthopedic Surgery" },
+      { "Name": "Plastic and Burn Surgery" },
+      { "Name": "Pediatric Surgery" },
+      { "Name": "Urology" }
+    ]
+  },
+  {
+    "Name": "Pediatrics",
+    "SubSpecialties": [
+      { "Name": "General Pediatrics" },
+      { "Name": "Pediatric Cardiology" },
+      { "Name": "Pediatric Pulmonology" },
+      { "Name": "Pediatric Gastroenterology" },
+      { "Name": "Pediatric Hematology and Oncology" },
+      { "Name": "Pediatric Endocrinology and Diabetes" },
+      { "Name": "Pediatric Nephrology" },
+      { "Name": "Pediatric Neurology" }
+    ]
+  },
+  {
+    "Name": "Obstetrics and Gynecology",
+    "SubSpecialties": [
+      { "Name": "Maternal and Fetal Medicine" },
+      { "Name": "General Gynecology" },
+      { "Name": "Gynecologic Oncology" },
+      { "Name": "Infertility and IVF" }
+    ]
+  },
+  {
+    "Name": "Ophthalmology",
+    "SubSpecialties": [
+      { "Name": "Eye Surgery" },
+      { "Name": "Retinal Diseases" },
+      { "Name": "Corneal Diseases" },
+      { "Name": "Glaucoma" },
+      { "Name": "Strabismus and Pediatric Ophthalmology" }
+    ]
+  },
+  {
+    "Name": "Otolaryngology (ENT)",
+    "SubSpecialties": [
+      { "Name": "Ear Surgery" },
+      { "Name": "Nasal and Sinus Surgery" },
+      { "Name": "Laryngeal and Voice Disorders" },
+      { "Name": "Audiology and Balance Disorders" }
+    ]
+  },
+  {
+    "Name": "Dermatology and Venereology",
+    "SubSpecialties": [
+      { "Name": "General Dermatology" },
+      { "Name": "Andrology and Infertility" },
+      { "Name": "Allergic and Immunologic Skin Diseases" },
+      { "Name": "Hair and Nail Disorders" }
+    ]
+  },
+  {
+    "Name": "Psychiatry",
+    "SubSpecialties": [
+      { "Name": "General Psychiatry" },
+      { "Name": "Child and Adolescent Psychiatry" },
+      { "Name": "Geriatric Psychiatry" },
+      { "Name": "Addiction Psychiatry" }
+    ]
+  },
+  {
+    "Name": "Neurology",
+    "SubSpecialties": [
+      { "Name": "General Neurology" },
+      { "Name": "Neuromuscular Disorders" },
+      { "Name": "Epilepsy" },
+      { "Name": "Stroke Medicine" }
+    ]
+  },
+  {
+    "Name": "Diagnostic Radiology",
+    "SubSpecialties": [
+      { "Name": "X-ray Imaging" },
+      { "Name": "CT Imaging" },
+      { "Name": "MRI Imaging" },
+      { "Name": "Interventional Radiology" }
+    ]
+  },
+  {
+    "Name": "Nuclear Medicine",
+    "SubSpecialties": []
+  },
+  {
+    "Name": "Physical Medicine, Rheumatology, and Rehabilitation",
+    "SubSpecialties": [
+      { "Name": "Physical Medicine" },
+      { "Name": "Rheumatology" },
+      { "Name": "Medical Rehabilitation" }
+    ]
+  }
+]
   

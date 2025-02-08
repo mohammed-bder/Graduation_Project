@@ -8,8 +8,10 @@ namespace Graduation_Project.Core.IRepositories
         public Task AddAsync(T entity);
         public void Update(T entity);
         public void Delete(T entity);
-        public Task<IEnumerable<T>?> GetAllWithSpecAsync(ISpecifications<T> specs);
+        public Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs);
         public Task<T?> GetWithSpecsAsync(ISpecifications<T> specs);
+        Task<T?> GetAsync(int id);
+        Task<IReadOnlyList<T>> GetAllAsync();
         public Task SaveAsync();
 
     }

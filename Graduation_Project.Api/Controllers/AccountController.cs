@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Api.DTO.Account;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,20 +18,26 @@ namespace Graduation_Project.Api.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authServices;
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IGenericRepository<Doctor> _doctorRepo;
+        private readonly IGenericRepository<Patient> _patientRepo;
+        private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IAuthService authServices , 
-            ApplicationDbContext applicationDbContext,
+            IGenericRepository<Doctor> doctorRepo,
+            IGenericRepository<Patient> patientRepo,
+            IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
-           _applicationDbContext = applicationDbContext;
             _logger = logger;
+            _doctorRepo = doctorRepo;
+            _patientRepo = patientRepo;
+            _specialtyRepo = specialtyRepo;
         }
 
         // login End Point
@@ -48,12 +55,14 @@ namespace Graduation_Project.Api.Controllers
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(401));
 
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
             var userDto = new UserDTO()
             {
                 FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
-                
+                Role = role
             };
 
             return Ok(userDto);
@@ -68,8 +77,8 @@ namespace Graduation_Project.Api.Controllers
             if (CheckEmailExists(model.Email).Result.Value)
                 return BadRequest(new ApiValidationErrorResponse() {Errors = new string[] { "This Email is Already Exist" } });
 
-            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
-                return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
+            //if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
+            //    return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
 
             var user = new AppUser()
             {
@@ -94,20 +103,30 @@ namespace Graduation_Project.Api.Controllers
            
             // split the full name into first and last name
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+
+
+           var specialty = await _specialtyRepo.GetAsync(model.SpecialtyId);
+            
+            if(specialty is  null)
+            {
+                return BadRequest(new ApiResponse(400, "please enter valid specialty"));
+            }
             var newDoctor = new Doctor()
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
                 LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 ApplicationUserId = registeredUser.Id,
                 ConsultationFees = model.ConsultationFees,
-                Gender = model.Gender
+                Gender = model.Gender,
+                SpecialtyId = model.SpecialtyId,
+                Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
             };
 
             try
             {
                 // Add Doctor to the application database
-                await _applicationDbContext.Doctors.AddAsync(newDoctor);
-                await _applicationDbContext.SaveChangesAsync();
+                await _doctorRepo.AddAsync(newDoctor);
+                await _doctorRepo.SaveAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -124,9 +143,10 @@ namespace Graduation_Project.Api.Controllers
 
             return Ok(new UserDTO()
             {
-                FullName = user.UserName,
+                FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
+                Role = UserRoleType.Doctor.ToString()
             });
 
         }
@@ -175,8 +195,8 @@ namespace Graduation_Project.Api.Controllers
 
             try
             {
-                await _applicationDbContext.Patients.AddAsync(newPatient);
-                await _applicationDbContext.SaveChangesAsync();
+                await _patientRepo.AddAsync(newPatient);
+                await _patientRepo.SaveAsync();
 
             }
             catch (DbUpdateException ex)
@@ -197,6 +217,7 @@ namespace Graduation_Project.Api.Controllers
                     FullName = model.FullName,
                     Email = model.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Role = UserRoleType.Patient.ToString()
                 });
         }
 
@@ -209,18 +230,28 @@ namespace Graduation_Project.Api.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
 
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
             return Ok(new UserDTO
             {
                 FullName = user.FullName,
                 Email = user.Email,
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
+                Role = role
             });
         }
 
-        [HttpGet("EmailExists")]
+        [HttpGet("EmailExists")] // GET: api/Account/EmailExists
         public async Task<ActionResult<bool>> CheckEmailExists(string email)
         {
             return await _userManager.FindByEmailAsync(email) is not null;
+        }
+
+        [HttpPost("logout")] // POST: api/Account/logout
+        public async Task<ActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new ApiResponse(200, "Logged out successfully."));
         }
     }
 }

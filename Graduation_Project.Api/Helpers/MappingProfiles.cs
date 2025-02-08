@@ -11,6 +11,9 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Person, PersonToReturnDTO>()
                 .ForMember(d => d.PictureUrl, O => O.MapFrom<PersonPictureUrlResolver>());
 
+            CreateMap<Specialty, SpecialityDTO>();
+            CreateMap<SubSpecialities, SubSpecialityDTO>()
+                .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name));
         }
     }
 }
