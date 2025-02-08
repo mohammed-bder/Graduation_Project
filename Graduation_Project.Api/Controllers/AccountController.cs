@@ -94,7 +94,6 @@ namespace Graduation_Project.Api.Controllers
            
             // split the full name into first and last name
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-
             var newDoctor = new Doctor()
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,

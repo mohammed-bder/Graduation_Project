@@ -30,7 +30,7 @@ namespace Graduation_Project.Service
             var authClams = new List<Claim>()
             {
                 new Claim(ClaimTypes.GivenName , user.UserName),
-                new Claim(ClaimTypes.Email , user.Email),
+                new Claim(ClaimTypes.Email , user.Email)
             };
 
             var userRoles = await userManager.GetRolesAsync(user);
