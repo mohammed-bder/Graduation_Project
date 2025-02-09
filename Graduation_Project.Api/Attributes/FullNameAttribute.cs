@@ -4,7 +4,7 @@ namespace Graduation_Project.Api.Attributes
 {
     public class FullNameAttribute : ValidationAttribute
     {
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value,ValidationContext validationContext)
         {
             if (value is string fullName)
             {
@@ -12,10 +12,10 @@ namespace Graduation_Project.Api.Attributes
 
                 if (nameParts.Length >= 2)
                 {
-                    return true;
+                    return ValidationResult.Success;
                 }
             }
-            return false;
+            return new ValidationResult("Full name must contain at least two words.");
         }
     }
 }

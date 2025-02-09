@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Graduation_Project.Api.Controllers
+namespace Graduation_Project.Api.Controllers.DoctorControllers
 {
     public class DoctorController : BaseApiController
     {
@@ -20,7 +20,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IGenericRepository<Doctor> _genericRepository;
         private readonly IMapper _mapper;
 
-        public DoctorController(UserManager<AppUser> userManager,IGenericRepository<Doctor> genericRepository
+        public DoctorController(UserManager<AppUser> userManager, IGenericRepository<Doctor> genericRepository
                                 , IMapper mapper)
         {
             _userManager = userManager;
@@ -37,7 +37,7 @@ namespace Graduation_Project.Api.Controllers
             var user = await _userManager.FindByEmailAsync(email);
 
             //Get Doctor From Doctor Table in business DB
-            DoctorSpecification doctorSpecification = new DoctorSpecification(user.Id);
+            DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
 
             var doctor = await _genericRepository.GetWithSpecsAsync(doctorSpecification);
             if (doctor == null)
@@ -47,14 +47,9 @@ namespace Graduation_Project.Api.Controllers
             var doctorForProfileDto = new DoctorForProfileDto()
             {
                 Email = email,
-                FullName = doctor.FirstName + " " + doctor.LastName,
-                PhoneNumber = doctor.PhoneNumber,
-                Gender = doctor.Gender.ToString(),
-                ConsultationFees = doctor.ConsultationFees,
-                DateOfBirth = doctor.DateOfBirth,
-                PictureUrl = doctor.PictureUrl,
-                Description = doctor.Description
             };
+
+            doctorForProfileDto = _mapper.Map(doctor, doctorForProfileDto);
 
             return Ok(doctorForProfileDto);
         }
@@ -68,22 +63,13 @@ namespace Graduation_Project.Api.Controllers
             var user = await _userManager.FindByEmailAsync(email);
 
             //Get Doctor From Doctor Table in business DB
-            DoctorSpecification doctorSpecification = new DoctorSpecification(user.Id);
+            DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
             var doctor = await _genericRepository.GetWithSpecsAsync(doctorSpecification);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
-            //split fullName Ex: mohamed hazem kamal --> ["mohamed","hazem","kamal"]
-            var nameParts = doctorDtoFromRequest.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-
-            // Edit                                         
-            doctor.FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
-            doctor.LastName = nameParts.Length > 1 ? string.Join(" ",nameParts.Skip(1)) : string.Empty;
-            doctor.PhoneNumber = doctorDtoFromRequest.PhoneNumber;
-            doctor.DateOfBirth = doctorDtoFromRequest.DateOfBirth;
-            doctor.Description = doctorDtoFromRequest.Description;
-            doctor.ConsultationFees = doctorDtoFromRequest.ConsultationFees;
-            doctor.PictureUrl = doctorDtoFromRequest.PictureUrl;
+            // mapping 
+            doctor = _mapper.Map(doctorDtoFromRequest, doctor);
 
             // Update Business DB
             _genericRepository.Update(doctor);

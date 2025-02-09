@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
-    public class DoctorSpecification : BaseSpecifications<Doctor>
+    public class DoctorForProfileSpecs : BaseSpecifications<Doctor>
     {
-        public DoctorSpecification(string id):base(d => d.ApplicationUserId == id)
+        public DoctorForProfileSpecs(string id):base(d => d.ApplicationUserId == id)
         {
             
         }
