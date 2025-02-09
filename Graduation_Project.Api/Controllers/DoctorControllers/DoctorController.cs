@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Talabat.API.Dtos.Account;
 
 namespace Graduation_Project.Api.Controllers.DoctorControllers
 {
@@ -78,6 +79,15 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok("Created Sucssefully");
 
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IReadOnlyList<Doctor>>> GetDoctorsAsync(string? sort)
+        {
+            var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
+            var doctors = await _genericRepository.GetAllWithSpecAsync(doctorSpecification);
+            return Ok(_mapper.Map<IEnumerable<Doctor> , IEnumerable<SortingDoctorDto>>(doctors));
+        }
+
     }
 }
 

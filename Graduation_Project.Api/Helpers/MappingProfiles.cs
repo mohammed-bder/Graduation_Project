@@ -60,6 +60,14 @@ namespace Graduation_Project.APIs.Helpers
                      src.BloodTrpe == null ? null : Enum.Parse(typeof(BloodType), src.BloodTrpe)
                      ));
 
+            CreateMap<Doctor, SortingDoctorDto>()
+               .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + ' ' + src.LastName
+                ))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src =>
+                    src.Gender.ToString()
+                ));
+
         }
     }
 }
