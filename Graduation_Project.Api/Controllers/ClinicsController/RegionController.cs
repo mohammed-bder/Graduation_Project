@@ -70,6 +70,11 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var spec = new RegionWithGovDataSpecification(id);
             var regions = await _regionRepo.GetAllWithSpecAsync(spec);
 
+            if(regions.IsNullOrEmpty())
+            {
+                return BadRequest(new ApiResponse(404, $"there is no region with this Governorate id= {id}"));
+            }
+
             var regionsDTO = new List<RegionDTO>();
             foreach (var item in regions)
             {
