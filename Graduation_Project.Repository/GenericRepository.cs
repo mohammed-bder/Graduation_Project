@@ -19,9 +19,12 @@ namespace Graduation_Project.Repository
         {
             this.dbContext = dbContext;
         }
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-            await dbContext.Set<T>().AddAsync(entity);
+             await dbContext.Set<T>().AddAsync(entity);
+            await dbContext.SaveChangesAsync(); // Save changes immediately to get the ID
+
+            return entity;
         }
 
         public void Delete(T entity)
@@ -51,6 +54,12 @@ namespace Graduation_Project.Repository
             return await dbContext.Set<T>().FindAsync(id);
         }
 
+        public async Task<T?> GetWithNameAsync(string name)
+        {
+            return await dbContext.Set<T>().FindAsync(name);
+
+        }
+
         public async Task SaveAsync()
         {
             await dbContext.SaveChangesAsync();
@@ -65,5 +74,7 @@ namespace Graduation_Project.Repository
         {
             return SpecificationsEvaluator<T>.GetQuery(dbContext.Set<T>(), specs);
         }
+
+    
     }
 }

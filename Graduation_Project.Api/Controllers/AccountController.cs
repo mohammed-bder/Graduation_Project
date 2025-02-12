@@ -19,6 +19,8 @@ namespace Graduation_Project.Api.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authServices;
         private readonly IGenericRepository<Doctor> _doctorRepo;
+        private readonly IGenericRepository<Clinic> _clinicRepo;
+        private readonly IGenericRepository<DoctorClinic> _doctorClinicRepo;
         private readonly IGenericRepository<Patient> _patientRepo;
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
@@ -27,6 +29,8 @@ namespace Graduation_Project.Api.Controllers
             SignInManager<AppUser> signInManager,
             IAuthService authServices , 
             IGenericRepository<Doctor> doctorRepo,
+            IGenericRepository<Clinic> clinicRepo,
+            IGenericRepository<DoctorClinic> doctorClinicRepo,
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger)
@@ -36,6 +40,8 @@ namespace Graduation_Project.Api.Controllers
             _authServices = authServices;
             _logger = logger;
             _doctorRepo = doctorRepo;
+            this._clinicRepo = clinicRepo;
+            this._doctorClinicRepo = doctorClinicRepo;
             _patientRepo = patientRepo;
             _specialtyRepo = specialtyRepo;
         }
@@ -109,6 +115,8 @@ namespace Graduation_Project.Api.Controllers
             
             if(specialty is  null)
             {
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
                 return BadRequest(new ApiResponse(400, "please enter valid specialty"));
             }
             var newDoctor = new Doctor()
@@ -122,11 +130,34 @@ namespace Graduation_Project.Api.Controllers
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
             };
 
+            var newClinic = new Clinic()
+                {
+                Name = model.ClinicName,
+                RegionId = model.RegionId,
+            };
+
+
+
             try
             {
                 // Add Doctor to the application database
-                await _doctorRepo.AddAsync(newDoctor);
+                var createdDoctor =   await _doctorRepo.AddAsync(newDoctor);
                 await _doctorRepo.SaveAsync();
+
+                var createdClinic = await _clinicRepo.AddAsync(newClinic);
+                await _clinicRepo.SaveAsync();
+
+                // Use the IDs directly after saving
+                var newDoctorClinic = new DoctorClinic
+                {
+                    DoctorId = createdDoctor.Id,
+                    ClinicId = createdClinic.Id
+                };
+
+                await _doctorClinicRepo.AddAsync(newDoctorClinic);
+                await _doctorClinicRepo.SaveAsync();
+
+
             }
             catch (DbUpdateException ex)
             {
@@ -139,6 +170,11 @@ namespace Graduation_Project.Api.Controllers
                 return BadRequest(new ApiResponse(500, "An unexpected error occurred."));
 
             }
+
+     
+
+  
+
             _logger.LogInformation("Doctor registered successfully: {Email}", model.Email);
 
             return Ok(new UserDTO()

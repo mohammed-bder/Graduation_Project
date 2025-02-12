@@ -12,16 +12,16 @@
         public Clinic Clinic { get; set; }
 
 
-        [Required]
+      
         [RegularExpression("Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday",
         ErrorMessage = "Invalid day of the week.")]
-        public string DayOfWeek { get; set; } // e.g., "Monday"
+        public string? DayOfWeek { get; set; } // e.g., "Monday"
 
-        [Required]
+      
         [DataType(DataType.Time)]
-        public DateTime  StartDate  { get; set; }
-        [Required]
+        public DateTime?  StartDate  { get; set; }
+       
         [DataType(DataType.Time)]
-        public DateTime  EndDate  { get; set; }
+        public DateTime?  EndDate  { get; set; }
     }
 }

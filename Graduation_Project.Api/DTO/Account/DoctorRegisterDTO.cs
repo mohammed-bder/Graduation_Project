@@ -24,6 +24,12 @@ namespace Talabat.API.Dtos.Account
 
         public int SpecialtyId { get; set; }
 
+
+        public string ClinicName { get; set; }
+        public int GovernorateId { get; set; }
+        public int RegionId { get; set; }
+
+
         //[Required]
         //public string PhoneNumber { get; set; }
 
