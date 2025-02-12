@@ -1,0 +1,181 @@
+
+[
+      {
+        "Name": "Cairo",
+        "regions": [
+          { "Name": "Nasr City" },
+          { "Name": "Heliopolis" },
+          { "Name": "Maadi" },
+          { "Name": "Shubra" },
+          { "Name": "Zamalek" },
+          { "Name": "New Cairo" },
+          { "Name": "6th of October" }
+        ]
+      },
+      {
+        "Name": "Giza",
+        "regions": [
+          { "Name": "Dokki" },
+          { "Name": "Mohandessin" },
+          { "Name": "Haram" },
+          { "Name": "Faisal" },
+          { "Name": "Sheikh Zayed" },
+          { "Name": "Imbaba" }
+        ]
+      },
+      {
+        "Name": "Alexandria",
+        "regions": [
+          { "Name": "Sidi Gaber" },
+          { "Name": "Roushdy" },
+          { "Name": "Miami" },
+          { "Name": "Stanley" },
+          { "Name": "Montaza" },
+          { "Name": "Smouha" }
+        ]
+      },
+      {
+        "Name": "Dakahlia",
+        "regions": [
+          { "Name": "Mansoura" },
+          { "Name": "Talkha" },
+          { "Name": "Mit Ghamr" },
+          { "Name": "Belqas" }
+        ]
+      },
+      {
+        "Name": "Sharqia",
+        "regions": [
+          { "Name": "Zagazig" },
+          { "Name": "10th of Ramadan" },
+          { "Name": "Bilbeis" },
+          { "Name": "Minya al-Qamh" }
+        ]
+      },
+      {
+        "Name": "Qalyubia",
+        "regions": [
+          { "Name": "Banha" },
+          { "Name": "Shubra El Kheima" },
+          { "Name": "Qalyub" },
+          { "Name": "Shebin El Qanater" }
+        ]
+      },
+      {
+        "Name": "Minya",
+        "regions": [
+          { "Name": "Minya City" },
+          { "Name": "Samalut" },
+          { "Name": "Mallawi" },
+          { "Name": "Bani Mazar" }
+        ]
+      },
+      {
+        "Name": "Assiut",
+        "regions": [
+          { "Name": "Assiut City" },
+          { "Name": "Dairut" },
+          { "Name": "Manfalut" },
+          { "Name": "Abnoub" }
+        ]
+      },
+      {
+        "Name": "Sohag",
+        "regions": [
+          { "Name": "Sohag City" },
+          { "Name": "Tahta" },
+          { "Name": "Girga" },
+          { "Name": "Akhmim" }
+        ]
+      },
+      {
+        "Name": "Luxor",
+        "regions": [
+          { "Name": "Luxor City" },
+          { "Name": "Karnak" },
+          { "Name": "Armant" },
+          { "Name": "Esna" }
+        ]
+      },
+      {
+        "Name": "Aswan",
+        "regions": [
+          { "Name": "Aswan City" },
+          { "Name": "Kom Ombo" },
+          { "Name": "Edfu" },
+          { "Name": "Daraw" }
+        ]
+      },
+      {
+        "Name": "Red Sea",
+        "regions": [
+          { "Name": "Hurghada" },
+          { "Name": "Safaga" },
+          { "Name": "Marsa Alam" },
+          { "Name": "Quseir" }
+        ]
+      },
+      {
+        "Name": "South Sinai",
+        "regions": [
+          { "Name": "Sharm El Sheikh" },
+          { "Name": "Dahab" },
+          { "Name": "Nuweiba" },
+          { "Name": "Taba" }
+        ]
+      },
+      {
+        "Name": "North Sinai",
+        "regions": [
+          { "Name": "Al-Arish" },
+          { "Name": "Sheikh Zuweid" },
+          { "Name": "Rafah" },
+          { "Name": "Bir El Abd" }
+        ]
+      },
+      {
+        "Name": "Ismailia",
+        "regions": [
+          { "Name": "Ismailia City" },
+          { "Name": "Fayed" },
+          { "Name": "Qantara East" },
+          { "Name": "Qantara West" }
+        ]
+      },
+      {
+        "Name": "Port Said",
+        "regions": [
+          { "Name": "Port Said City" },
+          { "Name": "Al-Manakh" },
+          { "Name": "Al-Zohour" }
+        ]
+      },
+      {
+        "Name": "Suez",
+        "regions": [
+          { "Name": "Suez City" },
+          { "Name": "Ataka" },
+          { "Name": "Al-Ganayen" }
+        ]
+      },
+      {
+        "Name": "Fayoum",
+        "regions": [
+          { "Name": "Fayoum City" },
+          { "Name": "Ibsheway" },
+          { "Name": "Sinnuris" },
+          { "Name": "Tamiya" }
+        ]
+      },
+      {
+        "Name": "Beni Suef",
+        "regions": [
+          { "Name": "Beni Suef City" },
+          { "Name": "Al-Fashn" },
+          { "Name": "Biba" },
+          { "Name": "Nasser" }
+        ]
+      }
+    ]
+  
+  

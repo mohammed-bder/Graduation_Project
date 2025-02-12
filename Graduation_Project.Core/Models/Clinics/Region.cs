@@ -9,6 +9,6 @@
         [ForeignKey("governorateId")]
         public Governorate governorate { get; set; }
 
-        public List<Clinic> clinics { get; set; }
+        public List<Clinic>? clinics { get; set; }
     }
 }

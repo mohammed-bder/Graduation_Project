@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Graduation_Project.Core.Models.Clinics;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -58,6 +60,37 @@ namespace Graduation_Project.Repository.Data
                     await _dbContext.SaveChangesAsync();
                 }
             }
+
+            /* ======================= seeding Gover & Region Data ======================= */
+            // i will make data seed to store Governorates and Regions
+            if (_dbContext.governorates.Count() == 0)
+            {
+                var GovernorateData = File.ReadAllText("../Graduation_Project.Repository/Data/DataSeed/Governorates.json");
+                var governorates = JsonSerializer.Deserialize<List<Governorate>>(GovernorateData);
+
+                if (governorates?.Count > 0)
+                {
+                    foreach (var governorate in governorates)
+                    {
+                        if (governorate.regions != null && governorate.regions.Count > 0)
+                        {
+                            foreach (var region in governorate.regions)
+                            {
+                                // region.governorate = governorate;
+                                // governorate.regions.Add(region);
+                                region.governorate = governorate;
+                            }
+                        }
+
+                        _dbContext.governorates.Add(governorate);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+
+
+
 
 
         }
