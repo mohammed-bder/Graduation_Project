@@ -28,6 +28,7 @@ namespace Graduation_Project.Api.DTO.Patient
         [Url(ErrorMessage = "Invalid picture URL format.")]
         public string? PictureUrl { get; set; }
 
+        [ValidEnumValue(ErrorMessage = "Invalid value for BloodTrpe.")]
         public BloodType? BloodTrpe { get; set; }
     }
 }

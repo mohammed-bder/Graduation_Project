@@ -71,7 +71,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             _genericRepository.Update(patient);
             await _genericRepository.SaveAsync();
 
-            return Ok("Updated Successfully");
+            return Ok(patientProfileFromRequest);
         }
     }
 }
