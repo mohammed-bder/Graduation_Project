@@ -5,10 +5,10 @@ namespace Graduation_Project.Api.DTO.Patient
 {
     public class PatientForProfileDto
     {
-        [FullName]
+        [FullName(ErrorMessage = "Full name must contain at least two words.")] // Fname + Lname
         [Required(ErrorMessage = "Full Name is required.")]
-        [StringLength(100, ErrorMessage = "Full Name must be at most 100 characters.")]
-        public string FullName { get; set; } // Fname + Lname
+        [StringLength(maximumLength: 100, MinimumLength = 3, ErrorMessage = "Full Name must be at least 3 characters and at most 100 characters.")]
+        public string FullName { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
@@ -19,7 +19,7 @@ namespace Graduation_Project.Api.DTO.Patient
 
         [Required(ErrorMessage = "Gender is required.")]
         [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
-        public string Gender { get; set; } // Enum --> String (Readability)
+        public Gender Gender { get; set; } // Enum --> String (Readability)
 
         [DataType(DataType.Date)]
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
@@ -28,6 +28,6 @@ namespace Graduation_Project.Api.DTO.Patient
         [Url(ErrorMessage = "Invalid picture URL format.")]
         public string? PictureUrl { get; set; }
 
-        public string? BloodTrpe { get; set; }
+        public BloodType? BloodTrpe { get; set; }
     }
 }

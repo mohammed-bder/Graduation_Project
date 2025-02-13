@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Graduation_Project.Api.Attributes;
 
 namespace Graduation_Project.Api.DTO.Account
 {
     public class PatientRegisterDTO
     {
-        [Required]
-        [MinLength(3, ErrorMessage = "The name should Contain at least 3 characters")] 
+        [FullName(ErrorMessage = "Full name must contain at least two words.")] // Fname + Lname
+        [Required(ErrorMessage = "FullName is required.")]
+        [StringLength(maximumLength: 100, MinimumLength = 3, ErrorMessage = "Full Name must be at least 3 characters and at most 100 characters.")]
         public string FullName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -19,6 +21,7 @@ namespace Graduation_Project.Api.DTO.Account
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
+        [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
         public Gender Gender { get; set; }
 
 
