@@ -1,0 +1,83 @@
+
+[
+    {
+      "id": 1,
+      "Name": "Cardiovascular Diseases"
+    },
+    {
+      "id": 2,
+      "Name": "Respiratory Diseases"
+    },
+    {
+      "id": 3,
+      "Name": "Gastrointestinal Diseases"
+    },
+    {
+      "id": 4,
+      "Name": "Cancer"
+    },
+    {
+      "id": 5,
+      "Name": "Bone and Joint Diseases"
+    },
+    {
+      "id": 6,
+      "Name": "Kidney and Urinary Tract Diseases"
+    },
+    {
+      "id": 7,
+      "Name": "Immune and Allergy Diseases"
+    },
+    {
+      "id": 8,
+      "Name": "Endocrine Diseases"
+    },
+    {
+      "id": 9,
+      "Name": "Pediatric Diseases"
+    },
+    {
+      "id": 10,
+      "Name": "Ear, Nose, and Throat Diseases"
+    },
+    {
+      "id": 11,
+      "Name": "Eye Diseases"
+    },
+    {
+      "id": 12,
+      "Name": "Neurological Diseases"
+    },
+    {
+      "id": 13,
+      "Name": "Dermatological Diseases"
+    },
+    {
+      "id": 14,
+      "Name": "Hematological Diseases"
+    },
+    {
+      "id": 15,
+      "Name": "Obstetric and Gynecological Diseases"
+    },
+    {
+      "id": 16,
+      "Name": "Chronic Diseases"
+    },
+    {
+      "id": 17,
+      "Name": "Infectious Diseases"
+    },
+    {
+      "id": 18,
+      "Name": "Genetic Diseases"
+    },
+    {
+      "id": 19,
+      "Name": "Mental Disorders"
+    },
+    {
+      "id": 20,
+      "Name": "Rare Diseases"
+    }
+  ]

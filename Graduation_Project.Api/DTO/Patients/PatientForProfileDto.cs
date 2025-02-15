@@ -1,7 +1,7 @@
 ﻿using Graduation_Project.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Api.DTO.Patient
+namespace Graduation_Project.Api.DTO.Patients
 {
     public class PatientForProfileDto
     {
@@ -19,16 +19,16 @@ namespace Graduation_Project.Api.DTO.Patient
 
         [Required(ErrorMessage = "Gender is required.")]
         [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
-        public Gender Gender { get; set; } // Enum --> String (Readability)
+        public Gender Gender { get; set; }
 
         [DataType(DataType.Date)]
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
         public DateTime? DateOfBirth { get; set; }
 
-        [Url(ErrorMessage = "Invalid picture URL format.")]
+        [StringLength(500, ErrorMessage = "PictureUrl cannot exceed 500 characters.")]
         public string? PictureUrl { get; set; }
 
-        [ValidEnumValue(ErrorMessage = "Invalid value for BloodTrpe.")]
+        [ValidEnumValue<BloodType>(ErrorMessage = "Invalid value for BloodTrpe.")]
         public BloodType? BloodTrpe { get; set; }
     }
 }
