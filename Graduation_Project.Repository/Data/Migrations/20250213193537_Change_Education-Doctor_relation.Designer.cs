@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250213193537_Change_Education-Doctor_relation")]
+    partial class Change_EducationDoctor_relation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,9 +309,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("SubSpecialitiesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.HasKey("DoctorId", "SubSpecialitiesId");
@@ -1123,7 +1123,7 @@ namespace Graduation_Project.Repository.Data.Migrations
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Education", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
-                        .WithOne("Education")
+                        .WithOne("Educations")
                         .HasForeignKey("Graduation_Project.Core.Models.Doctors.Education", "DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1427,7 +1427,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("DoctorSubspeciality");
 
-                    b.Navigation("Education")
+                    b.Navigation("Educations")
                         .IsRequired();
 
                     b.Navigation("Favorites");

@@ -14,6 +14,9 @@ namespace Graduation_Project.Core.IRepositories
         Task<T?> GetWithNameAsync(string name);
         Task<IReadOnlyList<T>> GetAllAsync();
         public Task SaveAsync();
+        public void DeleteRange(IEnumerable<T> entities);
+        public Task AddRangeAsync(IEnumerable<T> entities);
+
 
     }
 }

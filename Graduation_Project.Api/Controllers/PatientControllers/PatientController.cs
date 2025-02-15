@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using Graduation_Project.Api.DTO.Patient;
+using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Doctors;

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
-    public class EducationSpecification : BaseSpecifications<Education>
+    public class DoctorDetailsSpecs : BaseSpecifications<Doctor>
     {
-        public EducationSpecification(int id) : base (e => e.DoctorId == id)
+        public DoctorDetailsSpecs(int id) : base(d => d.Id == id)
         {
-            
+            Includes.Add(d => d.Appointments);
         }
-        
     }
 }

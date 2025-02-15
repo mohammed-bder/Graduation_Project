@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
-using Graduation_Project.Api.DTO.Patient;
+using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.Helpers;
 namespace Graduation_Project.APIs.Helpers
 {
@@ -51,6 +51,23 @@ namespace Graduation_Project.APIs.Helpers
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ));
+
+            CreateMap<Doctor, DoctorDetailsDto>()
+               .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
+                    src.Specialty != null ? src.Specialty.Name : null
+                ))
+               .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + ' ' + src.LastName
+                ));
+
+            CreateMap<Education, EducationDto>();
+
+            CreateMap<EducationDto, Education>();
+
+            CreateMap<Clinic, DoctorAboutClinicDto>();
+
+            CreateMap<Education, DoctorAboutDto>();
+
 
         }
     }

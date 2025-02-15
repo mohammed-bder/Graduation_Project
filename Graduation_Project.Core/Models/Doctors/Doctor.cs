@@ -32,11 +32,12 @@
         [Range(0.0, 10000.0, ErrorMessage = "Consultation fees must be a positive number.")]
         public decimal ConsultationFees { get; set; }
 
+        public int? ExperianceYears { get; set; }
 
         /* ----------------- Relationships ----------------- */
 
-        // (1 Doctor ==> M Education)
-        public ICollection<Education> Educations { get; set; }
+        // (1 Doctor ==> 1 Education)
+        public Education Education { get; set; }
 
         // (M Doctor ==> M Subspeciality)
         public ICollection<DoctorSubspeciality> DoctorSubspeciality { get; set; }

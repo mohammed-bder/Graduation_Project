@@ -1,6 +1,6 @@
 ﻿namespace Graduation_Project.Core.Models.Doctors
 {
-    public class DoctorSubspeciality
+    public class DoctorSubspeciality : BaseEntity
     {
         [ForeignKey("Doctor")]
         public int DoctorId { get; set; }

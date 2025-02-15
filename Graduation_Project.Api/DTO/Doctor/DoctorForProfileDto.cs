@@ -32,7 +32,8 @@ namespace Graduation_Project.Api.DTO.Doctor
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
         public DateTime? DateOfBirth { get; set; }
 
-        [Url(ErrorMessage = "Invalid picture URL format.")]
+        [StringLength(500, ErrorMessage = "PictureUrl cannot exceed 500 characters.")]
         public string? PictureUrl { get; set; }
+
     }
 }
