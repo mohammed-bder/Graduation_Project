@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
+using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.DTO.Doctor;
 using Graduation_Project.Api.DTO.Patient;
 using Graduation_Project.Api.Helpers;
@@ -68,6 +69,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.Gender.ToString()
                 ));
 
+
+            // ========================================== Clinic ==========================================
+            CreateMap<Clinic, ClinicDTO>()
+                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name))
+                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name))
+                .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
+                ;
         }
     }
 }
