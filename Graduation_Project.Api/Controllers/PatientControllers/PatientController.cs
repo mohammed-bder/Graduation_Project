@@ -74,7 +74,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();
 
-            return Ok("Updated Successfully");
+            return Ok(patientProfileFromRequest);
         }
 
         /****************************************** Medicl Category ******************************************/

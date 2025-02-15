@@ -56,7 +56,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
-        [HttpPost("SaveProfile")]
+        [HttpPost("EditProfile")]
         public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
         {
             // Get Current User 
@@ -76,7 +76,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _genericRepository.Update(doctor);
             await _genericRepository.SaveAsync();
 
-            return Ok("Created Sucssefully");
+            return Ok(doctorDtoFromRequest);
 
         }
 
@@ -85,6 +85,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         {
             var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
             var doctors = await _genericRepository.GetAllWithSpecAsync(doctorSpecification);
+
             return Ok(_mapper.Map<IEnumerable<Doctor> , IEnumerable<SortingDoctorDto>>(doctors));
         }
 
