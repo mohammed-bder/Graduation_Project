@@ -1,7 +1,8 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using Graduation_Project.Api.DTO.Patient;
+using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
@@ -15,14 +16,16 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
     public class PatientController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IGenericRepository<Patient> _genericRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PatientController(UserManager<AppUser> userManager, IGenericRepository<Patient> genericRepository, IMapper mapper)
+        public PatientController(UserManager<AppUser> userManager,
+                                IMapper mapper,
+                                IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
-            _genericRepository = genericRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
@@ -35,7 +38,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // Get current patient from business DB
             var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await _genericRepository.GetWithSpecsAsync(patientSpecs);
+            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
             if (patient == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -60,7 +63,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // Get current patient from business DB
             var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await _genericRepository.GetWithSpecsAsync(patientSpecs);
+            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
             if (patient == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -68,10 +71,36 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             patient = _mapper.Map(patientProfileFromRequest, patient);
 
             // Update Patient 
-            _genericRepository.Update(patient);
-            await _genericRepository.SaveAsync();
+            _unitOfWork.Repository<Patient>().Update(patient);
+            await _unitOfWork.Repository<Patient>().SaveAsync();
 
             return Ok(patientProfileFromRequest);
+        }
+
+        /****************************************** Medicl Category ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetMedicalCategory")]
+        public async Task<ActionResult<IReadOnlyList<MedicalCategoryDto>>> GetAllMediclCategory()
+        {
+            var MediclaCategories = await _unitOfWork.Repository<MedicalCategory>().GetAllAsync();
+            if (MediclaCategories is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Categories Not Found"));
+            }
+
+            return Ok(_mapper.Map<IReadOnlyList<MedicalCategory>, IReadOnlyList<MedicalCategoryDto>>(MediclaCategories));
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("{Id:int}")]
+        public async Task<ActionResult<MedicalCategoryDto>> GetMediclCategory(int Id)
+        {
+            var MedicalCategory = await _unitOfWork.Repository<MedicalCategory>().GetAsync(Id);
+            if(MedicalCategory is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Category Not Found"));
+            }
+            return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
         }
     }
 }

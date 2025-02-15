@@ -26,10 +26,17 @@ namespace Graduation_Project.Repository
 
             return entity;
         }
-
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await dbContext.Set<T>().AddRangeAsync(entities);
+        }
         public void Delete(T entity)
         {
             dbContext.Set<T>().Remove(entity);
+        }
+        public void DeleteRange(IEnumerable<T> entities)
+        {
+            dbContext.Set<T>().RemoveRange(entities);
         }
 
         public async Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)

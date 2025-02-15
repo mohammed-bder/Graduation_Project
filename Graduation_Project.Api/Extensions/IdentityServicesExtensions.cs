@@ -12,6 +12,8 @@ namespace Graduation_Project.Api.Extensions
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped(typeof(IAuthService), typeof(AuthServices));
+            services.AddHttpContextAccessor();
+            services.AddScoped(typeof(IUserService), typeof(UserService));
 
             // add Identity Services configuration (UserManager , SigninManager , RoleManager)
             services.AddIdentity<AppUser, IdentityRole>(options =>

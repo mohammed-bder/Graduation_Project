@@ -15,6 +15,9 @@ namespace Graduation_Project.Core.IRepositories
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<int> GetCountAsync(ISpecifications<T> spec);
         public Task SaveAsync();
+        public void DeleteRange(IEnumerable<T> entities);
+        public Task AddRangeAsync(IEnumerable<T> entities);
+
 
     }
 }

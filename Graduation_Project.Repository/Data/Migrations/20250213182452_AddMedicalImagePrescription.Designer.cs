@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250213182452_AddMedicalImagePrescription")]
+    partial class AddMedicalImagePrescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,9 +231,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("ExperianceYears")
-                        .HasColumnType("int");
-
                     b.Property<string>("FirstName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -308,9 +308,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int>("SubSpecialitiesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.HasKey("DoctorId", "SubSpecialitiesId");
 
                     b.HasIndex("SubSpecialitiesId");
@@ -326,28 +323,27 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Certifications")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Degree")
                         .HasColumnType("int");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Fellowships")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("GraduationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Institution")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Specialty")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId")
-                        .IsUnique();
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("Educations");
                 });
@@ -1126,8 +1122,8 @@ namespace Graduation_Project.Repository.Data.Migrations
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Education", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
-                        .WithOne("Education")
-                        .HasForeignKey("Graduation_Project.Core.Models.Doctors.Education", "DoctorId")
+                        .WithMany("Educations")
+                        .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1430,8 +1426,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("DoctorSubspeciality");
 
-                    b.Navigation("Education")
-                        .IsRequired();
+                    b.Navigation("Educations");
 
                     b.Navigation("Favorites");
 

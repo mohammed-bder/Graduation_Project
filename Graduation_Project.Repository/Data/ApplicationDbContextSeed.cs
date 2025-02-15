@@ -62,7 +62,6 @@ namespace Graduation_Project.Repository.Data
             }
 
             /* ======================= seeding Gover & Region Data ======================= */
-            // i will make data seed to store Governorates and Regions
             if (_dbContext.governorates.Count() == 0)
             {
                 var GovernorateData = File.ReadAllText("../Graduation_Project.Repository/Data/DataSeed/Governorates.json");
@@ -76,8 +75,6 @@ namespace Graduation_Project.Repository.Data
                         {
                             foreach (var region in governorate.regions)
                             {
-                                // region.governorate = governorate;
-                                // governorate.regions.Add(region);
                                 region.governorate = governorate;
                             }
                         }
@@ -88,7 +85,23 @@ namespace Graduation_Project.Repository.Data
                     await _dbContext.SaveChangesAsync();
                 }
             }
+            /* ======================= seeding Medical Category Data ======================= */
+            if(_dbContext.MedicalCategories.Count() == 0)
+            {
+                var MedicalCategoryData = File.ReadAllText("../Graduation_Project.Repository/Data/DataSeed/MedicalCategory.json");
+                var MedicalCategories = JsonSerializer.Deserialize<List<MedicalCategory>>(MedicalCategoryData);
 
+                if(MedicalCategories?.Count > 0)
+                {
+                    foreach (var MedicalCategory in MedicalCategories)
+                    {
+                        _dbContext.MedicalCategories.Add(MedicalCategory);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                }
+                
+            }
 
 
 
