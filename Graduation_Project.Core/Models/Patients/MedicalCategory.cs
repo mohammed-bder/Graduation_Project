@@ -9,7 +9,7 @@
         public string Name { get; set; } // Name of the medical category
 
         // Relationships
-        public ICollection<MedicalHistory> MedicalHistories { get; set; } // Navigation property: a category can have multiple doctors
+        public ICollection<MedicalHistory>? MedicalHistories { get; set; } // Navigation property: a category can have multiple doctors
     }
 }
 

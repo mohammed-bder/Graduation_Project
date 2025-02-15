@@ -1,7 +1,7 @@
 ﻿using Graduation_Project.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Api.DTO.Patient
+namespace Graduation_Project.Api.DTO.Patients
 {
     public class PatientForProfileDto
     {
