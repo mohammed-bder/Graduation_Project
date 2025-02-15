@@ -30,6 +30,8 @@ namespace Graduation_Project.Repository
 
             query = spec.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
 
+            query = spec.ThenIncludes.Aggregate(query, (currentQuery, includeExpression) => includeExpression(currentQuery));
+
             return query;
         }
     }

@@ -1,14 +1,14 @@
 ﻿using Graduation_Project.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Api.DTO.Patient
+namespace Graduation_Project.Api.DTO.Patients
 {
     public class PatientForProfileDto
     {
-        [FullName]
+        [FullName(ErrorMessage = "Full name must contain at least two words.")] // Fname + Lname
         [Required(ErrorMessage = "Full Name is required.")]
-        [StringLength(100, ErrorMessage = "Full Name must be at most 100 characters.")]
-        public string FullName { get; set; } // Fname + Lname
+        [StringLength(maximumLength: 100, MinimumLength = 3, ErrorMessage = "Full Name must be at least 3 characters and at most 100 characters.")]
+        public string FullName { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
@@ -19,15 +19,16 @@ namespace Graduation_Project.Api.DTO.Patient
 
         [Required(ErrorMessage = "Gender is required.")]
         [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
-        public string Gender { get; set; } // Enum --> String (Readability)
+        public Gender Gender { get; set; }
 
         [DataType(DataType.Date)]
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
         public DateTime? DateOfBirth { get; set; }
 
-        [Url(ErrorMessage = "Invalid picture URL format.")]
+        [StringLength(500, ErrorMessage = "PictureUrl cannot exceed 500 characters.")]
         public string? PictureUrl { get; set; }
 
-        public string? BloodTrpe { get; set; }
+        [ValidEnumValue<BloodType>(ErrorMessage = "Invalid value for BloodTrpe.")]
+        public BloodType? BloodTrpe { get; set; }
     }
 }

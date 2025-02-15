@@ -14,7 +14,7 @@ namespace Graduation_Project.Core.Specifications
         public List<Expression<Func<T, object>>> Includes { get; set; } = new List<Expression<Func<T, object>>>();
         public Expression<Func<T, object>> OrderBy { get; set; }
         public Expression<Func<T, object>> OrderByDescending { get; set; }
-     
+        public List<Func<IQueryable<T>, IQueryable<T>>> ThenIncludes { get; set; } = new List<Func<IQueryable<T>, IQueryable<T>>>();
 
         public BaseSpecifications()
         {
