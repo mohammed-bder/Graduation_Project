@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.IServices
 {
-    internal interface IGeneralService
+    public interface IUserService
     {
+        Task<AppUser> GetCurrentUserAsync();
     }
 }

@@ -3,6 +3,7 @@ using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.Helpers;
+using System.Globalization;
 namespace Graduation_Project.APIs.Helpers
 {
     public class MappingProfiles : Profile
@@ -59,6 +60,25 @@ namespace Graduation_Project.APIs.Helpers
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ));
+
+            /****************************************** Mapping for Medicl Category ******************************************/
+            CreateMap<MedicalCategory , MedicalCategoryDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src =>
+                    src.Name
+                ));
+
+
+            /****************************************** Mapping for Medicl History ******************************************/
+            CreateMap<MedicalHistory, MedicalHistoryDto>()
+                .ForMember(dest => dest.MedicalCategory, opt => opt.MapFrom(src => src.MedicalCategory.Name))
+                .ForMember(dest => dest.MedicalImage, opt => opt.MapFrom<MedicalHistoryPictureUrlResolver>());
+
+            CreateMap<MedicalHistoryFormDto, MedicalHistory>();
+
+            CreateMap<MedicalHistory, MedicalHistoryFormDto>();
+
+            CreateMap<MedicalHistory, MedicalHistoryInfoDto>();
+                
 
             CreateMap<Education, EducationDto>();
 
