@@ -2,7 +2,9 @@
 using AutoMapper;
 using Graduation_Project.Api.DTO.Doctor;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Helpers;
 using Graduation_Project.APIs.Helpers;
+using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Repository;
@@ -20,13 +22,15 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IGenericRepository<Doctor> _genericRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
         public DoctorController(UserManager<AppUser> userManager, IGenericRepository<Doctor> genericRepository
-                                , IMapper mapper)
+                                , IMapper mapper, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _genericRepository = genericRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
@@ -80,13 +84,17 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Doctor>>> GetDoctorsAsync(string? sort)
+        [HttpGet("DoctorWithFilter")]
+        public async Task<ActionResult<Pagination<Doctor>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
         {
-            var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
-            var doctors = await _genericRepository.GetAllWithSpecAsync(doctorSpecification);
+            var doctorSpecification = new SortingDoctorWithSpecificaiton(specParams);
+            var doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
+            var countSpec = new DoctorWithFilterCountSpecification(specParams);
+            var count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
 
-            return Ok(_mapper.Map<IEnumerable<Doctor> , IEnumerable<SortingDoctorDto>>(doctors));
+            return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
+            //return Ok(new Pagination<SortingDoctorDto>());
         }
 
     }

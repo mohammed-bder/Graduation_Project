@@ -69,12 +69,15 @@ namespace Graduation_Project.Repository
         {
             dbContext.Set<T>().Update(entity);
         }
+        public async Task<int> GetCountAsync(ISpecifications<T> spec)
+        {
+            return await ApplyQuery(spec).CountAsync();
+        }
 
         public IQueryable<T> ApplyQuery(ISpecifications<T> specs) //Helper Method
         {
             return SpecificationsEvaluator<T>.GetQuery(dbContext.Set<T>(), specs);
         }
 
-    
     }
 }

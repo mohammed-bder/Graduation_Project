@@ -13,6 +13,7 @@ namespace Graduation_Project.Core.IRepositories
         Task<T?> GetAsync(int id);
         Task<T?> GetWithNameAsync(string name);
         Task<IReadOnlyList<T>> GetAllAsync();
+        Task<int> GetCountAsync(ISpecifications<T> spec);
         public Task SaveAsync();
 
     }
