@@ -1,4 +1,4 @@
-﻿git using AutoMapper;
+﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
 using Graduation_Project.Api.DTO.Patients;
