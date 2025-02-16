@@ -19,6 +19,8 @@ namespace Graduation_Project.Core.Specifications
         public int Skip { get; set; }
         public int Take { get; set; }
         public bool IsPaginationEnabled { get; set; }
+        public Expression<Func<T, object>> Selector { get; set; }
+
         public BaseSpecifications()
         {
 
@@ -44,6 +46,11 @@ namespace Graduation_Project.Core.Specifications
             IsPaginationEnabled = true;
             Skip = skip;
             Take = take;
+        }
+
+        public void ApplySelector(Expression<Func<T, object>> selectorExpression)
+        {
+            Selector = selectorExpression;
         }
     }
 }

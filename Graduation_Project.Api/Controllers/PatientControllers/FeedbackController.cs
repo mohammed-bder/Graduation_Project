@@ -1,0 +1,160 @@
+﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Patients;
+using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Core;
+using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Shared;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.PatientSpecifications;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Graduation_Project.Api.Controllers.PatientControllers
+{
+    public class FeedbackController : BaseApiController
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
+
+        public FeedbackController(IUnitOfWork unitOfWork , IUserService userService , IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _userService = userService;
+            _mapper = mapper;
+        }
+
+        /****************************************** Add Feedback ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpPost("add-feedback")]
+        public async Task<ActionResult<FeedbackInfoDto>> AddFeedback(FeedbackDto feedbackDto)
+        {
+            var currentUser = await _userService.GetCurrentUserAsync();
+            var spec = new PatientForProfileSpecs(currentUser.Id);
+
+            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
+
+            if(patient is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Patient Not Found"));
+            }
+
+            var feedBack = _mapper.Map<FeedbackDto, Feedback>(feedbackDto);
+            feedBack.PatientId = patient.Id;
+            feedBack.Date = DateTime.Now;
+
+            try
+            {
+                await _unitOfWork.Repository<Feedback>().AddAsync(feedBack);
+                await _unitOfWork.CompleteAsync();
+                await UpdateDoctorRating(feedBack.DoctorId);
+                return Ok(_mapper.Map<Feedback,FeedbackInfoDto>(feedBack));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, ex.Message));
+            }
+        }
+
+        /****************************************** Edit Feedback ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpPut("edit-feedback/{Id:int}")]
+        public async Task<ActionResult<FeedbackInfoDto>> EditFeedback(FeedbackDto feedbackDto , int Id)
+        {
+            var feedback = await _unitOfWork.Repository<Feedback>().GetAsync(Id);
+            if(feedback is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
+            }
+
+            var feedbackMapped = _mapper.Map(feedbackDto, feedback);
+            feedbackMapped.Date = DateTime.Now;
+            try
+            {
+                _unitOfWork.Repository<Feedback>().Update(feedback);
+                var result = await _unitOfWork.CompleteAsync();
+                if(result <= 0)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to update Feedback"));
+                }
+                await UpdateDoctorRating(feedback.DoctorId);
+                return Ok(_mapper.Map<Feedback, FeedbackInfoDto>(feedback));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, ex.Message));
+            }
+        }
+
+        /****************************************** Get Feedback By Id ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("get-feedback/{Id:int}")]
+        public async Task<ActionResult<FeedbackInfoDto>> GetFeedbackById(int Id)
+        {
+            var feedback = await _unitOfWork.Repository<Feedback>().GetAsync(Id);
+            if(feedback is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
+            }
+            return Ok(_mapper.Map<Feedback, FeedbackInfoDto>(feedback));
+        }
+
+        /****************************************** Delete Feedback ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpDelete("delete-feedback/{Id:int}")]
+        public async Task<ActionResult> DeleteFeedback(int Id)
+        {
+            var feedback = await _unitOfWork.Repository<Feedback>().GetAsync(Id);
+            if (feedback is null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
+            }
+
+            try
+            {
+                _unitOfWork.Repository<Feedback>().Delete(feedback);
+                var result = await _unitOfWork.CompleteAsync();
+                if (result <= 0)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to delete Feedback"));
+                }
+                await UpdateDoctorRating(feedback.DoctorId);
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Feedback Deleted Successfully"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, ex.Message));
+            }
+
+        }
+
+        /****************************************** Update Doctor Rating ******************************************/
+        private async Task<ActionResult> UpdateDoctorRating(int doctorId)
+        {
+            // 1- get the doctor of this appId
+            //var spec = new DoctorForProfileSpecs(doctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(doctorId);
+            if (doctor is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Doctor Not Found"));
+
+            // 2- get all feedbacks of this doctor with the selector for scores
+            var doctorSpec = new DoctorWithFeedbackSpecs(doctorId);
+            var feedbackScores = await _unitOfWork.Repository<Feedback>().GetAllWithSpecAsync(doctorSpec, f => f.Score);
+            if (feedbackScores is null || !feedbackScores.Any())
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
+            }
+
+            // 3- calculate the average of the feedback scores
+            var averageScore = feedbackScores.Average();
+
+            // 4- update the doctor rating
+            doctor.Rating = averageScore;
+            _unitOfWork.Repository<Doctor>().Update(doctor);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Doctor Rating Updated Successfully"));
+        }
+    }
+}

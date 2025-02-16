@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Graduation_Project.Core.IRepositories;
@@ -42,6 +43,10 @@ namespace Graduation_Project.Repository
         public async Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)
         {
             return await ApplyQuery(specs).ToListAsync();
+        }
+        public async Task<IReadOnlyList<TResult>> GetAllWithSpecAsync<TResult>(ISpecifications<T> spec, Expression<Func<T, TResult>> selector)
+        {
+            return await ApplyQuery(spec).Select(selector).ToListAsync();
         }
 
         public async Task<T?> GetWithSpecsAsync(ISpecifications<T> specs)
