@@ -5,7 +5,8 @@ namespace Graduation_Project.Core.IRepositories
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {
-        public Task<T> AddAsync(T entity);
+        public  Task AddAsync(T entity);
+        public  Task<T> AddWithSaveAsync(T entity);
         public void Update(T entity);
         public void Delete(T entity);
         public Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs);

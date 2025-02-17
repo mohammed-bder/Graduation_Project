@@ -19,9 +19,14 @@ namespace Graduation_Project.Repository
         {
             this.dbContext = dbContext;
         }
-        public async Task<T> AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
              await dbContext.Set<T>().AddAsync(entity);
+        }
+
+        public async Task<T> AddWithSaveAsync(T entity)
+        {
+            await dbContext.Set<T>().AddAsync(entity);
             await dbContext.SaveChangesAsync(); // Save changes immediately to get the ID
 
             return entity;

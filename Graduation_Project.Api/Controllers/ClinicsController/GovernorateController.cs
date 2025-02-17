@@ -1,4 +1,5 @@
-﻿using Graduation_Project.Api.DTO.Clinics;
+﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Clinics;
@@ -11,12 +12,15 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
     public class GovernorateController : BaseApiController
     {
         private readonly IGenericRepository<Governorate> _governorateRepo;
+        private readonly IMapper _mapper;
 
         public GovernorateController(
-            IGenericRepository<Governorate> governorateRepo
+            IGenericRepository<Governorate> governorateRepo,
+            IMapper mapper
             )
         {
             _governorateRepo = governorateRepo;
+            this._mapper = mapper;
         }
 
 
@@ -32,12 +36,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var governoratesDTO = new List< GovernorateDTO>();
             foreach (var item in governorates)
             {
-                var govDTO = new GovernorateDTO()
-                {
-                    Id  = item.Id,
-                    Name = item.Name
-                };
-                governoratesDTO.Add(govDTO);
+                governoratesDTO.Add(_mapper.Map<Governorate , GovernorateDTO>(item));
             }
             return Ok(governoratesDTO);
         }
@@ -50,12 +49,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             if (governorate is null)
                 return BadRequest(new ApiResponse(404, $"there is no governorate with id={id}"));
 
-            var governorateDTO = new GovernorateDTO()
-            {
-                Id = governorate.Id,
-                Name = governorate.Name
-            };
-            return Ok(governorateDTO);
+            return Ok(_mapper.Map<Governorate, GovernorateDTO>(governorate));
         }
     }
 }

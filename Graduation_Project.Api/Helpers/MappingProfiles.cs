@@ -92,11 +92,25 @@ namespace Graduation_Project.APIs.Helpers
 
 
             // ========================================== Clinic ==========================================
-            CreateMap<Clinic, ClinicDTO>()
+            CreateMap<Clinic, ClinicInfoDTO>()
                 .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name))
                 .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name))
                 .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
                 ;
+
+
+
+            // ========================================== Governorate ==========================================
+
+            CreateMap<Governorate, GovernorateDTO>();
+
+
+            // ========================================== Region ==========================================
+
+            CreateMap<Region, RegionDTO>();
+
+
+
         }
     }
 }

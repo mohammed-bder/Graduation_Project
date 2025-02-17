@@ -1,6 +1,6 @@
 ﻿namespace Graduation_Project.Api.DTO.Clinics
 {
-    public class ClinicDTO
+    public class ClinicInfoDTO
     {
 
         public int Id { get; set; }
