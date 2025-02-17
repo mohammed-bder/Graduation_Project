@@ -1,4 +1,5 @@
-﻿using Graduation_Project.Api.DTO.Clinics;
+﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Specifications.ClinicsSpecifications;
@@ -12,14 +13,17 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
     {
         private readonly IGenericRepository<Region> _regionRepo;
         private readonly IGenericRepository<Governorate> _governorateRepo;
+        private readonly IMapper _mapper;
 
         public RegionController(
             IGenericRepository<Region> regionRepo,
-            IGenericRepository<Governorate> governorateRepo
+            IGenericRepository<Governorate> governorateRepo,
+            IMapper mapper
             )
         {
             _regionRepo = regionRepo;
             _governorateRepo = governorateRepo;
+            this._mapper = mapper;
         }
 
         // get all Region
@@ -34,14 +38,8 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var regionDTOs = new List<RegionDTO>();
 
             foreach (var item in regions)
-            {
-                var regionDTO = new RegionDTO()
-                {
-                    Id = item.Id,
-                    Name = item.Name
-                };
-                regionDTOs.Add(regionDTO);
-            }
+                regionDTOs.Add(_mapper.Map<Region , RegionDTO>(item));
+
             return Ok(regionDTOs);
         }
 
@@ -54,12 +52,8 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             if (region is null)
                 return BadRequest(new ApiResponse(404, $"there is no region with id={id}"));
 
-            var regionDTO = new RegionDTO()
-            {
-                Id = region.Id,
-                Name = region.Name
-            };
-            return Ok(regionDTO);
+
+            return Ok(_mapper.Map<Region, RegionDTO>(region));
         }
 
         // get region by Government id
@@ -77,14 +71,8 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
 
             var regionsDTO = new List<RegionDTO>();
             foreach (var item in regions)
-            {
-                var regionDTO = new RegionDTO()
-                {
-                    Id = item.Id,
-                    Name = item.Name
-                };
-                regionsDTO.Add(regionDTO);
-            }
+                regionsDTO.Add(_mapper.Map<Region, RegionDTO>(item));
+
 
             return Ok(regionsDTO);
         }

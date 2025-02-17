@@ -97,7 +97,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             try
             {
                 await _unitOfWork.Repository<MedicalHistory>().AddAsync(medicalHistory);
-                var result = await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CompleteAsync();
                 return Ok(_mapper.Map<MedicalHistory, MedicalHistoryFormDto>(medicalHistory));
             }
             catch (Exception ex)

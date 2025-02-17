@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Api.DTO.Doctor
+namespace Graduation_Project.Api.DTO.Doctors
 {
     public class SortingDoctorDto
     {

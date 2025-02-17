@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Graduation_Project.Api.DTO;
-using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Helpers;
 using Graduation_Project.APIs.Helpers;
