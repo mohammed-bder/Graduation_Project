@@ -80,7 +80,7 @@ namespace Graduation_Project.Repository
         {
             return await ApplyQuery(spec).CountAsync();
         }
-
+        ِ
         public IQueryable<T> ApplyQuery(ISpecifications<T> specs) //Helper Method
         {
             return SpecificationsEvaluator<T>.GetQuery(dbContext.Set<T>(), specs);

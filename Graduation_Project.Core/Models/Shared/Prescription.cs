@@ -2,10 +2,8 @@
 {
     public class Prescription : BaseEntity
     {
-        public string MedicationDetails { get; set; }
-        public string Dosage { get; set; }
+        public string? Diagnoses { get; set; }
         public DateTime IssuedDate { get; set; }
-        public int Duration { get; set; }
 
         public int DoctorId { get; set; }
         [ForeignKey("DoctorId")]
@@ -14,5 +12,7 @@
         public int PatientId { get; set; }
         [ForeignKey("PatientId")]
         public Patient Patient { get; set; }
+
+        public ICollection<MedicinePrescription>? MedicinePrescriptions { get; set; }
     }
 }

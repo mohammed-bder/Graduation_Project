@@ -2,6 +2,7 @@
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
 using Graduation_Project.Api.DTO.Patients;
+using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
 using System.Globalization;
 namespace Graduation_Project.APIs.Helpers
@@ -88,6 +89,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Education, DoctorAboutDto>();
 
+            CreateMap<PrescriptionFromUserDto, Prescription>();
 
         }
     }
