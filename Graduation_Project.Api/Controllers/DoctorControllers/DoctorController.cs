@@ -1,8 +1,9 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Graduation_Project.Api.DTO;
-using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Helpers;
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
@@ -23,16 +24,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     public class DoctorController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DoctorController(UserManager<AppUser> userManager
-                                , IUnitOfWork unitOfWork
-                                , IMapper mapper)
+        public DoctorController(UserManager<AppUser> userManager, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
-            this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
@@ -46,7 +45,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             //Get Doctor From Doctor Table in business DB
             DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
 
-            var doctor = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -71,7 +70,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             //Get Doctor From Doctor Table in business DB
             DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
-            var doctor = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -79,20 +78,25 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctor = _mapper.Map(doctorDtoFromRequest, doctor);
 
             // Update Business DB
-            unitOfWork.Repository<Doctor>().Update(doctor);
-            await unitOfWork.Repository<Doctor>().SaveAsync();
+            _unitOfWork.Repository<Doctor>().Update(doctor);
+            await _unitOfWork.Repository<Doctor>().SaveAsync();
 
             return Ok(doctorDtoFromRequest);
 
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Doctor>>> GetDoctorsAsync(string? sort)
+        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("DoctorWithFilter")]
+        public async Task<ActionResult<Pagination<Doctor>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
         {
-            var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
-            var doctors = await unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+            //var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
+            var doctorSpecification = new SortingDoctorWithSpecificaiton(specParams);
+            var doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
+            var countSpec = new DoctorWithFilterCountSpecification(specParams);
+            var count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
 
-            return Ok(_mapper.Map<IEnumerable<Doctor>, IEnumerable<SortingDoctorDto>>(doctors));
+            return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
 
@@ -102,7 +106,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         {
             //Get Doctor From Doctor Table in business DB
             DoctorDetailsSpecs doctorSpecification = new DoctorDetailsSpecs(id);
-            var doctor = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -127,11 +131,12 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         {
             var user = await _userManager.FindByEmailAsync(patientEmail);
             var patientSpecs = new PatientForProfileSpecs(user.Id);
+            //return Ok(new Pagination<SortingDoctorDto>());
 
-            var patient = await unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
             // Fav Specs
             var favouriteSpecs = new FavouriteSpecs(docId, patient.Id);
-            var favouriteDoctor = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(favouriteSpecs);
+            var favouriteDoctor = await _unitOfWork.Repository<Favorite>().GetWithSpecsAsync(favouriteSpecs);
             if (favouriteDoctor == null)
                 return false;
 
@@ -145,7 +150,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         {
             // Get Doctor From Db include  education , clinics
             var specs = new DoctorWithEducationAndClinicsSpecs(id);
-            var doctorFromDb = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(specs);
+            var doctorFromDb = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(specs);
 
             // Check if The doctor Is Exist ??
             if (doctorFromDb == null)

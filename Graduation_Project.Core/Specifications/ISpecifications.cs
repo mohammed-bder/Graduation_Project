@@ -18,6 +18,11 @@ namespace Graduation_Project.Core.Specifications
         public Expression<Func<T, object>> OrderByDescending { get; set; }
 
         public List<Func<IQueryable<T>,IQueryable<T>>> ThenIncludes { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
+        public bool IsPaginationEnabled { get; set; }
+        public Expression<Func<T, object>> Selector { get; set; }
+
 
     }
 }

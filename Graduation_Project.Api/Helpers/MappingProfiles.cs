@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Clinics;
-using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.Helpers;
 using System.Globalization;
@@ -62,12 +62,17 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + ' ' + src.LastName
                 ));
 
-            /****************************************** Mapping for Medicl Category ******************************************/
-            CreateMap<MedicalCategory , MedicalCategoryDto>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src =>
-                    src.Name
-                ));
+            /****************************************** Mapping for Education& Clinic ******************************************/
+            CreateMap<Education, EducationDto>();
 
+            CreateMap<EducationDto, Education>();
+
+            CreateMap<Clinic, DoctorAboutClinicDto>();
+
+            CreateMap<Education, DoctorAboutDto>();
+
+            /****************************************** Mapping for Medicl Category ******************************************/
+            CreateMap<MedicalCategory, MedicalCategoryDto>();
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
@@ -79,15 +84,13 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<MedicalHistory, MedicalHistoryFormDto>();
 
             CreateMap<MedicalHistory, MedicalHistoryInfoDto>();
-                
 
-            CreateMap<Education, EducationDto>();
+            /****************************************** Mapping for Feedback ******************************************/
+            CreateMap<FeedbackDto, Feedback>();
+            CreateMap<Feedback, FeedbackInfoDto>();
 
-            CreateMap<EducationDto, Education>();
 
-            CreateMap<Clinic, DoctorAboutClinicDto>();
 
-            CreateMap<Education, DoctorAboutDto>();
 
 
 
