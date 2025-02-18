@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.Helpers;
 using System.Globalization;
@@ -87,6 +88,17 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Clinic, DoctorAboutClinicDto>();
 
             CreateMap<Education, DoctorAboutDto>();
+
+            CreateMap<Feedback, FeedbackToReturnDto>()
+                    .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                        src.patient.FirstName + ' ' + src.patient.LastName
+                    ))
+                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
+                        src.patient.DateOfBirth.HasValue
+                            ? (DateTime.Today.Year - src.patient.DateOfBirth.Value.Year) -
+                              (DateTime.Today.DayOfYear < src.patient.DateOfBirth.Value.DayOfYear ? 1 : 0)
+                            : (int?)null
+                    ));
 
 
         }

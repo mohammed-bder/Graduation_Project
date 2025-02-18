@@ -2,13 +2,16 @@
 using AutoMapper;
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.FavouriteSpecifications;
+using Graduation_Project.Core.Specifications.FeedBackSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,14 +27,17 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IUserService userService;
         private readonly IMapper _mapper;
 
         public DoctorController(UserManager<AppUser> userManager
                                 , IUnitOfWork unitOfWork
+                                , IUserService userService
                                 , IMapper mapper)
         {
             _userManager = userManager;
             this.unitOfWork = unitOfWork;
+            this.userService = userService;
             _mapper = mapper;
         }
 
@@ -165,6 +171,27 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.DoctorClinics = _mapper.Map(doctorFromDb.DoctorClincs.Select(c => c.Clinic), doctorAboutDto.DoctorClinics);
 
             return Ok(doctorAboutDto);
+        }
+
+
+        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetReviews/{id:int}")]
+        public async Task<ActionResult<IReadOnlyList<FeedbackToReturnDto>>> GetDoctorReviews(int id)
+        {
+            //Handle Specs for reviews 
+            var specs = new FeedBackSpecs(id);
+
+            //Fetch reviews of doctor & check if exist or not
+            var reviews = await unitOfWork.Repository<Feedback>().GetAllWithSpecAsync(specs);
+            if (reviews is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            // mapping
+            var feedbacksToReturnDto = new List<FeedbackToReturnDto>();
+            // mapping to dto (FeedBack Attributes only) 
+            feedbacksToReturnDto = _mapper.Map(reviews, feedbacksToReturnDto);
+            
+            return Ok(feedbacksToReturnDto);
         }
     }
 

@@ -1,4 +1,5 @@
 using Graduation_Project.Api.Extensions;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Api.Middlewares;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Repository;
@@ -34,7 +35,7 @@ namespace Graduation_Project.Api
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
-
+            builder.Services.AddScoped(typeof(ExistingIdFilter<>));
             /****************************** Add Application Services ********************************/
             builder.Services.AddApplicationServices();
 
