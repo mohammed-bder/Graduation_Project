@@ -10,8 +10,7 @@
         [ForeignKey("DoctorId")]
         public Doctor Doctor { get; set; }
 
-
-        public int PatientId { get; set; } // me
+        public int PatientId { get; set; } 
         [ForeignKey("PatientId")]
         public Patient patient { get; set; }
     }

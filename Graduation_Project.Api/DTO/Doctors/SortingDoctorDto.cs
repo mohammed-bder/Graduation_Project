@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Api.DTO.Doctor
+namespace Graduation_Project.Api.DTO.Doctors
 {
     public class SortingDoctorDto
     {
@@ -9,6 +9,7 @@ namespace Graduation_Project.Api.DTO.Doctor
         public DateTime? DateOfBirth { get; set; }
         public string? PhoneNumber { get; set; }
         public Gender Gender { get; set; }
+        //public string? Specialty { get; set; }
         public string? PictureUrl { get; set; }
         public double? Rating { get; set; }
         public decimal ConsultationFees { get; set; }

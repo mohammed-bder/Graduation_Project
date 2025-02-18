@@ -16,6 +16,11 @@ namespace Graduation_Project.Core.Specifications
         public Expression<Func<T, object>> OrderByDescending { get; set; }
         public List<Func<IQueryable<T>, IQueryable<T>>> ThenIncludes { get; set; } = new List<Func<IQueryable<T>, IQueryable<T>>>();
 
+        public int Skip { get; set; }
+        public int Take { get; set; }
+        public bool IsPaginationEnabled { get; set; }
+        public Expression<Func<T, object>> Selector { get; set; }
+
         public BaseSpecifications()
         {
 
@@ -23,7 +28,7 @@ namespace Graduation_Project.Core.Specifications
 
         public BaseSpecifications(Expression<Func<T, bool>> CriteriaExpression)
         {
-            Criteria = CriteriaExpression; 
+            Criteria = CriteriaExpression;
         }
 
         public void AddOrderBy(Expression<Func<T, object>> OrderByExpression)
@@ -34,6 +39,18 @@ namespace Graduation_Project.Core.Specifications
         public void AddOrderByDescending(Expression<Func<T, object>> OrderByExpressionDescending)
         {
             OrderByDescending = OrderByExpressionDescending;
+        }
+
+        public void ApplyPagination(int skip, int take)
+        {
+            IsPaginationEnabled = true;
+            Skip = skip;
+            Take = take;
+        }
+
+        public void ApplySelector(Expression<Func<T, object>> selectorExpression)
+        {
+            Selector = selectorExpression;
         }
     }
 }

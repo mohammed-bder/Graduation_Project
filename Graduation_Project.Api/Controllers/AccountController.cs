@@ -141,11 +141,11 @@ namespace Graduation_Project.Api.Controllers
             try
             {
                 // Add Doctor to the application database
-                var createdDoctor =   await _doctorRepo.AddAsync(newDoctor);
-                await _doctorRepo.SaveAsync();
+                var createdDoctor =   await _doctorRepo.AddWithSaveAsync(newDoctor);
+                //await _doctorRepo.SaveAsync();
 
-                var createdClinic = await _clinicRepo.AddAsync(newClinic);
-                await _clinicRepo.SaveAsync();
+                var createdClinic = await _clinicRepo.AddWithSaveAsync(newClinic);
+                //await _clinicRepo.SaveAsync();
 
                 // Use the IDs directly after saving
                 var newDoctorClinic = new DoctorClinic

@@ -28,6 +28,11 @@ namespace Graduation_Project.Repository
                 query = query.OrderByDescending(spec.OrderByDescending);
             }
 
+            if (spec.IsPaginationEnabled)
+            {
+                query = query.Skip(spec.Skip).Take(spec.Take);
+            }
+
             query = spec.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
 
             query = spec.ThenIncludes.Aggregate(query, (currentQuery, includeExpression) => includeExpression(currentQuery));

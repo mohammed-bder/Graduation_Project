@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Graduation_Project.Api.Attributes;
 
-namespace Graduation_Project.Api.DTO.Doctor
+namespace Graduation_Project.Api.DTO.Doctors
 {
     public class EducationDto
     {

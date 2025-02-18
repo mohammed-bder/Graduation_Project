@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO;
-using Graduation_Project.Api.DTO.Doctor;
+using Graduation_Project.Api.DTO.Clinics;
+using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.Helpers;
@@ -18,6 +19,8 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<SubSpecialities, SubSpecialityDTO>()
                 .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name));
 
+            /****************************************** Mapping for Doctor Profile ******************************************/
+
             CreateMap<Doctor, DoctorForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
@@ -32,6 +35,8 @@ namespace Graduation_Project.APIs.Helpers
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
                 ));
+
+            /****************************************** Mapping for Patient Profile ******************************************/
 
             CreateMap<Patient, PatientForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
@@ -49,10 +54,14 @@ namespace Graduation_Project.APIs.Helpers
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
                 ));
 
+            /****************************************** Mapping for Home ******************************************/
+
             CreateMap<Doctor, SortingDoctorDto>()
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ));
+
+            /****************************************** Mapping for Doctor From Patient ******************************************/
 
             CreateMap<Doctor, DoctorDetailsDto>()
                .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
@@ -62,12 +71,17 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + ' ' + src.LastName
                 ));
 
-            /****************************************** Mapping for Medicl Category ******************************************/
-            CreateMap<MedicalCategory , MedicalCategoryDto>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src =>
-                    src.Name
-                ));
+            /****************************************** Mapping for Education& Clinic ******************************************/
+            CreateMap<Education, EducationDto>();
 
+            CreateMap<EducationDto, Education>();
+
+            CreateMap<Clinic, DoctorAboutClinicDto>();
+
+            CreateMap<Education, DoctorAboutDto>();
+
+            /****************************************** Mapping for Medicl Category ******************************************/
+            CreateMap<MedicalCategory, MedicalCategoryDto>();
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
@@ -79,15 +93,34 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<MedicalHistory, MedicalHistoryFormDto>();
 
             CreateMap<MedicalHistory, MedicalHistoryInfoDto>();
-                
 
-            CreateMap<Education, EducationDto>();
+            /****************************************** Mapping for Feedback ******************************************/
+            CreateMap<FeedbackDto, Feedback>();
+            CreateMap<Feedback, FeedbackInfoDto>();
 
-            CreateMap<EducationDto, Education>();
 
-            CreateMap<Clinic, DoctorAboutClinicDto>();
 
-            CreateMap<Education, DoctorAboutDto>();
+
+
+
+            // ========================================== Clinic ==========================================
+            CreateMap<Clinic, ClinicInfoDTO>()
+                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name))
+                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name))
+                .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
+                ;
+
+
+
+            // ========================================== Governorate ==========================================
+
+            CreateMap<Governorate, GovernorateDTO>();
+
+
+            // ========================================== Region ==========================================
+
+            CreateMap<Region, RegionDTO>();
+
 
             CreateMap<Feedback, FeedbackToReturnDto>()
                     .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
