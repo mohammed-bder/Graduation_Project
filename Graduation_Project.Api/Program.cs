@@ -28,12 +28,12 @@ namespace Graduation_Project.Api
             /****************************** Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
             });
 
             builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
             });
             builder.Services.AddScoped(typeof(ExistingIdFilter<>));
             /****************************** Add Application Services ********************************/
@@ -90,10 +90,10 @@ namespace Graduation_Project.Api
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwaggerMiddleware();
-            }
+            //}
 
             app.UseStaticFiles();
 
