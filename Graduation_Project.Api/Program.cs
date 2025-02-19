@@ -28,12 +28,12 @@ namespace Graduation_Project.Api
             /****************************** Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
             builder.Services.AddScoped(typeof(ExistingIdFilter<>));
             /****************************** Add Application Services ********************************/
