@@ -16,6 +16,6 @@ namespace Graduation_Project.Core.Models.Shared
         public int MedicineId { get; set; }
         public Medicine Medicine { get; set; }
 
-        public string Details { get; set; }
+        public string? Details { get; set; }
     }
 }

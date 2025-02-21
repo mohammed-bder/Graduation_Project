@@ -12,6 +12,7 @@ namespace Graduation_Project.Core
     {
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;
 
+        bool HasChanges();
         Task<int> CompleteAsync();
     }
 }

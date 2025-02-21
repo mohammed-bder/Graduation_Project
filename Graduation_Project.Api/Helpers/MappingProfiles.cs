@@ -113,8 +113,22 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Region, RegionDTO>();
 
+            // ========================================== Prescription ==========================================
+            CreateMap<PrescriptionFromUserDto, Prescription>()
+                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions))
+                .ReverseMap();
 
-            CreateMap<PrescriptionFromUserDto, Prescription>();
+            CreateMap<Prescription, PrescriptionEditFormDto>()
+                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
+
+            CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
+            .ForMember(dest => dest.PrescriptionId, opt => opt.Ignore()) // Ignore PrescriptionId
+            .ForMember(dest => dest.Prescription, opt => opt.Ignore())   // Ignore Prescription
+            .ForMember(dest => dest.Medicine, opt => opt.Ignore())       // Ignore Medicine
+            .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
+            .ReverseMap();
+
+
 
         }
     }
