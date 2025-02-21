@@ -4,6 +4,7 @@ using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Api.Helpers;
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
@@ -110,6 +111,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetDetailsDuringAppointment/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorDetailsDto>> GetDoctorDetailsDuringAppointment(int id)
         {
             //Get Doctor From Doctor Table in business DB
@@ -147,6 +149,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetAbout/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorAboutDto>> GetDoctorAbout(int id)
         {
             // Get Doctor From Db include  education , clinics
@@ -176,6 +179,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetReviews/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<IReadOnlyList<FeedbackToReturnDto>>> GetDoctorReviews(int id)
         {
             //Handle Specs for reviews 
