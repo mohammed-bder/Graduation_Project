@@ -6,6 +6,7 @@ using AutoMapper;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.DoctorSubSpecialitySpecifications;
@@ -34,11 +35,10 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         public async Task<ActionResult<EducationDto>> GetEducation()
         {
             // get cuurent user
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var currentUser = await _userManager.FindByEmailAsync(email);
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             // get Current Doctor from buisness DB with include education
-            DoctorWithEducationSpecs doctorForProfileSpecs = new DoctorWithEducationSpecs(currentUser.Id);
+            DoctorWithEducationSpecs doctorForProfileSpecs = new DoctorWithEducationSpecs(doctorId);
             var doctor = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorForProfileSpecs);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
@@ -57,15 +57,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<EducationDto>> EditEducation(EducationDto educationDtoFromRequest)
         {
-            // Get current user
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var currentUser = await _userManager.FindByEmailAsync(email);
+            // Get current doctorId
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             // Get current doctor from business DB with included education
-            DoctorWithEducationSpecs doctorForProfileSpecs = new DoctorWithEducationSpecs(currentUser.Id);
+            DoctorWithEducationSpecs doctorForProfileSpecs = new DoctorWithEducationSpecs(doctorId);
             var doctor = await unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorForProfileSpecs);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
