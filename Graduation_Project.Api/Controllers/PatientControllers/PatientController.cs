@@ -54,7 +54,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpPost("EditProfile")]
+        [HttpPut("EditProfile")]
         public async Task<ActionResult<PatientForProfileDto>> EditProfile(PatientForProfileDto patientProfileFromRequest)
         {
             // Get current user 

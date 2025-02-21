@@ -33,7 +33,13 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
                     )
                 )
                 &&
-                (!specParams.MaxPrice.HasValue || d.ConsultationFees <= specParams.MaxPrice) &&
+                //(!specParams.MaxPrice.HasValue || d.ConsultationFees <= specParams.MaxPrice) &&
+                (
+                    (!specParams.MaxPrice.HasValue || specParams.MaxPrice > 1000 || d.ConsultationFees <= specParams.MaxPrice)
+                    &&
+                    (!specParams.MinPrice.HasValue || d.ConsultationFees >= specParams.MinPrice)
+                ) &&
+
                 (!specParams.Gender.HasValue || d.Gender == specParams.Gender) &&
                 (!specParams.SubSpecialtyId.HasValue || d.DoctorSubspeciality.Any(ds => ds.SubSpecialitiesId == specParams.SubSpecialtyId.Value)) &&
                 (!specParams.SpecialtyId.HasValue || d.SpecialtyId == specParams.SpecialtyId)

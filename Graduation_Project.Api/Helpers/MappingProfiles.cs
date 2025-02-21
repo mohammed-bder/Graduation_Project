@@ -2,7 +2,9 @@
 using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.DTO.Doctors;
+using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
+using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
 using System.Globalization;
 namespace Graduation_Project.APIs.Helpers
@@ -18,6 +20,8 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<SubSpecialities, SubSpecialityDTO>()
                 .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name));
 
+            /****************************************** Mapping for Doctor Profile ******************************************/
+
             CreateMap<Doctor, DoctorForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
@@ -32,6 +36,8 @@ namespace Graduation_Project.APIs.Helpers
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
                 ));
+
+            /****************************************** Mapping for Patient Profile ******************************************/
 
             CreateMap<Patient, PatientForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
@@ -49,10 +55,14 @@ namespace Graduation_Project.APIs.Helpers
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
                 ));
 
+            /****************************************** Mapping for Home ******************************************/
+
             CreateMap<Doctor, SortingDoctorDto>()
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ));
+
+            /****************************************** Mapping for Doctor From Patient ******************************************/
 
             CreateMap<Doctor, DoctorDetailsDto>()
                .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
@@ -112,6 +122,32 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Region, RegionDTO>();
 
+            // ========================================== Prescription ==========================================
+            CreateMap<PrescriptionFromUserDto, Prescription>()
+                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions))
+                .ReverseMap();
+
+            CreateMap<Prescription, PrescriptionEditFormDto>()
+                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
+
+            CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
+            .ForMember(dest => dest.PrescriptionId, opt => opt.Ignore()) // Ignore PrescriptionId
+            .ForMember(dest => dest.Prescription, opt => opt.Ignore())   // Ignore Prescription
+            .ForMember(dest => dest.Medicine, opt => opt.Ignore())       // Ignore Medicine
+            .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
+            .ReverseMap();
+
+
+            CreateMap<Feedback, FeedbackToReturnDto>()
+                    .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                        src.patient.FirstName + ' ' + src.patient.LastName
+                    ))
+                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
+                        src.patient.DateOfBirth.HasValue
+                            ? (DateTime.Today.Year - src.patient.DateOfBirth.Value.Year) -
+                              (DateTime.Today.DayOfYear < src.patient.DateOfBirth.Value.DayOfYear ? 1 : 0)
+                            : (int?)null
+                    ));
 
 
         }
