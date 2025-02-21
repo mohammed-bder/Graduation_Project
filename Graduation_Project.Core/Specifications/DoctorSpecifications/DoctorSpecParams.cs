@@ -30,6 +30,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
         }
 
         public int? MaxPrice { get; set; }
+        public int? MinPrice { get; set; }
         public string? Sort { get; set; }
         public int? SpecialtyId { get; set; }
         public int? SubSpecialtyId { get; set; }

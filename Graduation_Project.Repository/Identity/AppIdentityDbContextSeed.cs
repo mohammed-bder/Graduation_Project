@@ -28,6 +28,7 @@ namespace Graduation_Project.Repository.Identity
                 
                 if (result.Succeeded)
                 {
+                    
                     await userManager.AddToRoleAsync(user, UserRoleType.Admin.ToString());
                     Console.WriteLine("User created successfully");
                 }

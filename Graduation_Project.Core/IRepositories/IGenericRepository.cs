@@ -21,6 +21,6 @@ namespace Graduation_Project.Core.IRepositories
         public void DeleteRange(IEnumerable<T> entities);
         public Task AddRangeAsync(IEnumerable<T> entities);
 
-
+        public void attaching(T entity);
     }
 }

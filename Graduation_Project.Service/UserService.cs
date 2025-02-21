@@ -25,8 +25,26 @@ namespace Graduation_Project.Service
         public async Task<AppUser> GetCurrentUserAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+            {
+                return null; // No authenticated user found
+            }
+
             var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+            {
+                return null; // User not found
+            }
+
             return currentUser;
         }
+
+        public async Task<string> GetUserRoleAsync(AppUser appUser)
+        {
+            var roles = await _userManager.GetRolesAsync(appUser);
+
+            return roles.FirstOrDefault(); // Assuming a user has only one role
+        }
+
     }
 }

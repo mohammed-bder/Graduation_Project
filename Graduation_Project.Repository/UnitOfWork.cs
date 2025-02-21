@@ -37,6 +37,10 @@ namespace Graduation_Project.Repository
             return repositories[key] as IGenericRepository<TEntity>;
         }
 
+        public bool HasChanges()
+        {
+            return dbcontext.ChangeTracker.HasChanges(); // Check for pending changes
+        }
         public async Task<int> CompleteAsync()
             => await dbcontext.SaveChangesAsync();
 
