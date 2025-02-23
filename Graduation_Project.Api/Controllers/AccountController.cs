@@ -20,7 +20,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IAuthService _authServices;
         private readonly IGenericRepository<Doctor> _doctorRepo;
         private readonly IGenericRepository<Clinic> _clinicRepo;
-        private readonly IGenericRepository<DoctorClinic> _doctorClinicRepo;
+      
         private readonly IGenericRepository<Patient> _patientRepo;
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
@@ -30,7 +30,7 @@ namespace Graduation_Project.Api.Controllers
             IAuthService authServices , 
             IGenericRepository<Doctor> doctorRepo,
             IGenericRepository<Clinic> clinicRepo,
-            IGenericRepository<DoctorClinic> doctorClinicRepo,
+           
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger)
@@ -41,7 +41,7 @@ namespace Graduation_Project.Api.Controllers
             _logger = logger;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
-            this._doctorClinicRepo = doctorClinicRepo;
+        
             _patientRepo = patientRepo;
             _specialtyRepo = specialtyRepo;
         }
@@ -128,34 +128,40 @@ namespace Graduation_Project.Api.Controllers
                 Gender = model.Gender,
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
+                
             };
 
-            var newClinic = new Clinic()
-                {
-                Name = model.ClinicName,
-                RegionId = model.RegionId,
-            };
+         
 
 
 
             try
             {
                 // Add Doctor to the application database
-                var createdDoctor =   await _doctorRepo.AddWithSaveAsync(newDoctor);
-                //await _doctorRepo.SaveAsync();
+              var regDoctor =  await _doctorRepo.AddWithSaveAsync(newDoctor);
 
-                var createdClinic = await _clinicRepo.AddWithSaveAsync(newClinic);
-                //await _clinicRepo.SaveAsync();
 
-                // Use the IDs directly after saving
-                var newDoctorClinic = new DoctorClinic
+                var newClinic = new Clinic()
                 {
-                    DoctorId = createdDoctor.Id,
-                    ClinicId = createdClinic.Id
+                    Name = model.ClinicName,
+                    RegionId = model.RegionId,
+                    DoctorId = regDoctor.Id
                 };
 
-                await _doctorClinicRepo.AddAsync(newDoctorClinic);
-                await _doctorClinicRepo.SaveAsync();
+                await _clinicRepo.AddWithSaveAsync(newClinic);
+
+
+                //await _clinicRepo.SaveAsync();
+
+                //// Use the IDs directly after saving
+                //var newDoctorClinic = new DoctorClinic
+                //{
+                //    DoctorId = createdDoctor.Id,
+                //    ClinicId = createdClinic.Id
+                //};
+
+                //await _doctorClinicRepo.AddAsync(newDoctorClinic);
+                //await _doctorClinicRepo.SaveAsync();
 
 
             }

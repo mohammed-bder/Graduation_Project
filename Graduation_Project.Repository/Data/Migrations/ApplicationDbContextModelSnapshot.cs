@@ -45,6 +45,9 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
@@ -65,6 +68,10 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId")
+                        .IsUnique()
+                        .HasFilter("[DoctorId] IS NOT NULL");
 
                     b.HasIndex("RegionId");
 
@@ -271,33 +278,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasIndex("SpecialtyId");
 
                     b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorClinic", b =>
-                {
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DayOfWeek")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("DoctorId", "ClinicId");
-
-                    b.HasIndex("ClinicId");
-
-                    b.ToTable("DoctorClinics");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorSubspeciality", b =>
@@ -928,7 +908,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Details")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MedicineId")
@@ -1032,11 +1011,17 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Clinic", b =>
                 {
+                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
+                        .WithOne("Clinic")
+                        .HasForeignKey("Graduation_Project.Core.Models.Clinics.Clinic", "DoctorId");
+
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Region", "Region")
                         .WithMany("clinics")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Doctor");
 
                     b.Navigation("Region");
                 });
@@ -1101,25 +1086,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasForeignKey("SpecialtyId");
 
                     b.Navigation("Specialty");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorClinic", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Clinics.Clinic", "Clinic")
-                        .WithMany()
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
-                        .WithMany("DoctorClincs")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Clinic");
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorSubspeciality", b =>
@@ -1463,7 +1429,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("DoctorClincs");
+                    b.Navigation("Clinic")
+                        .IsRequired();
 
                     b.Navigation("DoctorSubspeciality");
 

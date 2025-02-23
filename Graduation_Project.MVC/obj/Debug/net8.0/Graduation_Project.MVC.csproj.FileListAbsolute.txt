@@ -1,0 +1,10 @@
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.csproj.AssemblyReference.cache
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.GeneratedMSBuildEditorConfig.editorconfig
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.AssemblyInfoInputs.cache
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.AssemblyInfo.cs
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.csproj.CoreCompileInputs.cache
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.MvcApplicationPartsAssemblyInfo.cs
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.MvcApplicationPartsAssemblyInfo.cache
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.RazorAssemblyInfo.cache
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.RazorAssemblyInfo.cs
+D:\01_DotNET\Graduation Project\Graduation_Project\Graduation_Project.MVC\obj\Debug\net8.0\Graduation_Project.MVC.sourcelink.json
