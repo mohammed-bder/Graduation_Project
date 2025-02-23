@@ -47,7 +47,11 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             try
             {
                 await _unitOfWork.Repository<Feedback>().AddAsync(feedBack);
-                await _unitOfWork.CompleteAsync();
+                var result = await _unitOfWork.CompleteAsync();
+                if(result <= 0)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to add Feedback"));
+                }
                 await UpdateDoctorRating(feedBack.DoctorId);
                 return Ok(_mapper.Map<Feedback,FeedbackInfoDto>(feedBack));
             }
