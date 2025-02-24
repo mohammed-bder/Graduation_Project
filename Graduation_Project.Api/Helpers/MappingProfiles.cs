@@ -41,8 +41,12 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Patient, PatientForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
-                    src.FirstName + ' ' + src.LastName
+                    src.FirstName + " " + src.LastName
                 ));
+                //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
+                //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
+                //));
+
 
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
