@@ -1,10 +1,18 @@
-﻿using Graduation_Project.Core.IServices;
+﻿using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.Enums;
+using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
+using Graduation_Project.Core.Models.Patients;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -16,21 +24,24 @@ namespace Graduation_Project.Service
     public class AuthServices : IAuthService
     {
         private readonly IConfiguration _configuration;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthServices(IConfiguration configuration)
+        public AuthServices(IConfiguration configuration,IUnitOfWork unitOfWork)
         {
             _configuration = configuration;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
         {
             //throw new NotImplementedException();
 
+
             // 1. Private Clam (User-Defined)
             var authClams = new List<Claim>()
             {
                 new Claim(ClaimTypes.GivenName , user.UserName),
-                new Claim(ClaimTypes.Email , user.Email)
+                new Claim(ClaimTypes.Email , user.Email) 
             };
 
             var userRoles = await userManager.GetRolesAsync(user);
@@ -39,6 +50,25 @@ namespace Graduation_Project.Service
                 authClams.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            switch (userRoles.FirstOrDefault())
+            {
+                case nameof(UserRoleType.Doctor):
+                    //Get Doctor From Doctor Table in business DB
+                    DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
+                    var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+                    authClams.Add(new Claim(Identifiers.DoctorId, doctor.Id.ToString()));
+                    break;
+
+                case nameof(UserRoleType.Patient):
+                    //Get Patient From Patient Table in business DB
+                    var patientSpecs = new PatientForProfileSpecs(user.Id);
+                    var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+                    authClams.Add(new Claim(Identifiers.PatientId, patient.Id.ToString()));
+                    break;
+
+                default:
+                    break;
+            }
 
             // generate secret key
             //Encoding.UTF8.GetBytes => we use this to transform from string to array of byte 

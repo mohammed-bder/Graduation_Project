@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
 
 namespace Graduation_Project.Core.Specifications.FavouriteSpecifications
 {
@@ -13,5 +14,16 @@ namespace Graduation_Project.Core.Specifications.FavouriteSpecifications
         {
             
         }
+        public FavouriteSpecs(int patientId) : base(f => f.PatientId == patientId)
+        {
+
+        }
+
+        public FavouriteSpecs(int patientId, FavrouiteDoctorSpecParams favrouiteDoctorSpecParams) : base (f => f.PatientId == patientId)
+        {
+            Includes.Add(f => f.Doctor);
+            ApplyPagination((favrouiteDoctorSpecParams.PageIndex - 1) * favrouiteDoctorSpecParams.PageSize, favrouiteDoctorSpecParams.PageSize);
+        }
+
     }
 }

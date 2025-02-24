@@ -10,6 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 using Graduation_Project.Api.Attributes;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
+using Graduation_Project.Core.Constants;
+using System.Security.Claims;
+using AutoMapper;
+using Graduation_Project.Api.Helpers;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Api.DTO.Doctors;
 
 namespace Graduation_Project.Api.Controllers.DoctorControllers
 {
@@ -17,12 +23,15 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IUserService userService;
+        private readonly IMapper _mapper;
 
         public FavouriteController(IUnitOfWork unitOfWork
-                                , IUserService userService)
+                                , IUserService userService
+                                , IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.userService = userService;
+            _mapper = mapper;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
@@ -30,14 +39,12 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<bool>> GetFavourite(int id)
         {
-            // get current patient 
-            var user = await userService.GetCurrentUserAsync();
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            // get current patient Id
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // get favourite by (doctorId , patientId)
             // check if is it exist or not 
-            var favouriteSpecs = new FavouriteSpecs(id, patient.Id);
+            var favouriteSpecs = new FavouriteSpecs(id, patientId);
             var favouriteDoctor = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(favouriteSpecs);
             if (favouriteDoctor == null)
                 return Ok(false);
@@ -45,18 +52,43 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(true);
         }
 
+
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet]
+        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetAllFavourites([FromQuery] FavrouiteDoctorSpecParams favrouiteDoctorSpecParams)
+        {
+            // get current patient
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+            // get favourite record where patientid == patient.id includes doctor
+            var specs = new FavouriteSpecs(patientId, favrouiteDoctorSpecParams);
+            var favorites = await unitOfWork.Repository<Favorite>().GetAllWithSpecAsync(specs); // part of all records according to pagination 
+            if (favorites.Count == 0)
+                return Empty;
+
+            // get doctors from the previous query
+            IReadOnlyList<Doctor> favouriteDoctors = favorites.Select(f => f.Doctor).ToList();
+
+            // get Count of all favourite Doctors
+            var countSpecs = new FavouriteSpecs(patientId);
+            var count = await unitOfWork.Repository<Favorite>().GetCountAsync(countSpecs);
+
+            // mapping to SortingDoctorDto
+            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(favouriteDoctors);
+
+            return Ok(new Pagination<SortingDoctorDto>(favrouiteDoctorSpecParams.PageIndex, favrouiteDoctorSpecParams.PageSize, count, data));
+        }
+
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("{id:int}")]
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<bool>> AddFavourite(int id)
         {
-            // get current patient 
-            var user = await userService.GetCurrentUserAsync();
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            // get current patient Id
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // get favourite to this patientId , DoctorId to check if this is already exist or not
-            var specs = new FavouriteSpecs(id, patient.Id);
+            var specs = new FavouriteSpecs(id, patientId);
             var favouriteFromDb = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(specs);
             if (favouriteFromDb != null)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Doctor is already Favourite for the current patient"));
@@ -65,9 +97,10 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var favourite = new Favorite
             {
                 DoctorId = id,
-                PatientId = patient.Id,
+                PatientId = patientId,
             };
             await unitOfWork.Repository<Favorite>().AddAsync(favourite);
+            await unitOfWork.Repository<Favorite>().SaveAsync();
 
             return Ok(new ApiResponse(StatusCodes.Status201Created,"Created Successfully"));
         }
@@ -77,13 +110,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<bool>> RemoveFavourite(int id)
         {
-            // get current patient 
-            var user = await userService.GetCurrentUserAsync();
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            // get current patient Id
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // get favourite to this patientId , DoctorId to check if this is already exist or not
-            var specs = new FavouriteSpecs(id, patient.Id);
+            var specs = new FavouriteSpecs(id, patientId);
             var favourite = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(specs);
             if (favourite == null)
                 return NotFound(new ApiResponse(StatusCodes.Status400BadRequest, "Doctor is not Favourite for the current patient"));

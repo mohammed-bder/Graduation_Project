@@ -8,7 +8,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
     public class DoctorWithEducationSpecs : BaseSpecifications<Doctor>
     {
-        public DoctorWithEducationSpecs(string id) : base (d => d.ApplicationUserId == id)
+        public DoctorWithEducationSpecs(int id) : base (d => d.Id == id)
         {
             Includes.Add(d => d.Education);
             Includes.Add(d => d.Specialty);

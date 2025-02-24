@@ -10,9 +10,11 @@ namespace Graduation_Project.Api.DTO.Doctors
         public int? SpecializationId { get; set; }
 
         [Required(ErrorMessage = "Sub_Specilaities is required.")]
+        [ExistingIds<SubSpecialities>]
         public int[]? Sub_Specilaities_IDs { get; set; }
 
         [Required(ErrorMessage = "Degree is required.")]
+        [ValidEnumValue<DoctorDegree>]
         public DoctorDegree Degree { get; set; }
 
         [Required(ErrorMessage = "Institution name is required.")]

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graduation_Project.Service"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graduation_Project.Api", "Graduation_Project.Api\Graduation_Project.Api.csproj", "{9497BCC5-3566-4B24-A5FC-B68B4D0A4EAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graduation_Project.MVC", "Graduation_Project.MVC\Graduation_Project.MVC.csproj", "{43FC5E67-8B58-4851-B28F-6069E3FFA94E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +35,15 @@ Global
 		{9497BCC5-3566-4B24-A5FC-B68B4D0A4EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9497BCC5-3566-4B24-A5FC-B68B4D0A4EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9497BCC5-3566-4B24-A5FC-B68B4D0A4EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43FC5E67-8B58-4851-B28F-6069E3FFA94E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43FC5E67-8B58-4851-B28F-6069E3FFA94E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43FC5E67-8B58-4851-B28F-6069E3FFA94E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43FC5E67-8B58-4851-B28F-6069E3FFA94E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5104F454-DF38-4AF6-8FAA-008789393D43}
 	EndGlobalSection
 EndGlobal

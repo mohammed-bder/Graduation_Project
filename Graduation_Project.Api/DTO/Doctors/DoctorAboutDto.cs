@@ -11,6 +11,10 @@
         public string? Certifications { get; set; }
         public string? Fellowships { get; set; }
         //******************************* Clinic *******************************/
-        public List<DoctorAboutClinicDto> DoctorClinics { get; set; }
+        public string Name { get; set; } // Name of the clinic
+        public string? PictureUrl { get; set; }
+        public string? LocationLink { get; set; } //  locationLink of the clinic
+        public string? Location { get; set; }     //  Address or location of the clinic
+        //public DoctorAboutClinicDto DoctorClinics { get; set; }
     }
 }

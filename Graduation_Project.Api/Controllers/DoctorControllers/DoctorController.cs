@@ -4,9 +4,11 @@ using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Api.Helpers;
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
@@ -52,10 +54,10 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
 
+            // Get Current Doctor Id
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             //Get Doctor From Doctor Table in business DB
-            DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
-
-            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -71,16 +73,13 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
-        [HttpPost("EditProfile")]
+        [HttpPut("EditProfile")]
         public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
         {
-            // Get Current User 
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
-
+            // Get Current Doctor Id
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             //Get Doctor From Doctor Table in business DB
-            DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
-            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -112,6 +111,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetDetailsDuringAppointment/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorDetailsDto>> GetDoctorDetailsDuringAppointment(int id)
         {
             //Get Doctor From Doctor Table in business DB
@@ -121,13 +121,13 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
             // Get Current Patient To Know the doctor is Favourite or not
-            var email = User.FindFirstValue(ClaimTypes.Email);
+            var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // Map to doctorDetailsDto
             var doctorDetailsDto = new DoctorDetailsDto()
             {
                 NumberOfPatients = doctor.Appointments.Count(),
-                IsFavourite = await CheckFavouriteDoctor(email, doctor.Id)  // check in favourite table 
+                IsFavourite = await CheckFavouriteDoctor(PatientId, doctor.Id)  // check in favourite table 
             };
 
             doctorDetailsDto = _mapper.Map(doctor, doctorDetailsDto);
@@ -137,15 +137,9 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
 
         // check in favourite table 
-        private async Task<bool> CheckFavouriteDoctor(string patientEmail , int docId)
+        private async Task<bool> CheckFavouriteDoctor(int patientid , int docId)
         {
-            var user = await _userManager.FindByEmailAsync(patientEmail);
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            //return Ok(new Pagination<SortingDoctorDto>());
-
-            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
-            // Fav Specs
-            var favouriteSpecs = new FavouriteSpecs(docId, patient.Id);
+            var favouriteSpecs = new FavouriteSpecs(docId, patientid);
             var favouriteDoctor = await _unitOfWork.Repository<Favorite>().GetWithSpecsAsync(favouriteSpecs);
             if (favouriteDoctor == null)
                 return false;
@@ -153,9 +147,9 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return true;
         }
 
-        
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("GetAbout/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorAboutDto>> GetDoctorAbout(int id)
         {
             // Get Doctor From Db include  education , clinics
@@ -177,14 +171,21 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto = _mapper.Map(doctorFromDb.Education, doctorAboutDto);
 
             // Assign Doctor Clinics List
-            doctorAboutDto.DoctorClinics = _mapper.Map(doctorFromDb.DoctorClincs.Select(c => c.Clinic), doctorAboutDto.DoctorClinics);
+            //doctorAboutDto = _mapper.Map(doctorFromDb.Clinic, doctorAboutDto);
+            //doctorAboutDto = _mapper.Map(doctorFromDb.Clinic, doctorAboutDto.Clinic);
+            doctorAboutDto.Name = doctorFromDb.Clinic.Name;
+            doctorAboutDto.Location = doctorFromDb.Clinic.Location;
+            doctorAboutDto.LocationLink = doctorFromDb.Clinic.LocationLink;
+            doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
+
 
             return Ok(doctorAboutDto);
         }
 
 
-        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetReviews/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<IReadOnlyList<FeedbackToReturnDto>>> GetDoctorReviews(int id)
         {
             //Handle Specs for reviews 

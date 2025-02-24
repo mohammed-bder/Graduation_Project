@@ -15,8 +15,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             //Includes.Add(d => d.Education);
             //Includes.Add(d => d.DoctorSubspeciality);
 
-            ThenIncludes.Add(d => d.Include(d => d.DoctorClincs)
-                                   .ThenInclude(c => c.Clinic)
+            ThenIncludes.Add(d => d.Include(d => d.Clinic)
                                    .Include(d => d.Education)
                                    .Include(d => d.DoctorSubspeciality)
                                    .ThenInclude(s => s.SubSpecialities));
