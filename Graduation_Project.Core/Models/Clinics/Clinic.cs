@@ -12,6 +12,13 @@ namespace Graduation_Project.Core.Models.Clinics
         // Relationships
         public int RegionId { get; set; }
         public Region Region { get; set; }
+
+
+        // Required foreign key and navigation property
+        public int? DoctorId { get; set; }
+        public Doctor Doctor { get; set; }
+
+
         //public ICollection<DoctorClinic> DoctorClinics { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<ContactNumber>? ContactNumbers { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<Appointment>? Appointments { get; set; } // Navigation property: a clinic can have multiple doctors

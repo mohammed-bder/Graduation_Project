@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="ModelView\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Graduation_Project.Api\Graduation_Project.Api.csproj" />
+    <ProjectReference Include="..\Graduation_Project.Core\Graduation_Project.Core.csproj" />
+    <ProjectReference Include="..\Graduation_Project.Repository\Graduation_Project.Repository.csproj" />
+    <ProjectReference Include="..\Graduation_Project.Service\Graduation_Project.Service.csproj" />
+  </ItemGroup>
+
+</Project>

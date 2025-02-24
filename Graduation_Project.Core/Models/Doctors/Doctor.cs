@@ -52,8 +52,11 @@
         // (1 Doctor ==> M TherapySession)
         public ICollection<TherapySession> TherapySessions { get; set; }
 
-        // (M Doctor ==> M Clinic)
-        public ICollection<DoctorClinic> DoctorClincs { get; set; }
+        // (1 Doctor ==> 1 Clinic)
+        //public ICollection<DoctorClinic> DoctorClincs { get; set; }
+        public Clinic Clinic { get; set; }
+
+
 
         // (1 Doctor ==> M Appointment)
         public ICollection<Appointment> Appointments { get; set; }

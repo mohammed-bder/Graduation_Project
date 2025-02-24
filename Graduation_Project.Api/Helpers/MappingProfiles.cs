@@ -77,7 +77,8 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<EducationDto, Education>();
 
-            CreateMap<Clinic, DoctorAboutClinicDto>();
+            CreateMap<ClinicAboutDto, DoctorAboutDto>();
+
 
             CreateMap<Education, DoctorAboutDto>();
 
