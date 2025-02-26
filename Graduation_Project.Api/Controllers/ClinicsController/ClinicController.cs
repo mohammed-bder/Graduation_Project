@@ -53,8 +53,13 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var spec = new ClinicWithAllDataSpecification(id);
             var clinicFromDB = await _clinicRepo.GetWithSpecsAsync(spec);
 
+            
+
             if (clinicFromDB is null)
                 return BadRequest(new ApiResponse(404, $"clinic with id = {id} not found"));
+
+            if (model.Id == 0 || model.Id != clinicFromDB.Id)
+                return BadRequest(new ApiResponse(404, $"you can't change clinic Id"));
 
             if (model.Name == null || model.Name != clinicFromDB.Name)
                 clinicFromDB.Name = model.Name!;
