@@ -1,6 +1,4 @@
-﻿
-
-namespace Graduation_Project.Core.Models.Clinics
+﻿namespace Graduation_Project.Core.Models.Clinics
 {
     public class Clinic : BaseEntity
     {
@@ -15,13 +13,14 @@ namespace Graduation_Project.Core.Models.Clinics
 
 
         // Required foreign key and navigation property
+        [ForeignKey("Doctor")]
         public int? DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
+        public Doctor Doctor { get; set; }  
 
 
         //public ICollection<DoctorClinic> DoctorClinics { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<ContactNumber>? ContactNumbers { get; set; } // Navigation property: a clinic can have multiple doctors
-        public ICollection<Appointment>? Appointments { get; set; } // Navigation property: a clinic can have multiple doctors
+        //public ICollection<Appointment>? Appointments { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<TherapySession>? therapySessions { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<ClincSecretary>? clincSecretarys { get; set; } // Navigation property: a clinic can have multiple Secretary
 

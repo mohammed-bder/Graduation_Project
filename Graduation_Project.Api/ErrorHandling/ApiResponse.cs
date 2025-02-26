@@ -15,10 +15,10 @@
         {
             return statusCode switch
             {
-                400 => "A bad request, you have made",
-                401 => "Authorized, you are not",
-                404 => "Resource found, it was not",
-                500 => "Errors are the path to the dark side. Errors lead to anger. Anger leads to hate. Hate leads to career change",
+                400 => "Bad Request: The server could not understand the request due to invalid syntax.",
+                401 => "Unauthorized: You must authenticate before accessing this resource.",
+                404 => "Not Found: The requested resource could not be found on the server.",
+                500 => "Internal Server Error: An unexpected error occurred. Please try again later.",
                 _ => null
             };
         }
