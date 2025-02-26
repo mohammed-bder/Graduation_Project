@@ -7,14 +7,14 @@
 
         }
 
-        //public DbSet<Appointment> Appointment { get; set; }
+        public DbSet<Appointment> Appointment { get; set; }
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Prescription> Prescription { get; set; }
         /*********************Doctors************************/
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Education> Educations { get; set; }
-        //public DbSet<WorkSchedule> WorkSchedule { get; set; }
+        public DbSet<WorkSchedule> WorkSchedule { get; set; }
         //public DbSet<DoctorClinic> DoctorClinics { get; set; }
         public DbSet<DoctorSubspeciality> DoctorSubspecialities { get; set; }
         public DbSet<Specialty> Specialties { get; set; }

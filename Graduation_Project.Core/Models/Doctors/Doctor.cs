@@ -70,7 +70,7 @@
         // (1 Doctor ==> M Prescription)
         public ICollection<Prescription> Prescriptions { get; set; }
 
-        //public ICollection<WorkSchedule> WorkSchedules { get; set; }
+        public ICollection<WorkSchedule> WorkSchedules { get; set; }
 
 
     }

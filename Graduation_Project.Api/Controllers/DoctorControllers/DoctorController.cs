@@ -126,7 +126,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             // Map to doctorDetailsDto
             var doctorDetailsDto = new DoctorDetailsDto()
             {
-                //NumberOfPatients = doctor.Appointments.Count(),
+                NumberOfPatients = doctor.Appointments.Count(),
                 IsFavourite = await CheckFavouriteDoctor(PatientId, doctor.Id)  // check in favourite table 
             };
 

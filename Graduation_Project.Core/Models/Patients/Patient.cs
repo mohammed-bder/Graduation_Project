@@ -5,7 +5,7 @@
         public int? Points { get; set; }
         public BloodType? BloodType { get; set; }
 
-        //public ICollection<Appointment>? Appointments { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
         public ICollection<MedicalHistory>? MedicalHistories { get; set; }
         public ICollection<AI_QuickDiagnosis>? AIQuickDiagnosis { get; set; }
         public ICollection<PharmacyOrder>? PharmacyOrder { get; set; }

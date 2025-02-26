@@ -15,6 +15,8 @@ namespace Graduation_Project.Api.Extensions
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(IUserService), typeof(UserService));
 
+            services.AddScoped<IAppointmentService, AppointmentService>();
+
             // add Identity Services configuration (UserManager , SigninManager , RoleManager)
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
