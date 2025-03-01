@@ -53,8 +53,24 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var spec = new ClinicWithAllDataSpecification(id);
             var clinicFromDB = await _clinicRepo.GetWithSpecsAsync(spec);
 
+
+            if (model.Longitude != clinicFromDB.Longitude || model.Latitude != clinicFromDB.Latitude)
+            {
+                clinicFromDB.Longitude = model.Longitude;
+                clinicFromDB.Latitude = model.Latitude;
+                
+                // Generate Google Maps link
+                string mapsLink = $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
+                clinicFromDB.LocationLink = mapsLink;
+            }
+
+
+
             if (clinicFromDB is null)
                 return BadRequest(new ApiResponse(404, $"clinic with id = {id} not found"));
+
+            if (model.Id == 0 || model.Id != clinicFromDB.Id)
+                return BadRequest(new ApiResponse(404, $"you can't change clinic Id"));
 
             if (model.Name == null || model.Name != clinicFromDB.Name)
                 clinicFromDB.Name = model.Name!;
@@ -62,8 +78,8 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             if (model.PictureUrl == null || model.PictureUrl != clinicFromDB.PictureUrl)
                 clinicFromDB.PictureUrl = model.PictureUrl!;
 
-            if (model.Location == null || model.Location != clinicFromDB.Location)
-                clinicFromDB.Location = model.Location!;
+            if (model.Address == null || model.Address != clinicFromDB.Address)
+                clinicFromDB.Address = model.Address!;
 
             if (model.LocationLink == null || model.LocationLink != clinicFromDB.LocationLink)
                 clinicFromDB.LocationLink = model.LocationLink!;

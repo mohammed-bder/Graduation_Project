@@ -14,7 +14,7 @@
         public string? LastName { get; set; }
 
         //[Required(ErrorMessage = "Date of birth is required.")]
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number format.")]
         public string? PhoneNumber { get; set; }

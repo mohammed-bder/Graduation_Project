@@ -147,7 +147,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return true;
         }
 
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("GetAbout/{id:int}")]
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorAboutDto>> GetDoctorAbout(int id)
@@ -171,7 +171,13 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto = _mapper.Map(doctorFromDb.Education, doctorAboutDto);
 
             // Assign Doctor Clinics List
-            doctorAboutDto.DoctorClinics = _mapper.Map(doctorFromDb.DoctorClincs.Select(c => c.Clinic), doctorAboutDto.DoctorClinics);
+            //doctorAboutDto = _mapper.Map(doctorFromDb.Clinic, doctorAboutDto);
+            //doctorAboutDto = _mapper.Map(doctorFromDb.Clinic, doctorAboutDto.Clinic);
+            doctorAboutDto.Name = doctorFromDb.Clinic.Name;
+            doctorAboutDto.Location = doctorFromDb.Clinic.Address;
+            doctorAboutDto.LocationLink = doctorFromDb.Clinic.LocationLink;
+            doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
+
 
             return Ok(doctorAboutDto);
         }

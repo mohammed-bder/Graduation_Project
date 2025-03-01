@@ -41,8 +41,12 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Patient, PatientForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
-                    src.FirstName + ' ' + src.LastName
+                    src.FirstName + " " + src.LastName
                 ));
+                //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
+                //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
+                //));
+
 
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
@@ -77,7 +81,8 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<EducationDto, Education>();
 
-            CreateMap<Clinic, DoctorAboutClinicDto>();
+            CreateMap<ClinicAboutDto, DoctorAboutDto>();
+
 
             CreateMap<Education, DoctorAboutDto>();
 
@@ -99,9 +104,16 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<FeedbackDto, Feedback>();
             CreateMap<Feedback, FeedbackInfoDto>();
 
-
-
-
+            CreateMap<Feedback, FeedbackToReturnDto>()
+                    .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                        src.patient.FirstName + ' ' + src.patient.LastName
+                    ))
+                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
+                        src.patient.DateOfBirth.HasValue
+                            ? (DateTime.Today.Year - src.patient.DateOfBirth.Value.Year) -
+                              (DateTime.Today.DayOfYear < src.patient.DateOfBirth.Value.DayOfYear ? 1 : 0)
+                            : (int?)null
+                    ));
 
 
             // ========================================== Clinic ==========================================
@@ -138,16 +150,6 @@ namespace Graduation_Project.APIs.Helpers
             .ReverseMap();
 
 
-            CreateMap<Feedback, FeedbackToReturnDto>()
-                    .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
-                        src.patient.FirstName + ' ' + src.patient.LastName
-                    ))
-                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
-                        src.patient.DateOfBirth.HasValue
-                            ? (DateTime.Today.Year - src.patient.DateOfBirth.Value.Year) -
-                              (DateTime.Today.DayOfYear < src.patient.DateOfBirth.Value.DayOfYear ? 1 : 0)
-                            : (int?)null
-                    ));
 
 
         }

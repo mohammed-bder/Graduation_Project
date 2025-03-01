@@ -9,8 +9,8 @@ namespace Graduation_Project.Api.Attributes
             if (value == null)
                 return true;
 
-            if (value is DateTime date)
-                return date < DateTime.Now;
+            if (value is DateOnly date)
+                return date < DateOnly.FromDateTime(DateTime.Now);
 
             return false;
         }

@@ -6,6 +6,7 @@
         {
 
         }
+
         public DbSet<Appointment> Appointment { get; set; }
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
@@ -13,7 +14,8 @@
         /*********************Doctors************************/
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Education> Educations { get; set; }
-        public DbSet<DoctorClinic> DoctorClinics { get; set; }
+        public DbSet<WorkSchedule> WorkSchedule { get; set; }
+        //public DbSet<DoctorClinic> DoctorClinics { get; set; }
         public DbSet<DoctorSubspeciality> DoctorSubspecialities { get; set; }
         public DbSet<Specialty> Specialties { get; set; }
         public DbSet<SubSpecialities> SubSpecialities { get; set; }
@@ -58,8 +60,8 @@
             modelBuilder.Entity<ContactNumber>()
                 .HasKey(cn => new { cn.ClinicId, cn.PhoneNumber });
 
-            modelBuilder.Entity<DoctorClinic>()
-                .HasKey(dc => new { dc.DoctorId, dc.ClinicId });
+            //modelBuilder.Entity<DoctorClinic>()
+            //    .HasKey(dc => new { dc.DoctorId, dc.ClinicId });
 
             modelBuilder.Entity<DoctorSubspeciality>()
                 .HasKey(ds => new { ds.DoctorId, ds.SubSpecialitiesId });
