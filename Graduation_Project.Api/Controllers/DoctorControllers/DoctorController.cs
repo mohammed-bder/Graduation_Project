@@ -165,7 +165,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             // Assign Doctor Info (Description & Subspeciality)
             doctorAboutDto.Description = doctorFromDb.Description;
-            doctorAboutDto.DoctorSubspeciality = doctorFromDb.DoctorSubspeciality.Select(d => d.SubSpecialities.Name).ToList();
+            doctorAboutDto.DoctorSubspeciality = doctorFromDb.DoctorSubspeciality.Select(d => d.SubSpecialities.Name_ar).ToList();
 
             // Assign Doctor Education
             doctorAboutDto = _mapper.Map(doctorFromDb.Education, doctorAboutDto);

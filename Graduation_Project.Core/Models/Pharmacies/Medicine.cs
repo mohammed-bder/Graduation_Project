@@ -2,24 +2,23 @@
 {
     public class Medicine : BaseEntity
     {
+        public string? Name_ar { get; set; }
 
         [Required(ErrorMessage = "The medicine name is required.")]
-        [StringLength(100, ErrorMessage = "The medicine name cannot exceed 100 characters.")]
-        public string Name { get; set; }
+        public string Name_en { get; set; }
 
-        [StringLength(500, ErrorMessage = "The description cannot exceed 500 characters.")]
-        public string Description { get; set; }
+        [Required(ErrorMessage = "Price is required.")]
+        [Range(0.0, 10000.0, ErrorMessage = "Price must be a positive number.")]
+        public decimal Price { get; set; }
+
+        [StringLength(500, ErrorMessage = "The active substance cannot exceed 100 characters.")]
+        public string? ActiveSubstance { get; set; }
 
         [StringLength(50, ErrorMessage = "The dosage form cannot exceed 50 characters.")]
         public string DosageForm { get; set; }
 
-        [StringLength(100, ErrorMessage = "The active substance cannot exceed 100 characters.")]
-        public string ActiveSubstance { get; set; }
-
-        [Required(ErrorMessage = "Quantity is required.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a non-negative number.")]
-        public int Quantity { get; set; }
-
+        [StringLength(50, ErrorMessage = "The route cannot exceed 50 characters.")]
+        public string? Route { get; set; }
 
 
         // M-M relationship (Medicine <=> PharmacyOrders)

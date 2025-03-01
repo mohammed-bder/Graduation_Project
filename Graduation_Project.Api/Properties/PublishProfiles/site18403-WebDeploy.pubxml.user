@@ -6,8 +6,8 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project>
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAFr5gw5WVokqsHc+4PUJlvgAAAAACAAAAAAAQZgAAAAEAACAAAABZWR0sDVk53frXXn7eVRCbgYHPkwlrceLYbkeGWo6vggAAAAAOgAAAAAIAACAAAABSDp0KVUkV4ArQtsfYM4Rq+AB4k71dH54vzseb/CP4uSAAAABmAE5Nz+NsZ1onzvYO7ElZUWaa+uwtdCthmK1Lu+kAo0AAAAAvwUiviTYScORG/PakR825Bk6eUoViTdQEjiBzQMMbVm9bl9csun4/5uIUoSWLnPrDJbaHWzZvSFB3uuG2UWqg</EncryptedPassword>
-    <History>False|2025-02-21T15:52:22.4197266Z||;False|2025-02-21T17:45:19.2192786+02:00||;False|2025-02-21T17:37:17.2230094+02:00||;False|2025-02-21T17:33:56.3523340+02:00||;False|2025-02-21T16:46:39.7615913+02:00||;False|2025-02-21T16:43:55.0199370+02:00||;False|2025-02-21T16:41:27.7881996+02:00||;False|2025-02-21T16:39:07.0632716+02:00||;False|2025-02-21T16:30:11.3728318+02:00||;True|2025-02-19T17:26:04.2589854+02:00||;False|2025-02-19T17:18:53.8539158+02:00||;False|2025-02-19T17:15:02.3130346+02:00||;False|2025-02-19T17:13:06.1464436+02:00||;False|2025-02-19T17:09:38.8238755+02:00||;False|2025-02-19T17:08:07.8168396+02:00||;False|2025-02-19T17:04:42.2960709+02:00||;False|2025-02-19T17:00:10.4459145+02:00||;False|2025-02-19T16:51:26.1417615+02:00||;True|2025-02-19T16:48:31.2653005+02:00||;True|2025-02-19T16:34:48.9804418+02:00||;</History>
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAljxwmMGJ40S5sY/qZLm3gAAAAAACAAAAAAAQZgAAAAEAACAAAABQaDrU2evnEz7W1cHQ6QSNLk0uwM2UjYGM6pgDDuOM3gAAAAAOgAAAAAIAACAAAAD4l+v9yMecoFZ0jlGh708/bbkh9Pft+MSNtMk47QKgCyAAAABXAuuGMXeJQCFWrO9RDh6GAF8v8cnfIMyF8EwXCMaa6kAAAABNAtEkpg8bfwAHQvlkCVFTqKIi5r6Kbg7UbBA29U9VX6kM8IZs8qbBbDg8ryc2YbaUzgvov7ug+0lSz/PBIyBC</EncryptedPassword>
+    <History>False|2025-02-21T19:49:33.6896408Z||;False|2025-02-21T21:48:26.8564196+02:00||;False|2025-02-21T21:47:06.3511937+02:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
   <ItemGroup>
@@ -21,6 +21,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   <ItemGroup>
     <EFMigrations Include="Graduation_Project.Repository.Data.ApplicationDbContext">
       <Value>Server=db14249.public.databaseasp.net%3b Database=db14249%3b User Id=db14249%3b Password=7Zz%3f!n9Nf4D=%3b Encrypt=False%3b MultipleActiveResultSets=True%3b Trust Server Certificate=True</Value>
+    </EFMigrations>
+    <EFMigrations Include="Graduation_Project.Repository.Identity.AppIdentityDbContext">
+      <Value>Server=db14250.public.databaseasp.net%3b Database=db14250%3b User Id=db14250%3b Password=Gw2-k#B4=6mL%3b Encrypt=False%3b MultipleActiveResultSets=True%3b Trust Server Certificate=True</Value>
     </EFMigrations>
   </ItemGroup>
 </Project>

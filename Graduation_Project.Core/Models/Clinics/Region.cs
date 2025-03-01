@@ -3,7 +3,10 @@
     public class Region : BaseEntity
     {
         [Required(ErrorMessage = "Region name is required. Please provide a name.")]
-        public string Name { get; set; }
+        public string Name_ar { get; set; }
+
+        [Required(ErrorMessage = "Region name is required. Please provide a name.")]
+        public string Name_en { get; set; }
 
         public int governorateId { get; set; }
         [ForeignKey("governorateId")]

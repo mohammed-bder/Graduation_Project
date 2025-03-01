@@ -16,9 +16,9 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Person, PersonToReturnDTO>()
                 .ForMember(d => d.PictureUrl, O => O.MapFrom<PersonPictureUrlResolver>());
 
-            CreateMap<Specialty, SpecialityDTO>();
-            CreateMap<SubSpecialities, SubSpecialityDTO>()
-                .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name));
+            //CreateMap<Specialty, SpecialityDTO>();
+            //CreateMap<SubSpecialities, SubSpecialityDTO>()
+            //    .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name_ar));
 
             /****************************************** Mapping for Doctor Profile ******************************************/
 
@@ -66,7 +66,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Doctor, DoctorDetailsDto>()
                .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
-                    src.Specialty != null ? src.Specialty.Name : null
+                    src.Specialty != null ? src.Specialty.Name_ar : null
                 ))
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
@@ -106,8 +106,8 @@ namespace Graduation_Project.APIs.Helpers
 
             // ========================================== Clinic ==========================================
             CreateMap<Clinic, ClinicInfoDTO>()
-                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name))
-                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name))
+                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name_en))
+                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name_en))
                 .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
                 ;
 

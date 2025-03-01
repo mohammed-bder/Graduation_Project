@@ -3,6 +3,7 @@ using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Clinics;
+using Graduation_Project.Core.Specifications.ClinicsSpecifications;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,12 +32,12 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var governorates = await _governorateRepo.GetAllAsync();
 
             if (governorates is null)
-                return BadRequest( new ApiResponse(404, "there is no Governorate"));
-                    
-            var governoratesDTO = new List< GovernorateDTO>();
+                return BadRequest(new ApiResponse(404, "there is no Governorate"));
+
+            var governoratesDTO = new List<GovernorateDTO>();
             foreach (var item in governorates)
             {
-                governoratesDTO.Add(_mapper.Map<Governorate , GovernorateDTO>(item));
+                governoratesDTO.Add(_mapper.Map<Governorate, GovernorateDTO>(item));
             }
             return Ok(governoratesDTO);
         }
@@ -51,5 +52,29 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
 
             return Ok(_mapper.Map<Governorate, GovernorateDTO>(governorate));
         }
+
+        /***************************** End point to get governorate with its Regions *****************************/
+        [HttpGet("GovernorateWithRegions")]
+        public async Task<ActionResult<IReadOnlyList<GovernorateDTO>>> GetAllGovernorateWithRegions([FromQuery] string? lang = "ar")
+        {
+            if (lang.ToLower() != "ar" && lang.ToLower() != "en")
+            {
+                return BadRequest(new ApiResponse(400, "Invalid Language"));
+            }
+            var spec = new GovernorateWithRegionsSpecification();
+            var governates = await _governorateRepo.GetAllWithSpecAsync(spec , g => new GovernorateDTO
+            {
+                Id = g.Id,
+                Name = lang.ToLower() == "ar"? g.Name_ar : g.Name_en,
+                Regions = g.regions.Select(r => new RegionDTO
+                {
+                    Id = r.Id,
+                    Name = lang.ToLower() == "ar" ? r.Name_ar : r.Name_en
+                }).ToList()
+            });
+            return Ok(governates);
+        }
+
+
     }
 }

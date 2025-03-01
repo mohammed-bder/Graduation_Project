@@ -3,6 +3,8 @@
     public class SpecialityDTO
     {
         public int Id { get; set; }
-        public required string Name { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<SubSpecialityDTO> SubSpecialities { get; set; }
     }
 }
