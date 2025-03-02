@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
@@ -6,6 +7,7 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Core.Specifications.PrescriptionSpecifications;
 using Microsoft.AspNetCore.Authorization;
@@ -215,6 +217,27 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionEditFormDto>>(prescriptionsFromDB));
+        }
+
+
+        //[Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetMedicine")]
+        public async Task<ActionResult<IReadOnlyList<MedicinesForSearchResultDto>>> GetMedicinesByName([FromQuery] string? name, [FromQuery] int count = 20)// count will increase with every showMore
+        {
+            // check on name
+            if (string.IsNullOrEmpty(name))
+                return NotFound(new ApiResponse(404));
+
+            // Get Matched medicines
+            var spec = new MedicineSpec(name,count);
+            var matchedMedicines =
+                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec, spec.Selector) as IReadOnlyList<MedicinesForSearchResultDto>;
+
+            if (matchedMedicines.IsNullOrEmpty())
+                return NotFound(new ApiResponse(404));
+
+            // mapping
+            return Ok(matchedMedicines);
         }
     }
 }

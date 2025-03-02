@@ -147,7 +147,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return true;
         }
 
-        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetAbout/{id:int}")]
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
         public async Task<ActionResult<DoctorAboutDto>> GetDoctorAbout(int id)
