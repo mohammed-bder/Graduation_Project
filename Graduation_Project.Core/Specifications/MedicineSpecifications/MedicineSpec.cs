@@ -9,12 +9,12 @@ namespace Graduation_Project.Core.Specifications.MedicineSpecifications
 {
     public class MedicineSpec : BaseSpecifications<Medicine>
     {
-        public MedicineSpec(string? name,int take) : base(m => m.Name.ToLower().StartsWith(name))
+        public MedicineSpec(string? name,int take) : base(m => m.Name_en.ToLower().StartsWith(name))
         {
-            Selector = m => new
+            Selector = m => new 
             {
                 m.Id,
-                m.Name
+                m.Name_en
             };
 
             ApplyPagination(0, take);

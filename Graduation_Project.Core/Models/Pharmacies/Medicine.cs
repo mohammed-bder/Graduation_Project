@@ -11,7 +11,7 @@
         [Range(0.0, 10000.0, ErrorMessage = "Price must be a positive number.")]
         public decimal Price { get; set; }
 
-        [StringLength(500, ErrorMessage = "The active substance cannot exceed 100 characters.")]
+        [StringLength(600, ErrorMessage = "The active substance cannot exceed 100 characters.")]
         public string? ActiveSubstance { get; set; }
 
         [StringLength(50, ErrorMessage = "The dosage form cannot exceed 50 characters.")]

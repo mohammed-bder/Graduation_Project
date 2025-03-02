@@ -237,24 +237,6 @@ namespace Graduation_Project.Api.Controllers.Shared
         }
 
 
-        //[Authorize(Roles = nameof(UserRoleType.Doctor))]
-        [HttpGet("GetMedicine")]
-        public async Task<ActionResult<IReadOnlyList<MedicinesForSearchResultDto>>> GetMedicinesByName([FromQuery] string? name, [FromQuery] int count = 20)// count will increase with every showMore
-        {
-            // check on name
-            if (string.IsNullOrEmpty(name))
-                return NotFound(new ApiResponse(404));
 
-            // Get Matched medicines
-            var spec = new MedicineSpec(name,count);
-            var matchedMedicines =
-                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec, spec.Selector) as IReadOnlyList<MedicinesForSearchResultDto>;
-
-            if (matchedMedicines.IsNullOrEmpty())
-                return NotFound(new ApiResponse(404));
-
-            // mapping
-            return Ok(matchedMedicines);
-        }
     }
 }
