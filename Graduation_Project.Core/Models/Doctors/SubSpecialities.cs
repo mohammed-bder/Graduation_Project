@@ -3,8 +3,9 @@
     public class SubSpecialities : BaseEntity
     {
         [Required(ErrorMessage = "Subspeciality name is required.")]
-        [StringLength(50, ErrorMessage = "Subspeciality name cannot exceed 50 characters.")]
-        public required string Name { get; set; }
+        public string Name_ar { get; set; }
+        [Required(ErrorMessage = "Subspeciality name is required.")]
+        public string Name_en { get; set; }
 
         /* ----------------- Relationships ----------------- */
 

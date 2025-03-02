@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Core.Models.Clinics;
+using Graduation_Project.Core.Models.Pharmacies;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,24 +18,6 @@ namespace Graduation_Project.Repository.Data
 
         public async static Task SeedAsync(ApplicationDbContext _dbContext)
         {
-            /* ======================= seeding Doctor Data ======================= */
-            //if(_dbContext.Doctors.Count() == 0)
-            //{
-            //    var doctorData = File.ReadAllText("");
-            //    var doctors = JsonSerializer.Deserialize<List<Doctor>>(doctorData);
-
-            //    if(doctors?.Count() >= 0)
-            //    {
-            //        foreach (var doctor in doctors)
-            //        {
-            //            _dbContext.Doctors.Add(doctor);
-            //        }
-            //        await _dbContext.SaveChangesAsync();
-            //    }
-            //}
-
-            // repeat this for each entity
-
             /* ======================= seeding Speciality & SubSpecialities Data ======================= */
             if (_dbContext.Specialties.Count() == 0)
             {
@@ -61,53 +44,101 @@ namespace Graduation_Project.Repository.Data
                 }
             }
 
-            /* ======================= seeding Gover & Region Data ======================= */
-            if (_dbContext.governorates.Count() == 0)
+            /* ======================= seeding Governrate Data ======================= */
+            if (!await _dbContext.governorates.AnyAsync())
             {
-                var GovernorateData = File.ReadAllText("../Graduation_Project.Repository/Data/DataSeed/Governorates.json");
+                var GovernorateData = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/Governorates.json");
                 var governorates = JsonSerializer.Deserialize<List<Governorate>>(GovernorateData);
 
                 if (governorates?.Count > 0)
                 {
-                    foreach (var governorate in governorates)
+                    Console.WriteLine($"Total governorates in JSON: {governorates.Count}");
+
+                    await _dbContext.governorates.AddRangeAsync(governorates);
+
+                    try
                     {
-                        if (governorate.regions != null && governorate.regions.Count > 0)
-                        {
-                            foreach (var region in governorate.regions)
-                            {
-                                region.governorate = governorate;
-                            }
-                        }
-
-                        _dbContext.governorates.Add(governorate);
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Seeding completed. Inserted: {await _dbContext.governorates.CountAsync()} records.");
                     }
-
-                    await _dbContext.SaveChangesAsync();
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting records: {ex.Message}");
+                    }
                 }
             }
-            /* ======================= seeding Medical Category Data ======================= */
-            if(_dbContext.MedicalCategories.Count() == 0)
+
+            /* ======================= seeding Regions Data ======================= */
+            if (!await _dbContext.regions.AnyAsync())
             {
-                var MedicalCategoryData = File.ReadAllText("../Graduation_Project.Repository/Data/DataSeed/MedicalCategory.json");
+                var RegionsData = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/Regions.json");
+                var Regions = JsonSerializer.Deserialize<List<Region>>(RegionsData);
+
+                if (Regions?.Count > 0)
+                {
+                    Console.WriteLine($"Total records in JSON: {Regions.Count}");
+
+                    await _dbContext.regions.AddRangeAsync(Regions);
+
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Seeding completed. Inserted: {await _dbContext.regions.CountAsync()} records.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting records: {ex.Message}");
+                    }
+                }
+            }
+
+            /* ======================= seeding Medical Category Data ======================= */
+            if(!await _dbContext.MedicalCategories.AnyAsync())
+            {
+                var MedicalCategoryData = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/MedicalCategory.json");
                 var MedicalCategories = JsonSerializer.Deserialize<List<MedicalCategory>>(MedicalCategoryData);
 
-                if(MedicalCategories?.Count > 0)
+                if (MedicalCategories?.Count > 0)
                 {
-                    foreach (var MedicalCategory in MedicalCategories)
-                    {
-                        _dbContext.MedicalCategories.Add(MedicalCategory);
-                    }
+                    Console.WriteLine($"Total records in JSON: {MedicalCategories.Count}");
+                    await _dbContext.MedicalCategories.AddRangeAsync(MedicalCategories);
 
-                    await _dbContext.SaveChangesAsync();
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Seeding completed. Inserted: {await _dbContext.MedicalCategories.CountAsync()} records.");
+
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting records: {ex.Message}");
+                    }
                 }
-                
             }
 
+            /* ======================= seeding Medicine Data ======================= */
+            if(! await _dbContext.Medicines.AnyAsync())
+            {
+                var MedicineData = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/Medicines.json");
+                var medicines = JsonSerializer.Deserialize<List<Medicine>>(MedicineData);
 
+                if (medicines?.Count > 0)
+                {
+                    Console.WriteLine($"Total records in JSON: {medicines.Count}");
+                    await _dbContext.Medicines.AddRangeAsync(medicines);
 
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Seeding completed. Inserted: {await _dbContext.Medicines.CountAsync()} records.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting records: {ex.Message}");
+                    }
+                }
+            }
 
         }
-
-
     }
 }

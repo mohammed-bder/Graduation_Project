@@ -1,4 +1,5 @@
 # Ignore build directories
+Graduation_Project.Api/Graduation_Project.Api.csproj.user
 Graduation_Project.Api/bin/
 Graduation_Project.Api/obj/
 Graduation_Project.Core/bin/

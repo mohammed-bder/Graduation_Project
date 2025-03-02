@@ -5,8 +5,10 @@ namespace Graduation_Project.Core.Models.Doctors
     public class Specialty : BaseEntity
     {
         [Required(ErrorMessage = "Specialty name is required.")]
-        [StringLength(100, ErrorMessage = "Specialty name cannot exceed 100 characters.")]
-        public required string Name { get; set; }
+        public string Name_ar { get; set; }
+
+        [Required(ErrorMessage = "Specialty name is required.")]
+        public string Name_en { get; set; }
 
         /* ----------------- Relationships ----------------- */
 

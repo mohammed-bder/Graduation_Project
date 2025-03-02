@@ -2,7 +2,9 @@
 using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Shared;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using Talabat.API.Dtos.Account;
 
 namespace Graduation_Project.Api.Controllers.Shared
@@ -25,31 +28,22 @@ namespace Graduation_Project.Api.Controllers.Shared
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
 
-        //private readonly IGenericRepository<Prescription> genericRepository;
-
         public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userService = userService;
-            //this.genericRepository = genericRepository;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("DoctorAdd")]
         public async Task<ActionResult<PrescriptionFromUserDto>> AddPrescription(PrescriptionFromUserDto prescriptionFromUser)
         {
-            var currentUser = await _userService.GetCurrentUserAsync();
-            var spec = new DoctorForProfileSpecs(currentUser.Id);
-            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(spec);
-            if(doctor is null)
-            {
-                return NotFound(new ApiResponse(404));
-            }
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             var prescription = _mapper.Map<PrescriptionFromUserDto, Prescription>(prescriptionFromUser);
             prescription.IssuedDate = DateTime.Now;
-            prescription.DoctorId = doctor.Id;
+            prescription.DoctorId = DoctorId;
 
             try
             {
@@ -78,6 +72,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPut("DoctorEdit/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Prescription>))]
         public async Task<ActionResult<PrescriptionEditFormDto>> EditPrescription(PrescriptionEditFormDto updateDto, int id)
         {
             var spec = new PrescriptionWithMedicinePrescriptionsSpec(id);
@@ -86,10 +81,20 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 return (NotFound(new ApiResponse(404)));
             }
+            //check if the doctor who wrote it is the same person who is editing
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            if(prescriptionFromDB.Id != DoctorId)
+            {
+                return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Edit this")));
+            }
+
+            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
+            {
+                throw new InvalidOperationException("❌ You cannot edit this prescription after 24 hour of creation.");
+            }
 
             //prescriptionFromUser.PatientId = prescriptionFromDB.Id;
             prescriptionFromDB.Diagnoses = updateDto.Diagnoses;
-            prescriptionFromDB.IssuedDate = DateTime.Now;
             
             var existingMedicinePrescriptions = prescriptionFromDB.MedicinePrescriptions?.ToList();
 
@@ -142,6 +147,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpDelete("DoctorDelete/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Prescription>))]
         public async Task<ActionResult> DeletePrescription(int id)
         {
             var spec = new PrescriptionWithMedicinePrescriptionsSpec(id);
@@ -149,6 +155,17 @@ namespace Graduation_Project.Api.Controllers.Shared
             if(prescriptionFromDB is null)
             {
                 return NotFound(new ApiResponse(404));
+            }
+
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            if (prescriptionFromDB.Id != DoctorId)
+            {
+                return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Delete this")));
+            }
+
+            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
+            {
+                throw new InvalidOperationException("❌ You cannot Delete this prescription after 24 hour of creation.");
             }
 
             if (prescriptionFromDB.MedicinePrescriptions.Any())
