@@ -80,27 +80,38 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         /****************************************** Medicl Category ******************************************/
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetMedicalCategory")]
-        public async Task<ActionResult<IReadOnlyList<MedicalCategoryDto>>> GetAllMediclCategory()
+        public async Task<ActionResult<IReadOnlyList<MedicalCategoryDto>>> GetAllMediclCategory([FromQuery] string? lang = "ar")
         {
-            var MediclaCategories = await _unitOfWork.Repository<MedicalCategory>().GetAllAsync();
+            if (lang.ToLower() != "ar" && lang.ToLower() != "en")
+            {
+                return BadRequest(new ApiResponse(400, "Invalid Language"));
+            }
+
+            var spec = new MedicalCategorySpecification();
+            var MediclaCategories = await _unitOfWork.Repository<MedicalCategory>().GetAllWithSpecAsync(spec,mc => new MedicalCategoryDto
+            {
+                Id = mc.Id,
+                Name = lang.ToLower() == "ar" ? mc.Name_ar : mc.Name_en,
+            });
+
             if (MediclaCategories is null)
             {
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Categories Not Found"));
             }
 
-            return Ok(_mapper.Map<IReadOnlyList<MedicalCategory>, IReadOnlyList<MedicalCategoryDto>>(MediclaCategories));
+            return Ok(MediclaCategories);
         }
 
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("{Id:int}")]
-        public async Task<ActionResult<MedicalCategoryDto>> GetMediclCategory(int Id)
-        {
-            var MedicalCategory = await _unitOfWork.Repository<MedicalCategory>().GetAsync(Id);
-            if(MedicalCategory is null)
-            {
-                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Category Not Found"));
-            }
-            return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
-        }
+        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        //[HttpGet("{Id:int}")]
+        //public async Task<ActionResult<MedicalCategoryDto>> GetMediclCategory(int Id)
+        //{
+        //    var MedicalCategory = await _unitOfWork.Repository<MedicalCategory>().GetAsync(Id);
+        //    if(MedicalCategory is null)
+        //    {
+        //        return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Category Not Found"));
+        //    }
+        //    return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
+        //}
     }
 }
