@@ -1,117 +1,716 @@
 [
   {
-    "Name": "Internal Medicine",
+    "Name_ar": "الآشعة التداخلية",
+    "Name_en": "Interventional Radiology",
     "SubSpecialties": [
-      { "Name": "Cardiology" },
-      { "Name": "Gastroenterology and Hepatology" },
-      { "Name": "Endocrinology and Diabetes" },
-      { "Name": "Nephrology" },
-      { "Name": "Hematology and Oncology" },
-      { "Name": "Rheumatology and Immunology" },
-      { "Name": "Pulmonology" },
-      { "Name": "Infectious Diseases and Tropical Medicine" }
+      {
+        "Name_ar": "أشعة الأوعية الدموية",
+        "Name_en": "Vascular Interventional Radiology"
+      },
+      {
+        "Name_ar": "أشعة الأورام التداخلية",
+        "Name_en": "Oncologic Interventional Radiology"
+      },
+      {
+        "Name_ar": "الأشعة العصبية التداخلية",
+        "Name_en": "Neurointerventional Radiology"
+      },
+      {
+        "Name_ar": "الأشعة التداخلية للجهاز العضلي الهيكلي",
+        "Name_en": "Musculoskeletal Interventional Radiology"
+      },
+      {
+        "Name_ar": "الأشعة التداخلية للأورام",
+        "Name_en": "Interventional Oncology"
+      }
     ]
   },
   {
-    "Name": "General Surgery",
+    "Name_ar": "امراض دم",
+    "Name_en": "Hematology",
     "SubSpecialties": [
-      { "Name": "Cardiothoracic Surgery" },
-      { "Name": "Vascular Surgery" },
-      { "Name": "Neurosurgery" },
-      { "Name": "Orthopedic Surgery" },
-      { "Name": "Plastic and Burn Surgery" },
-      { "Name": "Pediatric Surgery" },
-      { "Name": "Urology" }
+      {
+        "Name_ar": "أمراض الدم الوراثية",
+        "Name_en": "Hereditary Blood Disorders"
+      },
+      {
+        "Name_ar": "أمراض الدم السرطانية",
+        "Name_en": "Oncologic Hematology"
+      },
+      {
+        "Name_ar": "أمراض الدم الخبيثة",
+        "Name_en": "Malignant Hematology"
+      },
+      {
+        "Name_ar": "أمراض الدم الحميدة",
+        "Name_en": "Benign Hematology"
+      },
+      {
+        "Name_ar": "طب نقل الدم",
+        "Name_en": "Transfusion Medicine"
+      }
     ]
   },
   {
-    "Name": "Pediatrics",
+    "Name_ar": "اورام",
+    "Name_en": "Oncology (Tumor)",
     "SubSpecialties": [
-      { "Name": "General Pediatrics" },
-      { "Name": "Pediatric Cardiology" },
-      { "Name": "Pediatric Pulmonology" },
-      { "Name": "Pediatric Gastroenterology" },
-      { "Name": "Pediatric Hematology and Oncology" },
-      { "Name": "Pediatric Endocrinology and Diabetes" },
-      { "Name": "Pediatric Nephrology" },
-      { "Name": "Pediatric Neurology" }
+      {
+        "Name_ar": "أورام الثدي",
+        "Name_en": "Breast Oncology"
+      },
+      {
+        "Name_ar": "أورام الجهاز الهضمي",
+        "Name_en": "Gastrointestinal Oncology"
+      },
+      {
+        "Name_ar": "أورام الأطفال",
+        "Name_en": "Pediatric Oncology"
+      },
+      {
+        "Name_ar": "الأورام النسائية",
+        "Name_en": "Gynecologic Oncology"
+      },
+      {
+        "Name_ar": "الأورام الإشعاعية",
+        "Name_en": "Radiation Oncology"
+      }
     ]
   },
   {
-    "Name": "Obstetrics and Gynecology",
+    "Name_ar": "باطنة",
+    "Name_en": "Internal Medicine",
     "SubSpecialties": [
-      { "Name": "Maternal and Fetal Medicine" },
-      { "Name": "General Gynecology" },
-      { "Name": "Gynecologic Oncology" },
-      { "Name": "Infertility and IVF" }
+      {
+        "Name_ar": "أمراض القلب",
+        "Name_en": "Cardiology"
+      },
+      {
+        "Name_ar": "أمراض الكلى",
+        "Name_en": "Nephrology"
+      },
+      {
+        "Name_ar": "أمراض الجهاز الهضمي",
+        "Name_en": "Gastroenterology"
+      }
     ]
   },
   {
-    "Name": "Ophthalmology",
+    "Name_ar": "تخسيس وتغذية",
+    "Name_en": "Dietitian and Nutrition",
     "SubSpecialties": [
-      { "Name": "Eye Surgery" },
-      { "Name": "Retinal Diseases" },
-      { "Name": "Corneal Diseases" },
-      { "Name": "Glaucoma" },
-      { "Name": "Strabismus and Pediatric Ophthalmology" }
+      {
+        "Name_ar": "تغذية علاجية",
+        "Name_en": "Clinical Nutrition"
+      },
+      {
+        "Name_ar": "تغذية رياضية",
+        "Name_en": "Sports Nutrition"
+      },
+      {
+        "Name_ar": "تغذية الأطفال",
+        "Name_en": "Pediatric Nutrition"
+      }
     ]
   },
   {
-    "Name": "Otolaryngology (ENT)",
+    "Name_ar": "جراحة اطفال",
+    "Name_en": "Pediatric Surgery",
     "SubSpecialties": [
-      { "Name": "Ear Surgery" },
-      { "Name": "Nasal and Sinus Surgery" },
-      { "Name": "Laryngeal and Voice Disorders" },
-      { "Name": "Audiology and Balance Disorders" }
+      {
+        "Name_ar": "جراحة حديثي الولادة",
+        "Name_en": "Neonatal Surgery"
+      },
+      {
+        "Name_ar": "جراحة أورام الأطفال",
+        "Name_en": "Pediatric Oncologic Surgery"
+      },
+      {
+        "Name_ar": "جراحة الأطفال العامة",
+        "Name_en": "General Pediatric Surgery"
+      },
+      {
+        "Name_ar": "جراحة المسالك البولية للأطفال",
+        "Name_en": "Pediatric Urology"
+      },
+      {
+        "Name_ar": "جراحة القلب للأطفال",
+        "Name_en": "Pediatric Cardiac Surgery"
+      },
+      {
+        "Name_ar": "جراحة الأعصاب للأطفال",
+        "Name_en": "Pediatric Neurosurgery"
+      }
     ]
   },
   {
-    "Name": "Dermatology and Venereology",
+    "Name_ar": "جراحة أورام",
+    "Name_en": "Oncology Surgery (Tumor Surgery)",
     "SubSpecialties": [
-      { "Name": "General Dermatology" },
-      { "Name": "Andrology and Infertility" },
-      { "Name": "Allergic and Immunologic Skin Diseases" },
-      { "Name": "Hair and Nail Disorders" }
+      {
+        "Name_ar": "جراحة أورام الثدي",
+        "Name_en": "Breast Oncologic Surgery"
+      },
+      {
+        "Name_ar": "جراحة أورام الجهاز الهضمي",
+        "Name_en": "Gastrointestinal Oncologic Surgery"
+      },
+      {
+        "Name_ar": "جراحة أورام الرأس والعنق",
+        "Name_en": "Head and Neck Surgical Oncology"
+      }
     ]
   },
   {
-    "Name": "Psychiatry",
+    "Name_ar": "جراحة اوعية دموية",
+    "Name_en": "Vascular Surgery (Arteries and Vein Surgery)",
     "SubSpecialties": [
-      { "Name": "General Psychiatry" },
-      { "Name": "Child and Adolescent Psychiatry" },
-      { "Name": "Geriatric Psychiatry" },
-      { "Name": "Addiction Psychiatry" }
+      {
+        "Name_ar": "جراحة الأوردة",
+        "Name_en": "Venous Surgery"
+      },
+      {
+        "Name_ar": "جراحة الشرايين",
+        "Name_en": "Arterial Surgery"
+      },
+      {
+        "Name_ar": "جراحة الأوعية الدموية التداخلية",
+        "Name_en": "Endovascular Surgery"
+      }
     ]
   },
   {
-    "Name": "Neurology",
+    "Name_ar": "جلدية",
+    "Name_en": "Dermatology (Skin)",
     "SubSpecialties": [
-      { "Name": "General Neurology" },
-      { "Name": "Neuromuscular Disorders" },
-      { "Name": "Epilepsy" },
-      { "Name": "Stroke Medicine" }
+      {
+        "Name_ar": "أمراض الجلد الوراثية",
+        "Name_en": "Genetic Skin Disorders"
+      },
+      {
+        "Name_ar": "أمراض الجلد السرطانية",
+        "Name_en": "Oncologic Dermatology"
+      },
+      {
+        "Name_ar": "أمراض الجلد الالتهابية",
+        "Name_en": "Inflammatory Skin Disorders"
+      },
+      {
+        "Name_ar": "الأمراض الجلدية للأطفال",
+        "Name_en": "Pediatric Dermatology"
+      },
+      {
+        "Name_ar": "الأمراض الجلدية المناعية",
+        "Name_en": "Immunodermatology"
+      }
     ]
   },
   {
-    "Name": "Diagnostic Radiology",
+    "Name_ar": "اسنان",
+    "Name_en": "Dentistry (Teeth)",
     "SubSpecialties": [
-      { "Name": "X-ray Imaging" },
-      { "Name": "CT Imaging" },
-      { "Name": "MRI Imaging" },
-      { "Name": "Interventional Radiology" }
+      {
+        "Name_ar": "تقويم الأسنان",
+        "Name_en": "Orthodontics"
+      },
+      {
+        "Name_ar": "جراحة الفم والوجه والفكين",
+        "Name_en": "Oral and Maxillofacial Surgery"
+      },
+      {
+        "Name_ar": "طب أسنان الأطفال",
+        "Name_en": "Pediatric Dentistry"
+      }
     ]
   },
   {
-    "Name": "Nuclear Medicine",
-    "SubSpecialties": []
+    "Name_ar": "نفسي",
+    "Name_en": "Psychiatry (Mental, Emotional or Behavioral Disorders)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "طب نفسي الأطفال",
+        "Name_en": "Child Psychiatry"
+      },
+      {
+        "Name_ar": "طب نفسي الشيخوخة",
+        "Name_en": "Geriatric Psychiatry"
+      }
+    ]
   },
   {
-    "Name": "Physical Medicine, Rheumatology, and Rehabilitation",
+    "Name_ar": "اطفال وحديثي الولادة",
+    "Name_en": "Pediatrics and New Born (Child)",
     "SubSpecialties": [
-      { "Name": "Physical Medicine" },
-      { "Name": "Rheumatology" },
-      { "Name": "Medical Rehabilitation" }
+      {
+        "Name_ar": "طب حديثي الولادة",
+        "Name_en": "Neonatology"
+      },
+      {
+        "Name_ar": "أمراض قلب الأطفال",
+        "Name_en": "Pediatric Cardiology"
+      },
+      {
+        "Name_ar": "أمراض الجهاز التنفسي للأطفال",
+        "Name_en": "Pediatric Pulmonology"
+      }
+    ]
+  },
+  {
+    "Name_ar": "مخ واعصاب",
+    "Name_en": "Neurology (Brain & Nerves)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الأعصاب العضلية",
+        "Name_en": "Neuromuscular Disorders"
+      },
+      {
+        "Name_ar": "أمراض الصداع",
+        "Name_en": "Headache Medicine"
+      },
+      {
+        "Name_ar": "الأمراض العصبية الوعائية",
+        "Name_en": "Vascular Neurology"
+      },
+      {
+        "Name_ar": "الأمراض العصبية العضلية",
+        "Name_en": "Neuromuscular Medicine"
+      }
+    ]
+  },
+  {
+    "Name_ar": "عظام",
+    "Name_en": "Orthopedics (Bones)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة العظام الرياضية",
+        "Name_en": "Sports Orthopedics"
+      },
+      {
+        "Name_ar": "جراحة العمود الفقري",
+        "Name_en": "Spinal Surgery"
+      },
+      {
+        "Name_ar": "جراحة العظام البارزة",
+        "Name_en": "Joint Replacement Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "نساء وتوليد",
+    "Name_en": "Gynaecology and Infertility",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض النساء السرطانية",
+        "Name_en": "Oncologic Gynecology"
+      },
+      {
+        "Name_ar": "أمراض النساء",
+        "Name_en": "Gynecology"
+      },
+      {
+        "Name_ar": "أمراض النساء الخبيثة",
+        "Name_en": "Gynecologic Oncology"
+      },
+      {
+        "Name_ar": "التوليد",
+        "Name_en": "Obstetrics"
+      }
+    ]
+  },
+  {
+    "Name_ar": "انف واذن وحنجرة",
+    "Name_en": "Ear, Nose and Throat",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة الأذن",
+        "Name_en": "Otology"
+      },
+      {
+        "Name_ar": "جراحة الأنف والجيوب الأنفية",
+        "Name_en": "Rhinology"
+      },
+      {
+        "Name_ar": "جراحة الحنجرة",
+        "Name_en": "Laryngology"
+      }
+    ]
+  },
+  {
+    "Name_ar": "قلب واوعية دموية",
+    "Name_en": "Cardiology and Vascular Disease (Heart)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض القلب الخلقية",
+        "Name_en": "Congenital Heart Disease"
+      },
+      {
+        "Name_ar": "أمراض صمامات القلب",
+        "Name_en": "Valvular Heart Disease"
+      }
+    ]
+  },
+  {
+    "Name_ar": "روماتيزم",
+    "Name_en": "Rheumatology",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض المفاصل الالتهابية",
+        "Name_en": "Inflammatory Joint Diseases"
+      },
+      {
+        "Name_ar": "أمراض النسيج الضام",
+        "Name_en": "Connective Tissue Diseases"
+      }
+    ]
+  },
+  {
+    "Name_ar": "سكر وغدد صماء",
+    "Name_en": "Diabetes and Endocrinology",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الغدة الدرقية",
+        "Name_en": "Thyroid Disorders"
+      },
+      {
+        "Name_ar": "أمراض الغدة النخامية",
+        "Name_en": "Pituitary Disorders"
+      }
+    ]
+  },
+  {
+    "Name_ar": "سمعيات",
+    "Name_en": "Audiology",
+    "SubSpecialties": [
+      {
+        "Name_ar": "تشخيص السمع",
+        "Name_en": "Hearing Diagnostics"
+      },
+      {
+        "Name_ar": "علاج السمع",
+        "Name_en": "Hearing Therapy"
+      }
+    ]
+  },
+  {
+    "Name_ar": "صدر وجهاز تنفسي",
+    "Name_en": "Chest and Respiratory",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الرئة المزمنة",
+        "Name_en": "Chronic Lung Diseases"
+      },
+      {
+        "Name_ar": "أمراض الجهاز التنفسي النومية",
+        "Name_en": "Sleep Respiratory Disorders"
+      }
+    ]
+  },
+  {
+    "Name_ar": "طب الأسرة",
+    "Name_en": "Family Medicine",
+    "SubSpecialties": [
+      {
+        "Name_ar": "طب الأسرة الوقائي",
+        "Name_en": "Preventive Family Medicine"
+      },
+      {
+        "Name_ar": "طب الأسرة للأطفال",
+        "Name_en": "Pediatric Family Medicine"
+      }
+    ]
+  },
+  {
+    "Name_ar": "طب المسنين",
+    "Name_en": "Geriatrics (Old People Health)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الشيخوخة العصبية",
+        "Name_en": "Geriatric Neurology"
+      },
+      {
+        "Name_ar": "أمراض الشيخوخة النفسية",
+        "Name_en": "Geriatric Psychiatry"
+      }
+    ]
+  },
+  {
+    "Name_ar": "طب تقويمي",
+    "Name_en": "Osteopathy (Osteopathic Medicine)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "تقويم العمود الفقري",
+        "Name_en": "Spinal Manipulation"
+      },
+      {
+        "Name_ar": "تقويم العظام الرياضي",
+        "Name_en": "Sports Osteopathy"
+      }
+    ]
+  },
+  {
+    "Name_ar": "علاج الآلام",
+    "Name_en": "Pain Management",
+    "SubSpecialties": [
+      {
+        "Name_ar": "علاج الآلام المزمنة",
+        "Name_en": "Chronic Pain Management"
+      },
+      {
+        "Name_ar": "علاج آلام السرطان",
+        "Name_en": "Cancer Pain Management"
+      }
+    ]
+  },
+  {
+    "Name_ar": "علاج طبيعي واصابات ملاعب",
+    "Name_en": "Physiotherapy and Sport Injuries",
+    "SubSpecialties": [
+      {
+        "Name_ar": "إعادة تأهيل الرياضيين",
+        "Name_en": "Sports Rehabilitation"
+      },
+      {
+        "Name_ar": "علاج إصابات العمود الفقري",
+        "Name_en": "Spinal Injury Rehabilitation"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جراحة سمنة ومناظير",
+    "Name_en": "Obesity and Laparoscopic Surgery",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة السمنة المفرطة",
+        "Name_en": "Bariatric Surgery"
+      },
+      {
+        "Name_ar": "جراحة المناظير المتقدمة",
+        "Name_en": "Advanced Laparoscopic Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جراحة عامة",
+    "Name_en": "General Surgery",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة الجهاز الهضمي",
+        "Name_en": "Gastrointestinal Surgery"
+      },
+      {
+        "Name_ar": "جراحة الغدد الصماء",
+        "Name_en": "Endocrine Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جراحة عمود فقري",
+    "Name_en": "Spinal Surgery",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة الانزلاق الغضروفي",
+        "Name_en": "Herniated Disc Surgery"
+      },
+      {
+        "Name_ar": "جراحة تشوهات العمود الفقري",
+        "Name_en": "Spinal Deformity Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جراحة قلب وصدر",
+    "Name_en": "Cardiology and Thoracic Surgery (Heart & Chest)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة القلب المفتوح",
+        "Name_en": "Open Heart Surgery"
+      },
+      {
+        "Name_ar": "جراحة الصدر التنظيرية",
+        "Name_en": "Thoracoscopic Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جراحة مخ واعصاب",
+    "Name_en": "Neurosurgery (Brain & Nerves Surgery)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة أورام المخ",
+        "Name_en": "Brain Tumor Surgery"
+      },
+      {
+        "Name_ar": "جراحة الأعصاب الطرفية",
+        "Name_en": "Peripheral Nerve Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "جهاز هضمي ومناظير",
+    "Name_en": "Gastroenterology and Endoscopy",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الكبد",
+        "Name_en": "Liver Diseases"
+      },
+      {
+        "Name_ar": "أمراض البنكرياس",
+        "Name_en": "Pancreatic Diseases"
+      }
+    ]
+  },
+  {
+    "Name_ar": "حساسية ومناعة",
+    "Name_en": "Allergy and Immunology (Sensitivity and Immunity)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الحساسية الجلدية",
+        "Name_en": "Skin Allergy"
+      },
+      {
+        "Name_ar": "أمراض المناعة الذاتية",
+        "Name_en": "Autoimmune Diseases"
+      }
+    ]
+  },
+  {
+    "Name_ar": "حقن مجهري واطفال انابيب",
+    "Name_en": "IVF and Infertility",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أطفال الأنابيب",
+        "Name_en": "In Vitro Fertilization"
+      },
+      {
+        "Name_ar": "تشخيص العقم",
+        "Name_en": "Infertility Diagnostics"
+      }
+    ]
+  },
+  {
+    "Name_ar": "ذكورة وعقم",
+    "Name_en": "Andrology and Male Infertility",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الذكورة",
+        "Name_en": "Male Reproductive Disorders"
+      },
+      {
+        "Name_ar": "تشخيص العقم الذكوري",
+        "Name_en": "Male Infertility Diagnostics"
+      }
+    ]
+  },
+  {
+    "Name_ar": "مسالك بولية",
+    "Name_en": "Urology (Urinary System)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض البروستاتا",
+        "Name_en": "Prostate Diseases"
+      },
+      {
+        "Name_ar": "جراحة المسالك البولية التنظيرية",
+        "Name_en": "Endoscopic Urologic Surgery"
+      }
+    ]
+  },
+  {
+    "Name_ar": "معامل تحاليل",
+    "Name_en": "Laboratories",
+    "SubSpecialties": [
+      {
+        "Name_ar": "تحاليل الدم",
+        "Name_en": "Blood Tests"
+      },
+      {
+        "Name_ar": "تحاليل الجينات",
+        "Name_en": "Genetic Testing"
+      }
+    ]
+  },
+  {
+    "Name_ar": "ممارسة عامة",
+    "Name_en": "General Practice",
+    "SubSpecialties": [
+      {
+        "Name_ar": "طب الأسرة",
+        "Name_en": "Family Medicine"
+      },
+      {
+        "Name_ar": "طب الطوارئ",
+        "Name_en": "Emergency Medicine"
+      }
+    ]
+  },
+  {
+    "Name_ar": "نطق وتخاطب",
+    "Name_en": "Phoniatrics (Speech)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "علاج اضطرابات النطق",
+        "Name_en": "Speech Disorder Therapy"
+      },
+      {
+        "Name_ar": "علاج اضطرابات الصوت",
+        "Name_en": "Voice Disorder Therapy"
+      }
+    ]
+  },
+  {
+    "Name_ar": "عيون",
+    "Name_en": "Ophthalmology (Eyes)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "جراحة العيون التجميلية",
+        "Name_en": "Oculoplastic Surgery"
+      },
+      {
+        "Name_ar": "أمراض الشبكية",
+        "Name_en": "Retinal Diseases"
+      }
+    ]
+  },
+  {
+    "Name_ar": "كبد",
+    "Name_en": "Hepatology (Liver Doctor)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الكبد الفيروسية",
+        "Name_en": "Viral Liver Diseases"
+      },
+      {
+        "Name_ar": "أمراض الكبد الدهنية",
+        "Name_en": "Fatty Liver Diseases"
+      }
+    ]
+  },
+  {
+    "Name_ar": "كلى",
+    "Name_en": "Nephrology",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أمراض الكلى المزمنة",
+        "Name_en": "Chronic Kidney Diseases"
+      },
+      {
+        "Name_ar": "غسيل الكلى",
+        "Name_en": "Dialysis"
+      }
+    ]
+  },
+  {
+    "Name_ar": "مراكز أشعة",
+    "Name_en": "Diagnostic Radiology (Scan Centers)",
+    "SubSpecialties": [
+      {
+        "Name_ar": "أشعة الرنين المغناطيسي",
+        "Name_en": "MRI Imaging"
+      },
+      {
+        "Name_ar": "أشعة مقطعية",
+        "Name_en": "CT Scan"
+      }
     ]
   }
 ]
-  

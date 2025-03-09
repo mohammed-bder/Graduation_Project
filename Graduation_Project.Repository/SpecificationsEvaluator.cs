@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Core.Models;
 using Graduation_Project.Core.Specifications;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace Graduation_Project.Repository
             query = spec.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
 
             query = spec.ThenIncludes.Aggregate(query, (currentQuery, includeExpression) => includeExpression(currentQuery));
+
 
             return query;
         }

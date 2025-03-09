@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
@@ -8,6 +9,7 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Core.Specifications.PrescriptionSpecifications;
 using Microsoft.AspNetCore.Authorization;
@@ -233,5 +235,8 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionEditFormDto>>(prescriptionsFromDB));
         }
+
+
+
     }
 }

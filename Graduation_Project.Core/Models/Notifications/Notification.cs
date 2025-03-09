@@ -2,13 +2,8 @@
 {
     public class Notification : BaseEntity
     {
-        [Required]
+        public string Title { get; set; } // Type of the notification (e.g., "Appointment", "Reminder")
         public string Message { get; set; } // The notification message content
-
-        [Required]
-        public string Type { get; set; } // Type of the notification (e.g., "Appointment", "Reminder")
-
-        [Required]
         public DateTime CreatedDate { get; set; } // The date and time the notification was created
 
         //================================Relations==========================
