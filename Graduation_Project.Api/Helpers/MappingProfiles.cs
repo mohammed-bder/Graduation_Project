@@ -86,12 +86,9 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Education, DoctorAboutDto>();
 
-            /****************************************** Mapping for Medicl Category ******************************************/
-            CreateMap<MedicalCategory, MedicalCategoryDto>();
-
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
-                .ForMember(dest => dest.MedicalCategory, opt => opt.MapFrom(src => src.MedicalCategory.Name))
+                .ForMember(dest => dest.MedicalCategory, opt => opt.MapFrom(src => src.MedicalCategory.Name_ar))
                 .ForMember(dest => dest.MedicalImage, opt => opt.MapFrom<MedicalHistoryPictureUrlResolver>());
 
             CreateMap<MedicalHistoryFormDto, MedicalHistory>();
