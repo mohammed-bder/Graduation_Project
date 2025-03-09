@@ -103,6 +103,9 @@ namespace Graduation_Project.APIs.Helpers
             /****************************************** Mapping for Feedback ******************************************/
             CreateMap<FeedbackDto, Feedback>();
             CreateMap<Feedback, FeedbackInfoDto>();
+            CreateMap<Feedback, FeedbackWithIdToReturnDto>();
+
+
 
             CreateMap<Feedback, FeedbackToReturnDto>()
                     .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>

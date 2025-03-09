@@ -26,6 +26,6 @@
 
 
         // 1-M relationship (Pharmacist <=> NotificationRecipients)
-        public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
+        //public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
     }
 }

@@ -25,7 +25,7 @@
         public string? Description { get; set; }
 
         [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
-        public double? Rating { get; set; }
+        public double? Rating { get; set; } = 0.0;
 
 
         [Required(ErrorMessage = "Consultation fees are required.")]
@@ -47,7 +47,7 @@
         public Specialty? Specialty { get; set; } 
 
         // (1 Doctor ==> M NotificationRecipient)
-        public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
+        //public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
 
         // (1 Doctor ==> M TherapySession)
         public ICollection<TherapySession> TherapySessions { get; set; }

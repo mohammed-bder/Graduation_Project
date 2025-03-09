@@ -2,8 +2,11 @@ using Graduation_Project.Api.Extensions;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Api.Middlewares;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;
 using Graduation_Project.Repository.Identity;
+using Graduation_Project.Service;
+using Graduation_Project.Service.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +21,19 @@ namespace Graduation_Project.Api
             var builder = WebApplication.CreateBuilder(args);
 
             #region Configure Service
-            // Add services to the container.
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials()
+                           .SetIsOriginAllowed(origin => true);
+                });
+            });
+
+            // Add services to the container.
             builder.Services.AddControllers();
 
             /****************************** Add Swagger Services********************************/
@@ -50,10 +64,14 @@ namespace Graduation_Project.Api
 
 
             builder.Services.AddScoped(typeof(ExistingIdFilter<>));
+            //builder.Services.AddScoped<INotificationService, NotificationService>();
+
             /****************************** Add Application Services ********************************/
             builder.Services.AddApplicationServices();
 
             builder.Services.AddIdentityServices(builder.Configuration);
+
+            builder.Services.AddSignalR();
 
             #endregion
 
@@ -117,6 +135,9 @@ namespace Graduation_Project.Api
 
             app.MapControllers();
 
+            app.MapHub<NotificationHub>("/Hubs/NotificationHub"); // Correct SignalR mapping
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();

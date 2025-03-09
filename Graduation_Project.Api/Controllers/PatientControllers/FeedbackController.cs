@@ -1,11 +1,17 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
+using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.FeedBackSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
+using Graduation_Project.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +108,46 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
             }
             return Ok(_mapper.Map<Feedback, FeedbackInfoDto>(feedback));
+        }
+
+        /****************************************** Get Current Patient Feedbacks With Specific Doctor ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("Get-Feedbacks-with-Specific-Doctor/{Id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
+        public async Task<ActionResult<IReadOnlyList<FeedbackWithIdToReturnDto>>> GetCurrentPatientReviews(int Id)
+        {
+            // Get Id From Token Claims
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+            // specs to get the Feedbacks where (docId , patientId)
+            var spec = new FeedBacksBetweenPatientAndDoctorSpecs(Id,patientId);
+            var feedbacks = await _unitOfWork.Repository<Feedback>().GetAllWithSpecAsync(spec);
+            if (feedbacks is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "FeedBacks Not Found"));
+
+            return Ok(_mapper.Map<IEnumerable<Feedback>, IReadOnlyList<FeedbackWithIdToReturnDto>>(feedbacks));
+        }
+
+        /****************************************** Get All Reviews ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetReviews/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
+        public async Task<ActionResult<IReadOnlyList<FeedbackToReturnDto>>> GetDoctorReviews(int id)
+        {
+            //Handle Specs for reviews 
+            var specs = new FeedBackSpecs(id);
+
+            //Fetch reviews of doctor & check if exist or not
+            var reviews = await _unitOfWork.Repository<Feedback>().GetAllWithSpecAsync(specs);
+            if (reviews is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            // mapping
+            var feedbacksToReturnDto = new List<FeedbackToReturnDto>();
+            // mapping to dto (FeedBack Attributes only) 
+            feedbacksToReturnDto = _mapper.Map(reviews, feedbacksToReturnDto);
+
+            return Ok(feedbacksToReturnDto);
         }
 
         /****************************************** Delete Feedback ******************************************/

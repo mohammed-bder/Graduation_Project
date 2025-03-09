@@ -4,16 +4,19 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Graduation_Project.Repository.Data.Migrations
+namespace Graduation_Project.Repository.Data.Migratoins
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306133325_handleNotification")]
+    partial class handleNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -483,13 +486,25 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PharmacistId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RecipientType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SecretaryId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -497,7 +512,15 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DoctorId");
+
                     b.HasIndex("NotificationId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PharmacistId");
+
+                    b.HasIndex("SecretaryId");
 
                     b.ToTable("notificationRecipients");
                 });
@@ -1177,11 +1200,27 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Notifications.NotificationRecipient", b =>
                 {
+                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("DoctorId");
+
                     b.HasOne("Graduation_Project.Core.Models.Notifications.Notification", "Notification")
                         .WithMany("Recipients")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Patients.Patient", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("PatientId");
+
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacist", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("PharmacistId");
+
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", null)
+                        .WithMany("notificationRecipients")
+                        .HasForeignKey("SecretaryId");
 
                     b.Navigation("Notification");
                 });
@@ -1406,6 +1445,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("clincSecretarys");
 
                     b.Navigation("doctors");
+
+                    b.Navigation("notificationRecipients");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>
@@ -1423,6 +1464,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("NotificationRecipients");
 
                     b.Navigation("Prescriptions");
 
@@ -1465,6 +1508,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("MedicalHistories");
 
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("PharmacyOrder");
 
                     b.Navigation("Prescriptions");
@@ -1483,6 +1528,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
                 {
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("Pharmacies");
                 });
 

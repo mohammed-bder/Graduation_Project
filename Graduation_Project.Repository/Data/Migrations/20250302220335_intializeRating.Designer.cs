@@ -4,16 +4,19 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Graduation_Project.Repository.Data.Migrations
+namespace Graduation_Project.Repository.Data.Migratoins
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250302220335_intializeRating")]
+    partial class intializeRating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -466,7 +469,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -483,6 +486,9 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
@@ -490,14 +496,29 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("RecipientType")
+                        .HasMaxLength(50)
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("patientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("pharmacistId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("secretaryId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DoctorId");
+
                     b.HasIndex("NotificationId");
+
+                    b.HasIndex("patientId");
+
+                    b.HasIndex("pharmacistId");
+
+                    b.HasIndex("secretaryId");
 
                     b.ToTable("notificationRecipients");
                 });
@@ -1177,13 +1198,45 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Notifications.NotificationRecipient", b =>
                 {
+                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Graduation_Project.Core.Models.Notifications.Notification", "Notification")
                         .WithMany("Recipients")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Graduation_Project.Core.Models.Patients.Patient", "patient")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("patientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacist", "pharmacist")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("pharmacistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", "secretary")
+                        .WithMany("notificationRecipients")
+                        .HasForeignKey("secretaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
                     b.Navigation("Notification");
+
+                    b.Navigation("patient");
+
+                    b.Navigation("pharmacist");
+
+                    b.Navigation("secretary");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.AI_QuickDiagnosis", b =>
@@ -1406,6 +1459,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("clincSecretarys");
 
                     b.Navigation("doctors");
+
+                    b.Navigation("notificationRecipients");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>
@@ -1423,6 +1478,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("NotificationRecipients");
 
                     b.Navigation("Prescriptions");
 
@@ -1465,6 +1522,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("MedicalHistories");
 
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("PharmacyOrder");
 
                     b.Navigation("Prescriptions");
@@ -1483,6 +1542,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
                 {
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("Pharmacies");
                 });
 

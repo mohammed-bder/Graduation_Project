@@ -1,14 +1,18 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
+using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Doctors;
+using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Graduation_Project.Api.Controllers.PatientControllers
@@ -102,5 +106,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             }
             return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
         }
+
+        
     }
 }
