@@ -31,9 +31,13 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (doctor == null)
                 return NotFound(new ApiResponse(404, "Doctor not found"));
 
+            // Fetch existing exceptions for this doctor
+            //var existingExceptions = await _unitOfWork.Repository<ScheduleException>()
+            //    .GetAllWithSpecAsync(new ScheduleExceptionSpecifications(request.DoctorId));
+
             // Check if the new schedule overlaps with an existing one
             bool isOverlapping = await _scheduleService
-                .IsScheduleOverlappingAsync(workScheduleFromUser.doctorId, workScheduleFromUser.Day,
+                .IsScheduleOverlappingAsync(doctor.Id, workScheduleFromUser.Day,
                                             workScheduleFromUser.StartTime, workScheduleFromUser.EndTime);
 
             if (isOverlapping)
