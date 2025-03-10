@@ -29,8 +29,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     public class DoctorController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IUserService userService;
+        //private readonly IUnitOfWork unitOfWork;
+        //private readonly IUserService userService;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -40,8 +40,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                                 , IMapper mapper)
         {
             _userManager = userManager;
-            this.unitOfWork = unitOfWork;
-            this.userService = userService;
+            //this.unitOfWork = unitOfWork;
+            //this.userService = userService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }

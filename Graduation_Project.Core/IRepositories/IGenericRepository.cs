@@ -10,6 +10,7 @@ namespace Graduation_Project.Core.IRepositories
         public  Task<T> AddWithSaveAsync(T entity);
         public void Update(T entity);
         public void Delete(T entity);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         public Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs);
         public Task<T?> GetWithSpecsAsync(ISpecifications<T> specs);
         public Task<IReadOnlyList<TResult>> GetAllWithSpecAsync<TResult>(ISpecifications<T> spec, Expression<Func<T, TResult>> selector);

@@ -142,6 +142,7 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Prescription, PrescriptionEditFormDto>()
                 .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
 
+            // ========================================== Medicine ==========================================
             CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
             .ForMember(dest => dest.PrescriptionId, opt => opt.Ignore()) // Ignore PrescriptionId
             .ForMember(dest => dest.Prescription, opt => opt.Ignore())   // Ignore Prescription
@@ -149,7 +150,9 @@ namespace Graduation_Project.APIs.Helpers
             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
             .ReverseMap();
 
-
+            // ========================================== WorkSchedule ==========================================
+            CreateMap<WorkScheduleFromUserDto, WorkSchedule>();
+            CreateMap<WorkSchedule, WorkScheduleFromDatabaseDto>();
 
 
         }
