@@ -11,12 +11,6 @@ namespace Graduation_Project.Core.Specifications.MedicineSpecifications
     {
         public MedicineSpec(string? name,int take) : base(m => m.Name_en.ToLower().StartsWith(name))
         {
-            Selector = m => new 
-            {
-                m.Id,
-                m.Name_en
-            };
-
             ApplyPagination(0, take);
         }
     }

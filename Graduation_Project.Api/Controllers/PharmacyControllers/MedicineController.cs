@@ -26,7 +26,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             // Get Matched medicines
             var spec = new MedicineSpec(name, count);
             var matchedMedicines =
-                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec, spec.Selector) as IReadOnlyList<MedicinesForSearchResultDto>;
+                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec,m => new MedicinesForSearchResultDto {Id = m.Id, Name =m.Name_en });
 
             if (matchedMedicines.IsNullOrEmpty())
                 return NotFound(new ApiResponse(404));

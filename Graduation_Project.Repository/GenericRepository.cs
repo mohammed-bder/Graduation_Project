@@ -77,6 +77,15 @@ namespace Graduation_Project.Repository
 
         }
 
+        public void Detach(T entity)
+        {
+            var entry = dbContext.Entry(entity);
+            if (entry != null)
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
+
         public async Task SaveAsync()
         {
             await dbContext.SaveChangesAsync();

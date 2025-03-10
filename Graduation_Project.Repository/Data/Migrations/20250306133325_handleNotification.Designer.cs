@@ -4,16 +4,19 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Graduation_Project.Repository.Data.Migrations
+namespace Graduation_Project.Repository.Data.Migratoins
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306133325_handleNotification")]
+    partial class handleNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,22 +250,11 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PolicyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RescheduleCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
 
                     b.HasIndex("PatientId");
-
-                    b.HasIndex("PolicyId");
 
                     b.ToTable("Appointment");
                 });
@@ -274,9 +266,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ActivePolicyId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
@@ -325,114 +314,16 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int?>("SecretaryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SlotDurationMinutes")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SpecialtyId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActivePolicyId");
 
                     b.HasIndex("SecretaryId");
 
                     b.HasIndex("SpecialtyId");
 
                     b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorPolicy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AllowFullRefund")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowLastMinuteBooking")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowLateCancellationReschedule")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowMultipleBookingsPerDay")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowPartialRefund")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowPatientCancellation")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowRescheduling")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MaxBookingsPerPatientPerDay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxRescheduleAttempts")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinBookingAdvanceHours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinCancellationHours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinRescheduleHours")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PartialRefundPercentage")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<bool>("RequirePrePayment")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("UnpaidReservationTimeoutMinutes")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("DoctorPolicies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AllowFullRefund = true,
-                            AllowLastMinuteBooking = true,
-                            AllowLateCancellationReschedule = true,
-                            AllowMultipleBookingsPerDay = false,
-                            AllowPartialRefund = true,
-                            AllowPatientCancellation = true,
-                            AllowRescheduling = true,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsDefault = true,
-                            MaxBookingsPerPatientPerDay = 1,
-                            MaxRescheduleAttempts = 1,
-                            MinBookingAdvanceHours = 2,
-                            MinCancellationHours = 24,
-                            MinRescheduleHours = 12,
-                            PartialRefundPercentage = 50m,
-                            RequirePrePayment = true,
-                            UnpaidReservationTimeoutMinutes = 30
-                        });
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorSubspeciality", b =>
@@ -485,36 +376,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Educations");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.ScheduleException", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly?>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<TimeOnly?>("StartTime")
-                        .HasColumnType("time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("scheduleExceptions");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Specialty", b =>
@@ -625,13 +486,25 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PharmacistId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RecipientType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SecretaryId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -639,7 +512,15 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DoctorId");
+
                     b.HasIndex("NotificationId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PharmacistId");
+
+                    b.HasIndex("SecretaryId");
 
                     b.ToTable("notificationRecipients");
                 });
@@ -682,13 +563,10 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -1241,34 +1119,22 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Graduation_Project.Core.Models.Patients.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Graduation_Project.Core.Models.Doctors.DoctorPolicy", "Policy")
-                        .WithMany()
-                        .HasForeignKey("PolicyId")
-                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-
-                    b.Navigation("Policy");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>
                 {
-                    b.HasOne("Graduation_Project.Core.Models.Doctors.DoctorPolicy", "ActivePolicy")
-                        .WithMany()
-                        .HasForeignKey("ActivePolicyId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", null)
                         .WithMany("doctors")
                         .HasForeignKey("SecretaryId");
@@ -1277,19 +1143,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .WithMany("Doctors")
                         .HasForeignKey("SpecialtyId");
 
-                    b.Navigation("ActivePolicy");
-
                     b.Navigation("Specialty");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorPolicy", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
-                        .WithMany("Policies")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.DoctorSubspeciality", b =>
@@ -1322,17 +1176,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Doctor");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.ScheduleException", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
-                        .WithMany("ScheduleExceptions")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-                });
-
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.SubSpecialities", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Doctors.Specialty", "Specialty")
@@ -1357,11 +1200,27 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Notifications.NotificationRecipient", b =>
                 {
+                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("DoctorId");
+
                     b.HasOne("Graduation_Project.Core.Models.Notifications.Notification", "Notification")
                         .WithMany("Recipients")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Patients.Patient", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("PatientId");
+
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacist", null)
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("PharmacistId");
+
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", null)
+                        .WithMany("notificationRecipients")
+                        .HasForeignKey("SecretaryId");
 
                     b.Navigation("Notification");
                 });
@@ -1586,6 +1445,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("clincSecretarys");
 
                     b.Navigation("doctors");
+
+                    b.Navigation("notificationRecipients");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>
@@ -1606,11 +1467,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("NotificationRecipients");
 
-                    b.Navigation("Policies");
-
                     b.Navigation("Prescriptions");
-
-                    b.Navigation("ScheduleExceptions");
 
                     b.Navigation("TherapySessions");
 
@@ -1651,6 +1508,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("MedicalHistories");
 
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("PharmacyOrder");
 
                     b.Navigation("Prescriptions");
@@ -1669,6 +1528,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
                 {
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("Pharmacies");
                 });
 

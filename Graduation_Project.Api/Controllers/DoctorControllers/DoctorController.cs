@@ -108,6 +108,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
+        //**************************************************** Doctor From Patient ****************************************************//
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetDetailsDuringAppointment/{id:int}")]
@@ -160,12 +161,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (doctorFromDb == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
+            if (doctorFromDb.Clinic == null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound,"Doctor clinic not found"));
             // Map To DoctorAboutDto
             var doctorAboutDto = new DoctorAboutDto();
 
             // Assign Doctor Info (Description & Subspeciality)
             doctorAboutDto.Description = doctorFromDb.Description;
-            doctorAboutDto.DoctorSubspeciality = doctorFromDb.DoctorSubspeciality.Select(d => d.SubSpecialities.Name_ar).ToList();
+            doctorAboutDto.DoctorSubspeciality = doctorFromDb.DoctorSubspeciality.Select(d => d.SubSpecialities.Name_en).ToList();
 
             // Assign Doctor Education
             doctorAboutDto = _mapper.Map(doctorFromDb.Education, doctorAboutDto);
@@ -178,31 +181,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.LocationLink = doctorFromDb.Clinic.LocationLink;
             doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
 
-
             return Ok(doctorAboutDto);
         }
 
 
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("GetReviews/{id:int}")]
-        [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
-        public async Task<ActionResult<IReadOnlyList<FeedbackToReturnDto>>> GetDoctorReviews(int id)
-        {
-            //Handle Specs for reviews 
-            var specs = new FeedBackSpecs(id);
-
-            //Fetch reviews of doctor & check if exist or not
-            var reviews = await unitOfWork.Repository<Feedback>().GetAllWithSpecAsync(specs);
-            if (reviews is null)
-                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
-
-            // mapping
-            var feedbacksToReturnDto = new List<FeedbackToReturnDto>();
-            // mapping to dto (FeedBack Attributes only) 
-            feedbacksToReturnDto = _mapper.Map(reviews, feedbacksToReturnDto);
-            
-            return Ok(feedbacksToReturnDto);
-        }
+        
     }
 
 }

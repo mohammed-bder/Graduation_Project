@@ -19,13 +19,14 @@
         //[NotMapped]
         //public IFormFile? MedicalLicenseFile { get; set; }
 
+        public int SlotDurationMinutes { get; set; } = 20;     // default is 20 min
 
 
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string? Description { get; set; }
 
         [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
-        public double? Rating { get; set; }
+        public double? Rating { get; set; } = 0.0;
 
 
         [Required(ErrorMessage = "Consultation fees are required.")]
@@ -47,7 +48,7 @@
         public Specialty? Specialty { get; set; } 
 
         // (1 Doctor ==> M NotificationRecipient)
-        public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
+        //public ICollection<NotificationRecipient> NotificationRecipients { get; set; }
 
         // (1 Doctor ==> M TherapySession)
         public ICollection<TherapySession> TherapySessions { get; set; }
@@ -69,10 +70,12 @@
 
         // (1 Doctor ==> M Prescription)
         public ICollection<Prescription> Prescriptions { get; set; }
-
         public ICollection<WorkSchedule> WorkSchedules { get; set; }
-
-
+        public ICollection<ScheduleException> ScheduleExceptions { get; set; }
+                                                                 // Nullable - Doctor may not have an active policy initially
+        public int? ActivePolicyId { get; set; }
+        public DoctorPolicy ActivePolicy { get; set; } // Navigation property
+        public ICollection<DoctorPolicy> Policies { get; set; }  // Navigation property for the relationship
     }
 
 }

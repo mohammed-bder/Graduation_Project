@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ActiveDebugProfile>http</ActiveDebugProfile>
+    <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
+    <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
+<<<<<<< HEAD
+    <NameOfLastUsedPublishProfile>D:\4th Computer\GraduationProject\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy2.pubxml</NameOfLastUsedPublishProfile>
+=======
+    <NameOfLastUsedPublishProfile>E:\.NET Web Developer\Graduation Project\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy2.pubxml</NameOfLastUsedPublishProfile>
+>>>>>>> 535d62f898c3a7e571bd440b5fbb01ccdeb12cd1
+  </PropertyGroup>
+</Project>

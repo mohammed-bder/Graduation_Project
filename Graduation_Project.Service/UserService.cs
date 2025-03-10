@@ -1,5 +1,11 @@
-﻿using Graduation_Project.Core.IServices;
+﻿using Graduation_Project.Core;
+using Graduation_Project.Core.Enums;
+using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
+using Graduation_Project.Core.Models.Patients;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,12 +22,38 @@ namespace Graduation_Project.Service
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(UserManager<AppUser> userManager , IHttpContextAccessor httpContextAccessor)
+        public UserService(UserManager<AppUser> userManager , IHttpContextAccessor httpContextAccessor,IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _unitOfWork = unitOfWork;
         }
+
+        public async Task<object> GetCurrentBusinessUserAsync(string userId, UserRoleType userRole)
+        {
+            // switch on the role 
+            switch (userRole) 
+            {
+                // get the doctor or patient from business DB
+                case UserRoleType.Doctor:
+                    var doctorSpec = new DoctorWithSpecialitySpecs(userId);
+                    var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpec);
+                    return doctor;
+
+                case UserRoleType.Patient:
+                    var patientSpec = new PatientForProfileSpecs(userId);
+                    var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpec);
+                    return patient;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
         public async Task<AppUser> GetCurrentUserAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);

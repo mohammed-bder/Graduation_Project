@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250309220045_Edit Appointment Logic")]
+    partial class EditAppointmentLogic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,11 +108,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -126,11 +125,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -525,13 +520,10 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -546,13 +538,10 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("SpecialtyId")
                         .HasColumnType("int");
@@ -608,7 +597,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -625,6 +614,9 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
@@ -632,14 +624,29 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("RecipientType")
+                        .HasMaxLength(50)
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("patientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("pharmacistId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("secretaryId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DoctorId");
+
                     b.HasIndex("NotificationId");
+
+                    b.HasIndex("patientId");
+
+                    b.HasIndex("pharmacistId");
+
+                    b.HasIndex("secretaryId");
 
                     b.ToTable("notificationRecipients");
                 });
@@ -682,13 +689,10 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name_ar")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -818,27 +822,27 @@ namespace Graduation_Project.Repository.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ActiveSubstance")
-                        .HasMaxLength(600)
-                        .HasColumnType("nvarchar(600)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("DosageForm")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Name_ar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_en")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Route")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1357,13 +1361,45 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Notifications.NotificationRecipient", b =>
                 {
+                    b.HasOne("Graduation_Project.Core.Models.Doctors.Doctor", "Doctor")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Graduation_Project.Core.Models.Notifications.Notification", "Notification")
                         .WithMany("Recipients")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Graduation_Project.Core.Models.Patients.Patient", "patient")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("patientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacist", "pharmacist")
+                        .WithMany("NotificationRecipients")
+                        .HasForeignKey("pharmacistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", "secretary")
+                        .WithMany("notificationRecipients")
+                        .HasForeignKey("secretaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
                     b.Navigation("Notification");
+
+                    b.Navigation("patient");
+
+                    b.Navigation("pharmacist");
+
+                    b.Navigation("secretary");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.AI_QuickDiagnosis", b =>
@@ -1586,6 +1622,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("clincSecretarys");
 
                     b.Navigation("doctors");
+
+                    b.Navigation("notificationRecipients");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>
@@ -1651,6 +1689,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.Navigation("MedicalHistories");
 
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("PharmacyOrder");
 
                     b.Navigation("Prescriptions");
@@ -1669,6 +1709,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
                 {
+                    b.Navigation("NotificationRecipients");
+
                     b.Navigation("Pharmacies");
                 });
 

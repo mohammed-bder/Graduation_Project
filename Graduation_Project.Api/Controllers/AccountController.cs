@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
 using Talabat.API.Dtos.Account;
 
@@ -24,6 +25,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IGenericRepository<Patient> _patientRepo;
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
+        private readonly IUserService _userService;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -33,12 +35,14 @@ namespace Graduation_Project.Api.Controllers
            
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
             _logger = logger;
+            _userService = userService;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -48,7 +52,7 @@ namespace Graduation_Project.Api.Controllers
 
         // login End Point
         [HttpPost("login")] // POST: api/account/login
-        public async Task<ActionResult<UserDTO>> Login(LoginDTO model)
+        public async Task<ActionResult<object>> Login(LoginDTO model)
         {
             // 1. check if email is founded
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -63,15 +67,38 @@ namespace Graduation_Project.Api.Controllers
 
             var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-            var userDto = new UserDTO()
-            {
-                FullName = user.FullName,
-                Email = user.Email,
-                Token = await _authServices.CreateTokenAsync(user, _userManager),
-                Role = role
-            };
+            // service get the current (Patient or Doctor) (user.id, role)
+            var BusinessUser = await _userService.GetCurrentBusinessUserAsync(user.Id, (UserRoleType)Enum.Parse(typeof(UserRoleType),role));
 
-            return Ok(userDto);
+            if(BusinessUser is Doctor doctor)
+            {
+                var doctorDto = new DoctorDto()
+                {
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Role = role,
+                    Speciality = doctor.Specialty.Name_ar,
+                    Description = doctor.Description,
+                    PictureUrl = doctor.PictureUrl
+                };
+                return Ok(doctorDto);
+            }
+            else if (BusinessUser is Patient patient)
+            {
+                var patientDto = new PatientDto()
+                {
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Role = role,
+                    PictureUrl = patient.PictureUrl
+                };
+                return Ok(patientDto);
+            }
+
+
+            return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest));
         }
 
 

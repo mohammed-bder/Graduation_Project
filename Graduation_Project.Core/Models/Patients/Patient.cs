@@ -9,7 +9,7 @@
         public ICollection<MedicalHistory>? MedicalHistories { get; set; }
         public ICollection<AI_QuickDiagnosis>? AIQuickDiagnosis { get; set; }
         public ICollection<PharmacyOrder>? PharmacyOrder { get; set; }
-        public ICollection<NotificationRecipient>? NotificationRecipients { get; set; }
+        //public ICollection<NotificationRecipient>? NotificationRecipients { get; set; }
         public ICollection<TherapySession>? TherapySessions { get; set; }
         public ICollection<Favorite>? Favorites { get; set; }
         public ICollection<Feedback>? Feedbacks { get; set; }

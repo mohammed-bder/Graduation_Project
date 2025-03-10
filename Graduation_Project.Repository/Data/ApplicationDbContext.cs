@@ -15,6 +15,8 @@
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<WorkSchedule> WorkSchedule { get; set; }
+        public DbSet<ScheduleException> scheduleExceptions { get; set; }
+        public DbSet<DoctorPolicy> DoctorPolicies { get; set; }
         //public DbSet<DoctorClinic> DoctorClinics { get; set; }
         public DbSet<DoctorSubspeciality> DoctorSubspecialities { get; set; }
         public DbSet<Specialty> Specialties { get; set; }
@@ -96,6 +98,94 @@
             //.HasOne(d => d.ApplicationUser)
             //.WithOne()
             //.HasForeignKey<Secretary>(d => d.UserId);
+
+            //Important Relationship
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.WorkSchedules)
+                .WithOne(ws => ws.Doctor)
+                .HasForeignKey(ws => ws.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.ScheduleExceptions)
+                .WithOne(se => se.Doctor)
+                .HasForeignKey(se => se.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.Appointments)
+                .WithOne(a => a.Doctor)
+                .HasForeignKey(a => a.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Patient>()
+                .HasMany(p => p.Appointments)
+                .WithOne(a => a.Patient)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<DoctorPolicy>()
+                .HasOne(dps => dps.Doctor)
+                .WithMany(d => d.Policies)
+                .HasForeignKey(dps => dps.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DoctorPolicy>()
+                .Property(dp => dp.PartialRefundPercentage)
+                .HasPrecision(5, 2); // Adjust precision & scale as needed
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Policy)
+                .WithMany()
+                .HasForeignKey(a => a.PolicyId)
+                .OnDelete(DeleteBehavior.SetNull); // Prevents cascade delete
+
+            // Doctor-Active Policy Relationship
+            modelBuilder.Entity<Doctor>()
+                .HasOne(d => d.ActivePolicy)
+                .WithMany()
+                .HasForeignKey(d => d.ActivePolicyId)
+                .OnDelete(DeleteBehavior.NoAction); // If policy is deleted, doctor should not break
+
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.Policies)
+                .WithOne(dp => dp.Doctor)
+                .HasForeignKey(dp => dp.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DoctorPolicy>().HasData(
+               new DoctorPolicy
+               {
+                   Id = 1,  // Default policy always has Id = 1
+                   IsDefault = true,
+
+                   // Cancellation Rules
+                   AllowPatientCancellation = true,
+                   MinCancellationHours = 24,
+                   AllowLateCancellationReschedule = true,
+                   MaxRescheduleAttempts = 1,
+
+                   // Rescheduling Rules
+                   AllowRescheduling = true,
+                   MinRescheduleHours = 12,
+
+                   // Refund & Payment Rules
+                   AllowFullRefund = true,
+                   AllowPartialRefund = true,
+                   PartialRefundPercentage = 50,
+                   RequirePrePayment = true,
+                   UnpaidReservationTimeoutMinutes = 30,
+
+                   // Doctor Availability
+                   AllowMultipleBookingsPerDay = false,
+                   MaxBookingsPerPatientPerDay = 1,
+                   AllowLastMinuteBooking = true,
+                   MinBookingAdvanceHours = 2,
+
+                   // Use a static date to avoid model changes on each migration
+                   CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+               }
+            );
 
             base.OnModelCreating(modelBuilder);
         }
