@@ -83,7 +83,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
             //check if the doctor who wrote it is the same person who is editing
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
-            if(prescriptionFromDB.Id != DoctorId)
+            if(prescriptionFromDB.DoctorId != DoctorId)
             {
                 return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Edit this")));
             }
@@ -158,7 +158,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
-            if (prescriptionFromDB.Id != DoctorId)
+            if (prescriptionFromDB.DoctorId != DoctorId)
             {
                 return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Delete this")));
             }

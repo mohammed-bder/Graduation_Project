@@ -16,6 +16,7 @@ namespace Graduation_Project.Api.Extensions
             services.AddScoped(typeof(IUserService), typeof(UserService));
 
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IScheduleService, ScheduleService>();
 
             // add Identity Services configuration (UserManager , SigninManager , RoleManager)
             services.AddIdentity<AppUser, IdentityRole>(options =>

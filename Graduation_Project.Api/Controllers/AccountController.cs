@@ -126,7 +126,7 @@ namespace Graduation_Project.Api.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
 
            await _userManager.AddToRoleAsync(user, UserRoleType.Doctor.ToString());
-            
+           
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(400, "Failed to create user."));
 
@@ -158,7 +158,7 @@ namespace Graduation_Project.Api.Controllers
                 Gender = model.Gender,
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
-                
+                SlotDurationMinutes = 20
             };
 
          

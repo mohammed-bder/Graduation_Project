@@ -23,36 +23,6 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             _governorateRepo = governorateRepo;
             this._mapper = mapper;
         }
-
-
-        // get all Governorate
-        [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<GovernorateDTO>>> GetAll()
-        {
-            var governorates = await _governorateRepo.GetAllAsync();
-
-            if (governorates is null)
-                return BadRequest(new ApiResponse(404, "there is no Governorate"));
-
-            var governoratesDTO = new List<GovernorateDTO>();
-            foreach (var item in governorates)
-            {
-                governoratesDTO.Add(_mapper.Map<Governorate, GovernorateDTO>(item));
-            }
-            return Ok(governoratesDTO);
-        }
-
-        // get  Governorate by id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GovernorateDTO>> GetById(int id)
-        {
-            var governorate = await _governorateRepo.GetAsync(id);
-            if (governorate is null)
-                return BadRequest(new ApiResponse(404, $"there is no governorate with id={id}"));
-
-            return Ok(_mapper.Map<Governorate, GovernorateDTO>(governorate));
-        }
-
         /***************************** End point to get governorate with its Regions *****************************/
         [HttpGet("GovernorateWithRegions")]
         public async Task<ActionResult<IReadOnlyList<GovernorateDTO>>> GetAllGovernorateWithRegions([FromQuery] string? lang = "ar")

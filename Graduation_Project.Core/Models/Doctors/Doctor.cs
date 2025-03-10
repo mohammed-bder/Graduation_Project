@@ -19,6 +19,7 @@
         //[NotMapped]
         //public IFormFile? MedicalLicenseFile { get; set; }
 
+        public int SlotDurationMinutes { get; set; } = 20;     // default is 20 min
 
 
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
@@ -69,10 +70,12 @@
 
         // (1 Doctor ==> M Prescription)
         public ICollection<Prescription> Prescriptions { get; set; }
-
         public ICollection<WorkSchedule> WorkSchedules { get; set; }
-
-
+        public ICollection<ScheduleException> ScheduleExceptions { get; set; }
+                                                                 // Nullable - Doctor may not have an active policy initially
+        public int? ActivePolicyId { get; set; }
+        public DoctorPolicy ActivePolicy { get; set; } // Navigation property
+        public ICollection<DoctorPolicy> Policies { get; set; }  // Navigation property for the relationship
     }
 
 }

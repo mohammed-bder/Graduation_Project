@@ -7,7 +7,7 @@ namespace Graduation_Project.Api.DTO.Doctors
         public int Id { get; set; }      //Doctor: id
         public string FullName { get; set; } 
         public decimal ConsultationFees { get; set; }
-        public string? Specialty { get; set; }
+        public string Specialty { get; set; }
         public string? PictureUrl { get; set; }
         public double? Rating { get; set; }
     }

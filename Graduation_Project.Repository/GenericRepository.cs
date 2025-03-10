@@ -44,7 +44,10 @@ namespace Graduation_Project.Repository
         {
             dbContext.Set<T>().RemoveRange(entities);
         }
-
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await dbContext.Set<T>().AnyAsync(predicate);
+        }
         public async Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs)
         {
             return await ApplyQuery(specs).ToListAsync();
@@ -74,6 +77,15 @@ namespace Graduation_Project.Repository
         {
             return await dbContext.Set<T>().FindAsync(name);
 
+        }
+
+        public void Detach(T entity)
+        {
+            var entry = dbContext.Entry(entity);
+            if (entry != null)
+            {
+                entry.State = EntityState.Detached;
+            }
         }
 
         public async Task SaveAsync()
