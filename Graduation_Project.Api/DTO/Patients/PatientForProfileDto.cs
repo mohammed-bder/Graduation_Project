@@ -21,7 +21,6 @@ namespace Graduation_Project.Api.DTO.Patients
         [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
         public Gender Gender { get; set; }
 
-        [DataType(DataType.Date)]
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
         public DateOnly? DateOfBirth { get; set; }
 

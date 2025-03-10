@@ -6,6 +6,7 @@ using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
+using Microsoft.Extensions.Configuration;
 using System.Globalization;
 namespace Graduation_Project.APIs.Helpers
 {
@@ -14,7 +15,7 @@ namespace Graduation_Project.APIs.Helpers
         public MappingProfiles()
         {
             CreateMap<Person, PersonToReturnDTO>()
-                .ForMember(d => d.PictureUrl, O => O.MapFrom<PersonPictureUrlResolver>());
+                .ForMember(d => d.PictureUrl, O => O.MapFrom<PictureUrlResolver<Person, PersonToReturnDTO>>()); 
 
             //CreateMap<Specialty, SpecialityDTO>();
             //CreateMap<SubSpecialities, SubSpecialityDTO>()
@@ -25,7 +26,8 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Doctor, DoctorForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl,opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorForProfileDto>>());
 
             CreateMap<DoctorForProfileDto, Doctor>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
@@ -42,7 +44,8 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Patient, PatientForProfileDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + " " + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl , opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileDto>>());
                 //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
                 //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
                 //));
@@ -60,11 +63,14 @@ namespace Graduation_Project.APIs.Helpers
                 ));
 
             /****************************************** Mapping for Home ******************************************/
-
             CreateMap<Doctor, SortingDoctorDto>()
-               .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
+                    src.Specialty != null ? src.Specialty.Name_ar : null
+                ))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>());
 
             /****************************************** Mapping for Doctor From Patient ******************************************/
 
@@ -74,7 +80,8 @@ namespace Graduation_Project.APIs.Helpers
                 ))
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
-                ));
+                ))
+               .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorDetailsDto>>());
 
             /****************************************** Mapping for Education& Clinic ******************************************/
             CreateMap<Education, EducationDto>();
@@ -89,7 +96,7 @@ namespace Graduation_Project.APIs.Helpers
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
                 .ForMember(dest => dest.MedicalCategory, opt => opt.MapFrom(src => src.MedicalCategory.Name_ar))
-                .ForMember(dest => dest.MedicalImage, opt => opt.MapFrom<MedicalHistoryPictureUrlResolver>());
+                .ForMember(dest => dest.MedicalImage,  O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryDto>>()); 
 
             CreateMap<MedicalHistoryFormDto, MedicalHistory>();
 
