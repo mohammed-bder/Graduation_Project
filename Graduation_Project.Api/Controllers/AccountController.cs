@@ -92,7 +92,10 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
                     Role = role,
-                    PictureUrl = patient.PictureUrl
+                    PictureUrl = patient.PictureUrl,
+                    BloodType = patient.BloodType,
+                    Points = patient.Points, 
+                    Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null
                 };
                 return Ok(patientDto);
             }

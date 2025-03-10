@@ -11,5 +11,8 @@
         public string Role { get; set; }
 
         public string? PictureUrl { get; set; }
+        public int? Points { get; set; }
+        public BloodType? BloodType { get; set; }
+        public int? Age { get; set; }
     }
 }

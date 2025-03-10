@@ -209,7 +209,9 @@ namespace Graduation_Project.Api.Controllers.Shared
             //Check if the current user is a patient
             if (userRole == nameof(UserRoleType.Patient))
             {
-                var pspec = new PatientForProfileSpecs(currentUser.Id);
+                var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+                var pspec = new PatientForProfileSpecs(patientId);
                 var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(pspec);
                 if (patient is null)
                 {

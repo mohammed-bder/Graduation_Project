@@ -54,14 +54,14 @@ namespace Graduation_Project.Service
             {
                 case nameof(UserRoleType.Doctor):
                     //Get Doctor From Doctor Table in business DB
-                    DoctorForProfileSpecs doctorSpecification = new DoctorForProfileSpecs(user.Id);
+                    var doctorSpecification = new DoctorByAppUserIdSpecs(user.Id);
                     var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
                     authClams.Add(new Claim(Identifiers.DoctorId, doctor.Id.ToString()));
                     break;
 
                 case nameof(UserRoleType.Patient):
                     //Get Patient From Patient Table in business DB
-                    var patientSpecs = new PatientForProfileSpecs(user.Id);
+                    var patientSpecs = new PatientByAppUserIdSpecs(user.Id);
                     var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
                     authClams.Add(new Claim(Identifiers.PatientId, patient.Id.ToString()));
                     break;

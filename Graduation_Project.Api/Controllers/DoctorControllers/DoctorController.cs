@@ -48,12 +48,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("GetProfile")]
-        public async Task<ActionResult<DoctorForProfileDto>> GetDoctorProfile()
+        public async Task<ActionResult<DoctorForProfileToReturnDto>> GetDoctorProfile()
         {
-            // Get Current User
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
-
             // Get Current Doctor Id
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             //Get Doctor From Doctor Table in business DB
@@ -61,15 +57,16 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
+            var email = User.FindFirstValue(ClaimTypes.Email);
             // Map to DoctorForProfileDto
-            var doctorForProfileDto = new DoctorForProfileDto()
+            var doctorForProfileToReturnDto = new DoctorForProfileToReturnDto()
             {
                 Email = email,
             };
 
-            doctorForProfileDto = _mapper.Map(doctor, doctorForProfileDto);
+            doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
 
-            return Ok(doctorForProfileDto);
+            return Ok(doctorForProfileToReturnDto);
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
@@ -78,6 +75,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         {
             // Get Current Doctor Id
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+
             //Get Doctor From Doctor Table in business DB
             var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
             if (doctor == null)

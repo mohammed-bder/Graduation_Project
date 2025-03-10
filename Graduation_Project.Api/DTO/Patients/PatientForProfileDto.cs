@@ -10,10 +10,6 @@ namespace Graduation_Project.Api.DTO.Patients
         [StringLength(maximumLength: 100, MinimumLength = 3, ErrorMessage = "Full Name must be at least 3 characters and at most 100 characters.")]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
-
         [Phone(ErrorMessage = "Invalid phone number format.")]
         public string? PhoneNumber { get; set; }
 
@@ -29,6 +25,6 @@ namespace Graduation_Project.Api.DTO.Patients
         public string? PictureUrl { get; set; }
 
         [ValidEnumValue<BloodType>(ErrorMessage = "Invalid value for BloodTrpe.")]
-        public BloodType? BloodTrpe { get; set; }
+        public BloodType? BloodType { get; set; }
     }
 }

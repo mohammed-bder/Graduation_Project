@@ -27,6 +27,11 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + ' ' + src.LastName
                 ));
 
+            CreateMap<Doctor, DoctorForProfileToReturnDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + ' ' + src.LastName
+                ));
+
             CreateMap<DoctorForProfileDto, Doctor>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
                     src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0]
@@ -47,6 +52,10 @@ namespace Graduation_Project.APIs.Helpers
                 //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
                 //));
 
+            CreateMap<Patient, PatientForProfileToReturnDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + " " + src.LastName
+                ));
 
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>

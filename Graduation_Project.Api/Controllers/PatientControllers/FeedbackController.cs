@@ -36,8 +36,8 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         [HttpPost("add-feedback")]
         public async Task<ActionResult<FeedbackInfoDto>> AddFeedback(FeedbackDto feedbackDto)
         {
-            var currentUser = await _userService.GetCurrentUserAsync();
-            var spec = new PatientForProfileSpecs(currentUser.Id);
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            var spec = new PatientForProfileSpecs(patientId);
 
             var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
 
