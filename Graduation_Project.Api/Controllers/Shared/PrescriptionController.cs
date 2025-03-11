@@ -64,6 +64,15 @@ namespace Graduation_Project.Api.Controllers.Shared
                     }).ToList();
 
                     await _unitOfWork.Repository<MedicinePrescription>().AddRangeAsync(medicinePrescriptions);
+                    var result = await _unitOfWork.CompleteAsync();
+                    if (result == 0)
+                    {
+                        return BadRequest(new ApiResponse(400));
+                    }
+                    else
+                    {
+                        Console.WriteLine("MedicinePrescriptions Added Successfully");
+                    }
                 }
 
                 var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
@@ -93,10 +102,12 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Edit this")));
             }
+            var currentDoctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
+            var currentPatient = await _unitOfWork.Repository<Patient>().GetAsync(prescriptionFromDB.PatientId);
 
             if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
             {
-                throw new InvalidOperationException("❌ You cannot edit this prescription after 24 hour of creation.");
+                return BadRequest(new ApiResponse(400, "You cannot edit this prescription after 24 hour of creation."));
             }
 
             //prescriptionFromUser.PatientId = prescriptionFromDB.Id;
@@ -140,8 +151,9 @@ namespace Graduation_Project.Api.Controllers.Shared
                 {
                     return BadRequest(new ApiResponse(400));
                 }
-
-                return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
+                var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(prescriptionFromDB);
+                return Ok(electornicPrescriptionResponse);
+                //return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
             }
             catch(Exception ex)
             {
