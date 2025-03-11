@@ -262,6 +262,7 @@ namespace Graduation_Project.Api.Controllers
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
                 LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 Gender = model.Gender,
+                Points = 0,
                 ApplicationUserId = registeredPatient.Id
             };
 
