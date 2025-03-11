@@ -153,7 +153,6 @@ namespace Graduation_Project.Api.Controllers.Shared
                 }
                 var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(prescriptionFromDB);
                 return Ok(electornicPrescriptionResponse);
-                //return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
             }
             catch(Exception ex)
             {

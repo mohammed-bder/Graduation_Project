@@ -166,7 +166,7 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Prescription, PrescriptionResponseDTO>()
                 .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.PatientId))
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FirstName + " " + src.Patient.LastName))
-                .ForMember(dest => dest.PatientAge, opt => opt.MapFrom(src => src.Patient.DateOfBirth.HasValue ? (int?)(DateTime.Today.Year - src.Patient.DateOfBirth.Value.Year) : null))
+                .ForMember(dest => dest.PatientAge, opt => opt.MapFrom(src => src.Patient.DateOfBirth.HasValue ? (int?)(DateTime.Now.Year - src.Patient.DateOfBirth.Value.Year) : null))
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor.FirstName + " " + src.Doctor.LastName))
                 .ForMember(dest => dest.IssuedDate , opt => opt.MapFrom(src => src.IssuedDate.ToString("yyyy-MM-dd HH:mm:ss")));
 
