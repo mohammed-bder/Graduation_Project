@@ -2,6 +2,7 @@
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Common;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Specifications.AppointmentSpecs;
@@ -256,8 +257,48 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
         }
 
+        [HttpGet("get-todays-appointment/{doctorId:int}")]
+        public async Task<ActionResult<IReadOnlyList<AppointmentDto>>> GetTodayAppointmentsAsync(int doctorId)
+        {
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
 
+            // Define the query specification for today's appointments
+            var appointmentSpec = new AppointmentsForSearchSpecifications(doctorId, today);
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
+            if (appointments.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404, "No appointments found for this doctor."));
+            }
+
+            // Convert to DTOs for cleaner response
+            //var appointmentDtos = appointments.Select(a => new AppointmentDto
+            //{
+            //    Id = a.Id,
+            //    PatientName = $"{a.Patient.FirstName} {a.Patient.LastName}",
+            //    AppointmentTime = a.AppointmentTime,
+            //    Status = a.Status
+            //}).ToList();
+
+            // Organize data into a structured response
+            var groupedAppointments = appointments
+                .GroupBy(a => a.AppointmentDate) // Group by date
+                .ToDictionary(
+                    g => g.Key.ToString("yyyy-MM-dd"), // Convert DateOnly to string for JSON keys
+                    g => g.ToDictionary(
+                        a => a.AppointmentTime.ToString("HH:mm:ss"), // Time as JSON key
+                        a => new
+                        {
+                            a.Id,
+                            a.PatientId,
+                            PatientName = $"{a.Patient.FirstName} {a.Patient.LastName}", // Assuming Patient navigation property is included
+                            a.Status // Convert status to string
+                        }
+                    )
+                );
+
+            return Ok(groupedAppointments);
+        }
     }
 
 }

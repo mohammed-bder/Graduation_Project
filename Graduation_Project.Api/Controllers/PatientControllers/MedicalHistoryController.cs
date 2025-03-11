@@ -2,6 +2,7 @@
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
@@ -62,9 +63,9 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         [HttpGet("GetAllHistoryAndCategories")]
         public async Task<ActionResult<IReadOnlyList<MedicalHistoryDto>>> GetAllHistoryAndCategories()
         {
-            var currentUser = await _userService.GetCurrentUserAsync();
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            var spec = new PatientForProfileSpecs(currentUser.Id);
+            var spec = new PatientForProfileSpecs(patientId);
             var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
 
             if (patient is null)
@@ -83,9 +84,9 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         [HttpPost("MedicalHistory")]
         public async Task<ActionResult<MedicalHistoryFormDto>> AddMedicalHistory(MedicalHistoryFormDto model)
         {
-            var currentUser = await _userService.GetCurrentUserAsync();
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            var spec = new PatientForProfileSpecs(currentUser.Id);
+            var spec = new PatientForProfileSpecs(patientId);
             var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
 
             if (patient is null)

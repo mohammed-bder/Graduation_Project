@@ -5,6 +5,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
+<<<<<<< HEAD
     <NameOfLastUsedPublishProfile>E:\.NET Web Developer\Graduation Project\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+=======
+<<<<<<< HEAD
+    <NameOfLastUsedPublishProfile>D:\4th Computer\GraduationProject\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+=======
+    <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
+    <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
+>>>>>>> b6b3ecd269cb955da3f31e3bed492e8c0a385d20
+>>>>>>> 8ee6366f7d4595b6ac1df8f47e115256db843ca3
   </PropertyGroup>
 </Project>

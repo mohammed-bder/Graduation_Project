@@ -68,6 +68,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             {
                 AddOrderByDescending(p => p.Rating);
             }
+
             Includes.Add(d => d.Specialty);
             ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
         }

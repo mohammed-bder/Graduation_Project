@@ -38,12 +38,12 @@ namespace Graduation_Project.Service
             {
                 // get the doctor or patient from business DB
                 case UserRoleType.Doctor:
-                    var doctorSpec = new DoctorWithSpecialitySpecs(userId);
+                    var doctorSpec = new DoctorByAppUserIdSpecs(userId);
                     var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpec);
                     return doctor;
 
                 case UserRoleType.Patient:
-                    var patientSpec = new PatientForProfileSpecs(userId);
+                    var patientSpec = new PatientByAppUserIdSpecs(userId);
                     var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpec);
                     return patient;
 

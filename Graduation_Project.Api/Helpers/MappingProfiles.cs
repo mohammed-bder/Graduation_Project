@@ -29,6 +29,11 @@ namespace Graduation_Project.APIs.Helpers
                 ))
                 .ForMember(dest => dest.PictureUrl,opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorForProfileDto>>());
 
+            CreateMap<Doctor, DoctorForProfileToReturnDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + ' ' + src.LastName
+                ));
+
             CreateMap<DoctorForProfileDto, Doctor>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
                     src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0]
@@ -50,6 +55,10 @@ namespace Graduation_Project.APIs.Helpers
                 //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
                 //));
 
+            CreateMap<Patient, PatientForProfileToReturnDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    src.FirstName + " " + src.LastName
+                ));
 
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
@@ -145,6 +154,7 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Prescription, PrescriptionEditFormDto>()
                 .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
 
+            // ========================================== Medicine ==========================================
             CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
             .ForMember(dest => dest.PrescriptionId, opt => opt.Ignore()) // Ignore PrescriptionId
             .ForMember(dest => dest.Prescription, opt => opt.Ignore())   // Ignore Prescription
@@ -164,6 +174,12 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<MedicinePrescription, MedicinePrescriptionResponseDTO>()
              .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
              .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
+
+            // ========================================== WorkSchedule ==========================================
+            CreateMap<WorkScheduleFromUserDto, WorkSchedule>();
+            CreateMap<WorkSchedule, WorkScheduleFromDatabaseDto>();
+
+
         }
     }
 }
