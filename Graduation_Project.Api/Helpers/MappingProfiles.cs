@@ -151,10 +151,6 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Region, RegionDTO>();
 
             // ========================================== Prescription ==========================================
-            CreateMap<PrescriptionFromUserDto, Prescription>()
-                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions))
-                .ReverseMap();
-
             CreateMap<Prescription, PrescriptionEditFormDto>()
                 .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
 
@@ -165,6 +161,19 @@ namespace Graduation_Project.APIs.Helpers
             .ForMember(dest => dest.Medicine, opt => opt.Ignore())       // Ignore Medicine
             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
             .ReverseMap();
+
+
+            CreateMap<Prescription, PrescriptionResponseDTO>()
+                .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.PatientId))
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FirstName + " " + src.Patient.LastName))
+                .ForMember(dest => dest.PatientAge, opt => opt.MapFrom(src => src.Patient.DateOfBirth.HasValue ? (int?)(DateTime.Today.Year - src.Patient.DateOfBirth.Value.Year) : null))
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor.FirstName + " " + src.Doctor.LastName))
+                .ForMember(dest => dest.IssuedDate , opt => opt.MapFrom(src => src.IssuedDate.ToString("yyyy-MM-dd HH:mm:ss")));
+
+
+            CreateMap<MedicinePrescription, MedicinePrescriptionResponseDTO>()
+             .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
+             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
 
             // ========================================== WorkSchedule ==========================================
             CreateMap<WorkScheduleFromUserDto, WorkSchedule>();
