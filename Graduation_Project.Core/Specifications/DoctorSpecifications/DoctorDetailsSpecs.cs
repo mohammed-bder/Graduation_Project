@@ -11,6 +11,8 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
         public DoctorDetailsSpecs(int id) : base(d => d.Id == id)
         {
             Includes.Add(d => d.Appointments);
+            Includes.Add(d => d.Specialty);
+
         }
     }
 }
