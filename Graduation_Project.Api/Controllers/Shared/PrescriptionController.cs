@@ -37,11 +37,16 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("DoctorAdd")]
-        public async Task<ActionResult<PrescriptionFromUserDto>> AddPrescription(PrescriptionFromUserDto prescriptionFromUser)
+        public async Task<ActionResult<PrescriptionResponseDTO>> AddPrescription(PrescriptionFromUserDto prescriptionFromUser)
         {
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
 
-            var prescription = _mapper.Map<PrescriptionFromUserDto, Prescription>(prescriptionFromUser);
+            var prescription = new Prescription
+            {
+                PatientId = prescriptionFromUser.PatientId,
+                Diagnoses = prescriptionFromUser.Diagnoses
+            };
             prescription.IssuedDate = DateTime.Now;
             prescription.DoctorId = DoctorId;
 
@@ -60,8 +65,9 @@ namespace Graduation_Project.Api.Controllers.Shared
 
                     await _unitOfWork.Repository<MedicinePrescription>().AddRangeAsync(medicinePrescriptions);
                 }
-                
-                return Ok(prescriptionFromUser);
+
+                var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
+                return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
             {
