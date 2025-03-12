@@ -7,6 +7,7 @@ using Graduation_Project.Core;
 using Graduation_Project.Core.Common;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
+using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Specifications.AppointmentSpecs;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,10 +52,11 @@ namespace Graduation_Project.Service
 
 
             // Use schedule exceptions from the doctor entity and handle if Null
-            var scheduleExceptions = doctor.ScheduleExceptions?.ToDictionary(e => e.Date, e => e) ?? new Dictionary<DateOnly, ScheduleException>();
+            var scheduleExceptions = doctor.ScheduleExceptions?
+                .ToLookup(e => e.Date) ?? (ILookup<DateOnly, ScheduleException>)Array.Empty<ScheduleException>().ToLookup(e => e.Date);
 
             // Convert work schedules to a dictionary for fast lookup
-            var workScheduleDict = doctor.WorkSchedules.ToDictionary(s => s.Day, s => s);
+            var workScheduleDict = doctor.WorkSchedules.ToLookup(s => s.Day);
 
             // Group booked appointments by date
             var bookedAppointmentsDict = bookedAppointments
@@ -73,35 +75,33 @@ namespace Graduation_Project.Service
                 DayOfWeek currentDayOfWeek = currentDate.DayOfWeek;
 
                 // 1️⃣ Check if there's an exception for this specific date
-                if (scheduleExceptions.TryGetValue(currentDate, out var exception))
+                if (scheduleExceptions.Contains(currentDate))
                 {
-                    if (!exception.IsAvailable)
+                    var exceptionsForDay = scheduleExceptions[currentDate];
+
+                    List<TimeOnly> exceptionSlots = new();
+
+                    foreach (var exception in exceptionsForDay)
                     {
-                        continue; // Doctor is unavailable on this day
+                        if (!exception.IsAvailable)
+                        {
+                            exceptionSlots.Clear(); // If any exception blocks the day, remove all slots
+                            break;
+                        }
+
+                        if (exception.StartTime.HasValue && exception.EndTime.HasValue)
+                        {
+                            var slots = GenerateTimeSlots(new WorkSchedule
+                            {
+                                StartTime = exception.StartTime.Value,
+                                EndTime = exception.EndTime.Value,
+                                Day = currentDayOfWeek
+                            }, doctor.SlotDurationMinutes);
+
+                            exceptionSlots.AddRange(slots);
+                        }
                     }
-
-                    // Generate time slots based on exception
-                    var exceptionSlots = GenerateTimeSlots(new WorkSchedule
-                    {
-                        StartTime = exception.StartTime.Value,
-                        EndTime = exception.EndTime.Value,
-                        Day = currentDayOfWeek
-                    }, doctor.SlotDurationMinutes);
-
-                    // Remove booked slots
-                    if (bookedAppointmentsDict.TryGetValue(currentDate, out var bookedAppointmentsForDay))
-                    {
-                        // Get the times for all booked appointments, including cancelled ones
-                        var bookedAndCancelledTimesForDay = bookedAppointmentsForDay
-                            .Where(a => a.Status == AppointmentStatus.Confirmed ||
-                                        a.Status == AppointmentStatus.Pending)
-                            //we should remove the cancelled
-                            .Select(a => a.AppointmentTime)  // We need to compare AppointmentTime (TimeOnly)
-                            .ToList();
-
-                        // Remove booked/cancelled times from the generated exception slots
-                        exceptionSlots = exceptionSlots.Except(bookedAndCancelledTimesForDay).ToList();
-                    }
+                    exceptionSlots = RemoveBookedSlots(exceptionSlots, bookedAppointmentsDict, currentDate);
 
                     if (exceptionSlots.Any())
                     {
@@ -114,34 +114,50 @@ namespace Graduation_Project.Service
 
                 // 2️⃣ No exception → use default schedule
 
-                if (workScheduleDict.TryGetValue(currentDayOfWeek, out var schedule))
+                if (workScheduleDict.Contains(currentDayOfWeek))
                 {
-                    Console.WriteLine($"[DEBUG] Found schedule for {currentDayOfWeek}: {schedule.StartTime} - {schedule.EndTime}");
-
-                    var slots = GenerateTimeSlots(schedule, doctor.SlotDurationMinutes);
-
-                    // Remove booked slots
-                    if (bookedAppointmentsDict.TryGetValue(currentDate, out var bookedAppointmentsForDay))
+                    foreach (var schedule in workScheduleDict[currentDayOfWeek])
                     {
-                        // Get the times for all booked appointments, including cancelled ones
-                        var bookedAndCancelledTimesForDay = bookedAppointmentsForDay
-                            .Where(a => a.Status == AppointmentStatus.Confirmed)
-                            .Select(a => a.AppointmentTime)  // We need to compare AppointmentTime (TimeOnly)
-                            .ToList();
+                        var slots = GenerateTimeSlots(schedule, doctor.SlotDurationMinutes);
 
-                        // Remove booked/cancelled times from the generated slots
-                        slots = slots.Except(bookedAndCancelledTimesForDay).ToList();
-                    }
+                        slots = RemoveBookedSlots(slots, bookedAppointmentsDict, currentDate);
 
-                    if (slots.Any())
-                    {
-                        availableSlots[currentDate] = slots;
+                        if (slots.Any())
+                        {
+                            if (!availableSlots.ContainsKey(currentDate))
+                                availableSlots[currentDate] = new List<TimeOnly>();
+
+                            availableSlots[currentDate].AddRange(slots);
+                        }
                     }
                 }
             }
 
 
             return ServiceResult<Dictionary<DateOnly, List<TimeOnly>>>.Success(availableSlots);
+        }
+
+        private List<TimeOnly> RemoveBookedSlots(List<TimeOnly> slots,
+                                         Dictionary<DateOnly, List<Appointment>> bookedAppointmentsDict,
+                                         DateOnly currentDate)
+        {
+            if (bookedAppointmentsDict.TryGetValue(currentDate, out var bookedAppointmentsForDay))
+            {
+                var bookedTimes = bookedAppointmentsForDay
+                    .Where(a => a.Status == AppointmentStatus.Confirmed || a.Status == AppointmentStatus.Pending)
+                    .Select(a => a.AppointmentTime)
+                    .ToList();
+
+                return slots.Except(bookedTimes).ToList(); // ✅ Return updated slots list
+            }
+
+            return slots;
+        }
+
+        public bool CheckIfPatientPayedVisita(Patient patient, bool payed)
+        {
+            //Payment Check Logic
+            return payed;
         }
     }
 }

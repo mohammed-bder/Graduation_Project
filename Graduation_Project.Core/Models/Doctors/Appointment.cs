@@ -27,7 +27,7 @@ namespace Graduation_Project.Core.Models.Doctors
         public AppointmentStatus Status { get; set; } // Track the status of the appointment (Pending, Confirmed, etc.)
 
         [ForeignKey("Policy")]
-        public int? PolicyId { get; set; }  // 🔗 Links to the DoctorPolicy
+        public int PolicyId { get; set; }  // 🔗 Links to the DoctorPolicy
         public DoctorPolicy Policy { get; set; } = null!;
     }
 

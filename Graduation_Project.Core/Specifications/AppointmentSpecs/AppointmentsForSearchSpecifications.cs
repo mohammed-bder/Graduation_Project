@@ -18,7 +18,7 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
         {
             Includes.Add(a => a.Patient); // Include patient details
             AddOrderBy(a => a.AppointmentDate); // Order by date
-            AddOrderBy(a => a.AppointmentTime); // Then order by time
+            AddThenOrderBy(a => a.AppointmentTime); // Then order by time
         }
     }
 }

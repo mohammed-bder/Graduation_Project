@@ -9,6 +9,6 @@ namespace Graduation_Project.Core.IServices
     public interface IScheduleService
     {
         public Task<bool> IsScheduleOverlappingAsync(int doctorId, DayOfWeek day, TimeOnly startTime, TimeOnly endTime);
-
+        public Task<bool> IsScheduleOverlappingAsync(ScheduleException newException);
     }
 }
