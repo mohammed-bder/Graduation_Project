@@ -9,6 +9,9 @@ using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Core.Specifications.ScheduleExceptionSpecs;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Service;
+using Microsoft.AspNetCore.Authorization;
+using Graduation_Project.Core.Constants;
+using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.DoctorControllers
 {
@@ -25,14 +28,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _scheduleService = scheduleService;
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("AddScheduleException")]
         public async Task<ActionResult> AddScheduleException([FromBody] ScheduleExceptionFromUserDto scheduleExceptionFromUser)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(scheduleExceptionFromUser.DoctorId);
-            if (doctor == null)
-                return NotFound(new ApiResponse(404, "Doctor not found"));
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             var exception = _mapper.Map<ScheduleExceptionFromUserDto, ScheduleException>(scheduleExceptionFromUser);
+            exception.DoctorId = doctorId;
             // Check if it overlaps with existing exceptions
             bool isOverlapping = await _scheduleService.IsScheduleOverlappingAsync(exception);
             if (isOverlapping)
@@ -55,30 +58,33 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(scheduleExceptionFromUser);
         }
 
-        [HttpGet("GetAllScheduleException/{doctorId:int}")]
-        public async Task<ActionResult> GetScheduleExceptions(int doctorId)
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetAllScheduleException")]
+        public async Task<ActionResult> GetScheduleExceptions()
         {
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             var exceptionsFromDB = await _unitOfWork.Repository<ScheduleException>()
                 .GetAllWithSpecAsync(new AllScheduleExceptionSpecifications(doctorId));
 
             if (exceptionsFromDB.IsNullOrEmpty())
             {
-                return NotFound(new ApiResponse(404, "No schedule exceptions found for this doctor."));
+                return NotFound(new ApiResponse(404, "No schedule Exceptions found for this doctor."));
             }
 
             return Ok(_mapper.Map<IReadOnlyList<ScheduleException>, IReadOnlyList<ScheduleExceptionFromDatabaseDto>>(exceptionsFromDB));
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpDelete("DeleteException/{id:int}")]
         public async Task<ActionResult> DeleteScheduleException(int id)
         {
-            var exception = await _unitOfWork.Repository<ScheduleException>()
-                .GetWithSpecsAsync(new ScheduleExceptionSpecifications(id));
-
+            var exception = await _unitOfWork.Repository<ScheduleException>().GetAsync(id);
             if (exception == null)
-            {
-                return NotFound(new ApiResponse(404, "Schedule exception not found."));
-            }
+                return NotFound(new ApiResponse(404, "Schedule Exception not found"));
+
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            if (exception.DoctorId != doctorId)
+                return Unauthorized(new ApiResponse(401, "This Schedule Exception Doesnt belong to this Doctor"));
 
             _unitOfWork.Repository<ScheduleException>().Delete(exception);
             var result = await _unitOfWork.CompleteAsync();

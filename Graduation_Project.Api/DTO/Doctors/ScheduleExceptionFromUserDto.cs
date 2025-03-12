@@ -5,8 +5,6 @@ namespace Graduation_Project.Api.DTO.Doctors
 {
     public class ScheduleExceptionFromUserDto
     {
-        [ExistingId<Doctor>]
-        public int DoctorId { get; set; }
         [DataType(DataType.Date)]
         public DateOnly Date { get; set; }
         [DataType(DataType.Time)]
