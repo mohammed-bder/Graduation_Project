@@ -34,40 +34,38 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetProfile")]
-        public async Task<ActionResult<PatientForProfileDto>> GetProfile()
+        public async Task<ActionResult<PatientForProfileToReturnDto>> GetProfile()
         {
-            // Get current user 
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
+            // Get current user id
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // Get current patient from business DB
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
             if (patient == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
             // mapping for Dto
-            var patientForProfileDto = new PatientForProfileDto
+            var patientForProfileToReturnDto = new PatientForProfileToReturnDto
             {
                 Email = email
             };
 
-            patientForProfileDto = _mapper.Map(patient, patientForProfileDto);
+            patientForProfileToReturnDto = _mapper.Map(patient, patientForProfileToReturnDto);
 
-            return Ok(patientForProfileDto);
+            return Ok(patientForProfileToReturnDto);
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPut("EditProfile")]
         public async Task<ActionResult<PatientForProfileDto>> EditProfile(PatientForProfileDto patientProfileFromRequest)
         {
-            // Get current user 
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
+            // Get current user id
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
             // Get current patient from business DB
-            var patientSpecs = new PatientForProfileSpecs(user.Id);
-            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
+            var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
             if (patient == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
@@ -118,6 +116,18 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
         }
 
-        
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("Points")]
+        public async Task<ActionResult<int>> GetPatientPoints()
+        {
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
+            var points = patient.Points;
+
+            if (points == null)
+                return NoContent();
+
+            return Ok(points);
+        }
     }
 }

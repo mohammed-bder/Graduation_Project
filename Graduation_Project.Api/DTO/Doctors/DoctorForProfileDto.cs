@@ -10,10 +10,6 @@ namespace Graduation_Project.Api.DTO.Doctors
         [StringLength(maximumLength:100 , MinimumLength = 3 , ErrorMessage = "Full Name must be at least 3 characters and at most 100 characters.")]
         public string FullName { get; set; } 
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
-
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string? Description { get; set; }
 

@@ -37,11 +37,16 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("DoctorAdd")]
-        public async Task<ActionResult<PrescriptionFromUserDto>> AddPrescription(PrescriptionFromUserDto prescriptionFromUser)
+        public async Task<ActionResult<PrescriptionResponseDTO>> AddPrescription(PrescriptionFromUserDto prescriptionFromUser)
         {
             var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
 
-            var prescription = _mapper.Map<PrescriptionFromUserDto, Prescription>(prescriptionFromUser);
+            var prescription = new Prescription
+            {
+                PatientId = prescriptionFromUser.PatientId,
+                Diagnoses = prescriptionFromUser.Diagnoses
+            };
             prescription.IssuedDate = DateTime.Now;
             prescription.DoctorId = DoctorId;
 
@@ -59,9 +64,19 @@ namespace Graduation_Project.Api.Controllers.Shared
                     }).ToList();
 
                     await _unitOfWork.Repository<MedicinePrescription>().AddRangeAsync(medicinePrescriptions);
+                    var result = await _unitOfWork.CompleteAsync();
+                    if (result == 0)
+                    {
+                        return BadRequest(new ApiResponse(400));
+                    }
+                    else
+                    {
+                        Console.WriteLine("MedicinePrescriptions Added Successfully");
+                    }
                 }
-                
-                return Ok(prescriptionFromUser);
+
+                var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
+                return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
             {
@@ -87,10 +102,12 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Edit this")));
             }
+            var currentDoctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
+            var currentPatient = await _unitOfWork.Repository<Patient>().GetAsync(prescriptionFromDB.PatientId);
 
             if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
             {
-                throw new InvalidOperationException("❌ You cannot edit this prescription after 24 hour of creation.");
+                return BadRequest(new ApiResponse(400, "You cannot edit this prescription after 24 hour of creation."));
             }
 
             //prescriptionFromUser.PatientId = prescriptionFromDB.Id;
@@ -134,8 +151,8 @@ namespace Graduation_Project.Api.Controllers.Shared
                 {
                     return BadRequest(new ApiResponse(400));
                 }
-
-                return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
+                var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(prescriptionFromDB);
+                return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
             {
@@ -209,7 +226,9 @@ namespace Graduation_Project.Api.Controllers.Shared
             //Check if the current user is a patient
             if (userRole == nameof(UserRoleType.Patient))
             {
-                var pspec = new PatientForProfileSpecs(currentUser.Id);
+                var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+                var pspec = new PatientForProfileSpecs(patientId);
                 var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(pspec);
                 if (patient is null)
                 {

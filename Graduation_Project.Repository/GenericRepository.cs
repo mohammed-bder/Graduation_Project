@@ -68,7 +68,6 @@ namespace Graduation_Project.Repository
             return await dbContext.Set<T>().ToListAsync();
         }
 
-
         public async Task<T?> GetAsync(int id)
         {
             return await dbContext.Set<T>().FindAsync(id);

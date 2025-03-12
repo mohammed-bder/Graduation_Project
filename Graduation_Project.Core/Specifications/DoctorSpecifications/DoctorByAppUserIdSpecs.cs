@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
-    public class DoctorDetailsSpecs : BaseSpecifications<Doctor>
+    public class DoctorByAppUserIdSpecs : BaseSpecifications<Doctor>
     {
-        public DoctorDetailsSpecs(int id) : base(d => d.Id == id)
+        public DoctorByAppUserIdSpecs(string id) : base(d => d.ApplicationUserId == id)
         {
-            Includes.Add(d => d.Appointments);
             Includes.Add(d => d.Specialty);
-
         }
     }
 }

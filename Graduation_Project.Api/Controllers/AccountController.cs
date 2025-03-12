@@ -92,7 +92,10 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
                     Role = role,
-                    PictureUrl = patient.PictureUrl
+                    PictureUrl = patient.PictureUrl,
+                    BloodType = patient.BloodType,
+                    Points = patient.Points, 
+                    Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null
                 };
                 return Ok(patientDto);
             }
@@ -259,6 +262,7 @@ namespace Graduation_Project.Api.Controllers
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
                 LastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : string.Empty,
                 Gender = model.Gender,
+                Points = 0,
                 ApplicationUserId = registeredPatient.Id
             };
 
