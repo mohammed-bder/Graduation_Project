@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.PrescriptionSpecifications
 {
-    public class AllPrescriptionsForPatientWithMedicinePrescriptionsSpec: BaseSpecifications<Prescription>
+    public class PrescriptionWithMedicinePrescriptionsAndImageSpec: BaseSpecifications<Prescription>
     {
-        public AllPrescriptionsForPatientWithMedicinePrescriptionsSpec(int patientId) : base(p => p.PatientId == patientId)
+        public PrescriptionWithMedicinePrescriptionsAndImageSpec(int prescriptionId) : base(p => p.Id == prescriptionId)
         {
             Includes.Add(p => p.MedicinePrescriptions);
+            Includes.Add(p => p.PrescriptionImages);
         }
+
     }
 }

@@ -14,5 +14,8 @@
         public Patient Patient { get; set; }
 
         public ICollection<MedicinePrescription>? MedicinePrescriptions { get; set; } = new HashSet<MedicinePrescription>(); // 🔥 Ensure collection is initialized
+
+
+        public ICollection<PrescriptionImage>? PrescriptionImages { get; set; }
     }
 }

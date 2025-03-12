@@ -64,7 +64,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 Email = email,
             };
 
-            doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
+            //doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
+            doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
             return Ok(doctorForProfileToReturnDto);
         }
@@ -87,6 +88,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             // Update Business DB
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
+
+           //var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
             return Ok(doctorDtoFromRequest);
 
