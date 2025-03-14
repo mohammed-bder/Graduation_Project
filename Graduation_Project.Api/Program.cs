@@ -40,7 +40,7 @@ namespace Graduation_Project.Api
             /****************************** Add Swagger Services********************************/
             builder.Services.AddSwaggerServices();
 
-            ///****************************** Connection String ********************************/
+            /****************************** Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

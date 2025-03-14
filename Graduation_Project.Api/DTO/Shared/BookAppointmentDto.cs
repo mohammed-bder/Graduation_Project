@@ -7,14 +7,11 @@ namespace Graduation_Project.Api.DTO.Shared
     {
         [Required]
         [ExistingId<Doctor>]
-        public int doctorId { get; set; }
+        public int DoctorId { get; set; }
         [Required]
-        [ExistingId<Patient>]
-        public int patientId { get; set; }
+        public DateOnly AppointmentDate { get; set; }
         [Required]
-        public DateOnly date { get; set; }
-        [Required]
-        public TimeOnly time { get; set; }
+        public TimeOnly AppointmentTime { get; set; }
     }
 
 }

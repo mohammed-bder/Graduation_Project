@@ -14,6 +14,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             )
         {
             Includes.Add(d => d.WorkSchedules);
+            Includes.Add(d => d.ScheduleExceptions);
         }
     }
 }

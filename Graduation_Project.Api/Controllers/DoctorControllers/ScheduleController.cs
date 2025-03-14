@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Specifications.WorkScheduleSpecs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.DoctorControllers
 {
@@ -22,29 +26,24 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _scheduleService = scheduleService;
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("AddSchedule")]
         public async Task<ActionResult> AddSchedule(WorkScheduleFromUserDto workScheduleFromUser)
         {
             //Get current Doctor
             // 1️⃣ Validate Doctor Exists
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(workScheduleFromUser.doctorId);
-            if (doctor == null)
-                return NotFound(new ApiResponse(404, "Doctor not found"));
-
-            // Fetch existing exceptions for this doctor
-            //var existingExceptions = await _unitOfWork.Repository<ScheduleException>()
-            //    .GetAllWithSpecAsync(new ScheduleExceptionSpecifications(request.DoctorId));
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             // Check if the new schedule overlaps with an existing one
             bool isOverlapping = await _scheduleService
-                .IsScheduleOverlappingAsync(doctor.Id, workScheduleFromUser.Day,
+                .IsScheduleOverlappingAsync(doctorId, workScheduleFromUser.Day,
                                             workScheduleFromUser.StartTime, workScheduleFromUser.EndTime);
 
             if (isOverlapping)
                 return BadRequest(new ApiResponse(400, "Schedule conflicts with an existing schedule."));
 
             var workSchedule = _mapper.Map<WorkScheduleFromUserDto, WorkSchedule>(workScheduleFromUser);
-
+            workSchedule.DoctorId = doctorId;
             try
             {
                 await _unitOfWork.Repository<WorkSchedule>().AddAsync(workSchedule);
@@ -62,17 +61,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         }
 
 
-        //[ServiceFilter(typeof(ExistingIdFilter<WorkSchedule>))]
-        [HttpGet("GetAllDoctorSchedules/{id:int}")]
-        public async Task<ActionResult<IReadOnlyList<WorkSchedule>>> GetAllDoctorSchedules(int id)
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetAllDoctorSchedules")]
+        public async Task<ActionResult<IReadOnlyList<WorkSchedule>>> GetAllDoctorSchedules()
         {
             // Validate Doctor Exists
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(id);
-            if (doctor == null)
-                return NotFound(new ApiResponse(404, "Doctor not found"));
-
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             // Get Work Schedules for the Doctor
-            var wsSpec = new WorkSheduleSpecifications(id);
+            var wsSpec = new WorkSheduleSpecifications(doctorId);
             var schedules = await _unitOfWork.Repository<WorkSchedule>().GetAllWithSpecAsync(wsSpec);
             if (schedules.IsNullOrEmpty())
             {
@@ -82,8 +78,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(_mapper.Map<IReadOnlyList<WorkSchedule>, IReadOnlyList<WorkScheduleFromDatabaseDto>>(schedules));
         }
 
-
-        //[ServiceFilter(typeof(ExistingIdFilter<WorkSchedule>))]
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpDelete("DeleteSchedule/{id:int}")]
         public async Task<ActionResult> DeleteSchedule(int id)
         {
@@ -91,6 +86,10 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var schedule = await _unitOfWork.Repository<WorkSchedule>().GetAsync(id);
             if (schedule == null)
                 return NotFound(new ApiResponse(404, "Schedule not found"));
+
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            if (schedule.DoctorId != doctorId)
+                return Unauthorized(new ApiResponse(401, "This Schedule Doesnt belong to this Doctor"));
 
             try
             {
