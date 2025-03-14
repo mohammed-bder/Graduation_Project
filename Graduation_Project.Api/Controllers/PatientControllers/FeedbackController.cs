@@ -107,6 +107,14 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             {
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
             }
+
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+            if(feedback.PatientId != patientId)
+            {
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Unauthorized"));
+            }
+
             return Ok(_mapper.Map<Feedback, FeedbackInfoDto>(feedback));
         }
 
@@ -159,6 +167,13 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             if (feedback is null)
             {
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Feedback Not Found"));
+            }
+
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+
+            if(feedback.PatientId != patientId)
+            {
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Unauthorized"));
             }
 
             try
