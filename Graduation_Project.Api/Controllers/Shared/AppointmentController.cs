@@ -1,16 +1,21 @@
-﻿using Graduation_Project.Api.DTO.Shared;
+﻿using AutoMapper;
+using Graduation_Project.Api.DTO.Doctors;
+using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Common;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Specifications.AppointmentSpecs;
 using Graduation_Project.Core.Specifications.DoctorPolicySpecs;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.WorkScheduleSpecs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.Shared
 {
@@ -18,21 +23,23 @@ namespace Graduation_Project.Api.Controllers.Shared
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public AppointmentController(IAppointmentService appointmentService, IUnitOfWork unitOfWork)
+        public AppointmentController(IAppointmentService appointmentService, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _appointmentService = appointmentService;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet("available-slots/{doctorId:int}")]
-        public async Task<IActionResult> GetAvailableSlots(int doctorId)
+        public async Task<ActionResult<Dictionary<DateOnly, List<TimeOnly>>>> GetAvailableSlots(int doctorId)
         {
             try
             {
                 // Step 1: Retrieve doctor and check existence
-                var dSpec = new DoctorWithWorkScheduleSpecifications(doctorId);
-                var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(dSpec);
+                var doctor = await _unitOfWork.Repository<Doctor>()
+                    .GetWithSpecsAsync(new DoctorWithWorkScheduleSpecifications(doctorId));
                 if (doctor == null)
                 {
                     return NotFound(new ApiResponse(404, "Doctor not found"));
@@ -74,22 +81,22 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
         }
 
-
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("book")]
-        public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentDto request)
+        public async Task<ActionResult> BookAppointment([FromBody] BookAppointmentDto request)
         {
             // 1️⃣ Validate Doctor Exists
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(request.doctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>()
+                .GetWithSpecsAsync(new DoctorWithWorkScheduleSpecifications(request.DoctorId));
             if (doctor == null)
                 return NotFound(new ApiResponse(404, "Doctor not found"));
 
-            // 2️⃣ Validate Patient Exists
-            var patient = await _unitOfWork.Repository<Patient>().GetAsync(request.patientId);
-            if (patient == null)
-                return NotFound(new ApiResponse(404, "Patient not found"));
+            // 2️⃣ Patient Exists
+            var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            var patient = await _unitOfWork.Repository<Patient>().GetAsync(PatientId);
 
             // All of the upcoming code should be a common service
-            var dpSpec = new DoctorPolicySpecifications(request.doctorId);
+            var dpSpec = new DoctorPolicySpecifications(request.DoctorId);
             var doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpSpec);
 
             // If no custom policies exist, return the default policy
@@ -109,13 +116,12 @@ namespace Graduation_Project.Api.Controllers.Shared
             // End of service
 
             // 3️⃣ Check if the doctor is available on the given day
-            var wsSpec = new WorkShedulewithDoctorAndDayCriteriaSpecifications(request.doctorId, request.date.DayOfWeek);
-            var workSchedules = await _unitOfWork.Repository<WorkSchedule>().GetAllWithSpecAsync(wsSpec);
+            var workSchedules = doctor.WorkSchedules.Where(ws => ws.Day == request.AppointmentDate.DayOfWeek);
             if (!workSchedules.Any())
                 return NotFound(new ApiResponse(404, "Doctor doesn't work that day")); // Doctor doesn't work that day
 
             // 4️⃣ Check if the selected time falls within any shift
-            bool isTimeValid = workSchedules.Any(ws => request.time >= ws.StartTime && request.time < ws.EndTime);
+            bool isTimeValid = workSchedules.Any(ws => request.AppointmentTime >= ws.StartTime && request.AppointmentTime < ws.EndTime);
             if (!isTimeValid)
                 return NotFound(new ApiResponse(404, "Time is outside of work schedule")); // Time is outside of work schedule
 
@@ -135,7 +141,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             // Step 2: Check if the selected time is available
-            var availableSlots = availableSlotsResult.Data.Values.Any(daySlots => daySlots.Contains(request.time));
+            var availableSlots = availableSlotsResult.Data.Values.Any(daySlots => daySlots.Contains(request.AppointmentTime));
 
             if (!availableSlots)
             {
@@ -143,25 +149,33 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             // Apply policy checks such as prepayment, cancellation window, etc.
-            if (latestPolicy.RequirePrePayment)
-            {
-                // Check if payment is done; if not, return an error
-                // Assuming you have a payment check method or some payment flag on the patient
-                //if (!patient.HasPaid)
-                //    return BadRequest(new ApiResponse(400, "Payment required before confirming appointment"));
-            }
 
             // Step 7: Create and Save Appointment
-            var appointment = new Appointment
+
+            var appointment = _mapper.Map<BookAppointmentDto, Appointment>(request);
+            appointment.RescheduleCount = 0;
+            appointment.PolicyId = latestPolicy.Id;
+            appointment.PatientId = PatientId;
+
+            // Check if payment Service is done
+            var payed = true;
+            if (_appointmentService.CheckIfPatientPayedVisita(patient, payed))
             {
-                DoctorId = request.doctorId,
-                PatientId = request.patientId,
-                AppointmentDate = request.date,
-                AppointmentTime = request.time,
-                RescheduleCount = 0,
-                Status = AppointmentStatus.Confirmed, // Assuming the doctor approves first
-                PolicyId = latestPolicy.Id
-            };
+                // Assume that patient payed so the Confirmation is Done
+                appointment.Status = AppointmentStatus.Confirmed;
+            }
+            else
+            {
+                // Check if not paying is allowed
+                if (latestPolicy.RequirePrePayment)
+                {
+                    return NotFound(new ApiResponse(404, "Patient Need to Pay"));
+                }
+                else
+                {
+                    appointment.Status = AppointmentStatus.Pending; // Assuming the doctor approves first
+                }
+            }
 
             await _unitOfWork.Repository<Appointment>().AddAsync(appointment);
             var result = await _unitOfWork.CompleteAsync();
@@ -173,74 +187,63 @@ namespace Graduation_Project.Api.Controllers.Shared
             return Ok(new ApiResponse(200, "Appointment booked successfully!"));
         }
 
-
-        [HttpDelete("cancel-booking/{appointmentId:int}")]
-        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpDelete("cancel-booking/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Appointment>))]
+        public async Task<ActionResult> CancelAppointment(int id)
         {
+            // Step 1: Get the appointment and related entities
+            var appointment = await _unitOfWork.Repository<Appointment>()
+                .GetWithSpecsAsync(new AppointmentWithPolicySpecifications(id));
+            if (appointment == null)
+            {
+                return NotFound(new ApiResponse(404, "Appointment not found"));
+            }
+
+            if(appointment.Status == AppointmentStatus.Cancelled)
+            {
+                BadRequest(new ApiResponse(400, "Appointment Already Cancelled"));
+            }
+
+            // Get Policy For checking cancel logic for Doctor
+            var doctorPolicy = appointment.Policy;
+
+            // Step 2: Check if cancellation is allowed based on the policy and the time difference
+            var currentTime = DateTime.UtcNow;
+            var appointmentTime = appointment.AppointmentDate.ToDateTime(appointment.AppointmentTime);
+
+            var hoursBeforeAppointment = (appointmentTime - currentTime).TotalHours;
+
+            if (hoursBeforeAppointment < doctorPolicy.MinCancellationHours)
+            {
+                // If the cancellation is too late
+                if (doctorPolicy.AllowLateCancellationReschedule)
+                {
+                    // Option to reschedule (if allowed in the policy)
+                    return Ok(new ApiResponse(200, "Late cancellation allowed. You may reschedule."));
+                }
+                else
+                {
+                    // No cancellation allowed, refund, or reschedule options
+                    return BadRequest(new ApiResponse(400, "Late cancellations are not allowed."));
+                }
+            }
+
+            //// Step 3: Refund logic based on cancellation time
+            //bool isRefundEligible = latestPolicy.AllowFullRefund;
+            //decimal refundAmount = isRefundEligible ? appointment.AmountPaid : 0; // Adjust based on policy
+
+            //// Step 4: Process refund if eligible and update the appointment status
+            //if (refundAmount > 0)
+            //{
+            //    // Handle refund logic
+            //    // E.g., calling a payment service to refund the amount
+            //}
+
+            // Step 5: Mark the appointment as canceled
             try
             {
-                // Step 1: Get the appointment and related entities
-                var appointment = await _unitOfWork.Repository<Appointment>().GetAsync(appointmentId);
-                if (appointment == null)
-                {
-                    return NotFound(new ApiResponse(404, "Appointment not found"));
-                }
-
-                // All of the upcoming code should be a common service
-                var dpSpec = new DoctorPolicySpecifications(appointment.DoctorId);
-                var doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpSpec);
-
-                // If no custom policies exist, return the default policy
-                if (!doctorPolicies.Any())
-                {
-                    var dpfSpec = new DefaultDoctorPolicySpecifications();
-                    doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpfSpec);
-
-                    if (doctorPolicies == null || !doctorPolicies.Any())
-                    {
-                        // Handle missing policy gracefully
-                        return NotFound(new ApiResponse(404, "Default Doctor's policy not found"));
-                    }
-                }
-                // This is either the default or the latest custom
-                var latestPolicy = doctorPolicies.OrderByDescending(p => p.CreatedAt).First();
-                // End of service
-
-                // Step 2: Check if cancellation is allowed based on the policy and the time difference
-                var currentTime = DateTime.UtcNow;
-                var appointmentTime = appointment.AppointmentDate.ToDateTime(appointment.AppointmentTime);
-
-                var hoursBeforeAppointment = (appointmentTime - currentTime).TotalHours;
-
-                if (hoursBeforeAppointment < latestPolicy.MinCancellationHours)
-                {
-                    // If the cancellation is too late
-                    if (latestPolicy.AllowLateCancellationReschedule)
-                    {
-                        // Option to reschedule (if allowed in the policy)
-                        return Ok(new ApiResponse(200, "Late cancellation allowed. You may reschedule."));
-                    }
-                    else
-                    {
-                        // No cancellation allowed, refund, or reschedule options
-                        return BadRequest(new ApiResponse(400, "Late cancellations are not allowed."));
-                    }
-                }
-
-                //// Step 3: Refund logic based on cancellation time
-                //bool isRefundEligible = latestPolicy.AllowFullRefund;
-                //decimal refundAmount = isRefundEligible ? appointment.AmountPaid : 0; // Adjust based on policy
-
-                //// Step 4: Process refund if eligible and update the appointment status
-                //if (refundAmount > 0)
-                //{
-                //    // Handle refund logic
-                //    // E.g., calling a payment service to refund the amount
-                //}
-
-                // Step 5: Mark the appointment as canceled
                 appointment.Status = AppointmentStatus.Cancelled;
-                //appointment.IsCanceled = true; // Track cancellation state
                 _unitOfWork.Repository<Appointment>().Update(appointment);
 
                 var result = await _unitOfWork.CompleteAsync();
@@ -257,45 +260,66 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
         }
 
-        [HttpGet("get-todays-appointment/{doctorId:int}")]
-        public async Task<ActionResult<IReadOnlyList<AppointmentDto>>> GetTodayAppointmentsAsync(int doctorId)
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("get-todays-appointment")]
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetTodayAppointmentsAsync()
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             // Define the query specification for today's appointments
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
             var appointmentSpec = new AppointmentsForSearchSpecifications(doctorId, today);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
             if (appointments.IsNullOrEmpty())
             {
-                return NotFound(new ApiResponse(404, "No appointments found for this doctor."));
+                return NotFound(new ApiResponse(404, "No appointments found for this Doctor."));
             }
 
             // Convert to DTOs for cleaner response
-            //var appointmentDtos = appointments.Select(a => new AppointmentDto
-            //{
-            //    Id = a.Id,
-            //    PatientName = $"{a.Patient.FirstName} {a.Patient.LastName}",
-            //    AppointmentTime = a.AppointmentTime,
-            //    Status = a.Status
-            //}).ToList();
+            var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
 
-            // Organize data into a structured response
-            var groupedAppointments = appointments
-                .GroupBy(a => a.AppointmentDate) // Group by date
-                .ToDictionary(
-                    g => g.Key.ToString("yyyy-MM-dd"), // Convert DateOnly to string for JSON keys
-                    g => g.ToDictionary(
-                        a => a.AppointmentTime.ToString("HH:mm:ss"), // Time as JSON key
-                        a => new
-                        {
-                            a.Id,
-                            a.PatientId,
-                            PatientName = $"{a.Patient.FirstName} {a.Patient.LastName}", // Assuming Patient navigation property is included
-                            a.Status // Convert status to string
-                        }
-                    )
-                );
+            var groupedAppointments = appointmentDtos
+            .GroupBy(a => a.AppointmentDate) // Group by date first
+            .ToDictionary(
+                g => g.Key, // Date as JSON key (yyyy-MM-dd)
+                g => g.GroupBy(a => a.AppointmentTime) // Then group by time
+                      .ToDictionary(
+                          a => a.Key, // Time as JSON key (HH:mm:ss)
+                          a => a.First() // Use the first appointment in that time slot
+                      )
+            );
+
+            return Ok(groupedAppointments);
+        }
+        
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("get-all-appointments")]
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentForPatientDto>>>> GetAllAppointmentsAsync()
+        {
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            // Define the query specification for today's appointments
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            var appointmentSpec = new AppointmentsForPatientSearchSpecifications(patientId, today);
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
+
+            if (appointments.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404, "No appointments found for this Patient."));
+            }
+
+            // Convert to DTOs for cleaner response
+            var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
+
+            Dictionary<string, Dictionary<string, AppointmentForPatientDto>>? groupedAppointments = appointmentDtos
+            .GroupBy(a => a.AppointmentDate) // Group by date first
+            .ToDictionary(
+                g => g.Key, // Date as JSON key (yyyy-MM-dd)
+                g => g.GroupBy(a => a.AppointmentTime) // Then group by time
+                      .ToDictionary(
+                          a => a.Key, // Time as JSON key (HH:mm:ss)
+                          a => a.First() // Use the first appointment in that time slot
+                      )
+            );
 
             return Ok(groupedAppointments);
         }

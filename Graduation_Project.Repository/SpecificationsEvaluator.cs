@@ -29,6 +29,15 @@ namespace Graduation_Project.Repository
                 query = query.OrderByDescending(spec.OrderByDescending);
             }
 
+            if (spec.ThenOrderBy is not null) // Handle ThenBy for additional sorting
+            {
+                query = ((IOrderedQueryable<TEntity>)query).ThenBy(spec.ThenOrderBy);
+            }
+            else if (spec.ThenOrderByDescending is not null) // Handle ThenByDescending if needed
+            {
+                query = ((IOrderedQueryable<TEntity>)query).ThenByDescending(spec.ThenOrderByDescending);
+            }
+
             if (spec.IsPaginationEnabled)
             {
                 query = query.Skip(spec.Skip).Take(spec.Take);

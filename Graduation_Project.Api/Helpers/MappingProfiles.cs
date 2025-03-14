@@ -178,7 +178,24 @@ namespace Graduation_Project.APIs.Helpers
             // ========================================== WorkSchedule ==========================================
             CreateMap<WorkScheduleFromUserDto, WorkSchedule>();
             CreateMap<WorkSchedule, WorkScheduleFromDatabaseDto>();
+            // ========================================== ScheduleException ==========================================
+            CreateMap<ScheduleExceptionFromUserDto, ScheduleException>();
+            CreateMap<ScheduleException, ScheduleExceptionFromDatabaseDto>();
 
+            // ========================================== Appointment ==========================================
+            CreateMap<BookAppointmentDto, Appointment>();
+
+            CreateMap<Appointment, AppointmentDto>()
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
+                .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => src.AppointmentTime.ToString("HH:mm:ss")))
+                .ForMember(dest => dest.AppointmentDate, opt => opt.MapFrom(src => src.AppointmentDate.ToString("yyyy-MM-dd")))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())); // Convert enum to string
+
+            CreateMap<Appointment, AppointmentForPatientDto>()
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
+                .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => src.AppointmentTime.ToString("HH:mm:ss")))
+                .ForMember(dest => dest.AppointmentDate, opt => opt.MapFrom(src => src.AppointmentDate.ToString("yyyy-MM-dd")))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())); // Convert enum to string
 
         }
     }

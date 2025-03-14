@@ -42,8 +42,9 @@ namespace Graduation_Project.Service
                 NotificationId = notification.Id,
                 UserId = userId,
             };
-            await _unitOfWork.Repository<NotificationRecipient>().AddAsync(notificationRecipients);
+            await _unitOfWork.Repository<NotificationRecipient>().AddWithSaveAsync(notificationRecipients);
             await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", message, title);
+            //await _hubContext.Clients.All.SendAsync("ReceiveNotification", "New Message", "System");
 
             await _unitOfWork.Repository<NotificationRecipient>().SaveAsync();
         }

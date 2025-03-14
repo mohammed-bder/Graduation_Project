@@ -1,10 +1,11 @@
-﻿using Graduation_Project.Api.Attributes;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Graduation_Project.Api.DTO.Doctors
 {
-    public class ScheduleExceptionFromUserDto
+    public class ScheduleExceptionFromDatabaseDto
     {
+        //[ExistingId<Doctor>]
+        public int Id { get; set; }
         [DataType(DataType.Date)]
         public DateOnly Date { get; set; }
         [DataType(DataType.Time)]
