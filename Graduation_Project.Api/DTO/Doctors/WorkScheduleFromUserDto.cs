@@ -5,8 +5,6 @@ namespace Graduation_Project.Api.DTO.Doctors
 {
     public class WorkScheduleFromUserDto
     {
-        [ExistingId<Doctor>]
-        public int doctorId { get; set; }
 
         [ValidEnumValue<DayOfWeek>(ErrorMessage = "Invalid value for DayOfWeek.")]
         public DayOfWeek Day { get; set; } // e.g., Monday, Tuesday...

@@ -6,7 +6,6 @@ namespace Graduation_Project.Api.DTO.Doctors
     {
         //[ExistingId<Doctor>]
         public int Id { get; set; }
-        public int DoctorId { get; set; }
         [DataType(DataType.Date)]
         public DateOnly Date { get; set; }
         [DataType(DataType.Time)]

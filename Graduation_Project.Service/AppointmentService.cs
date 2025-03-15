@@ -45,9 +45,9 @@ namespace Graduation_Project.Service
             var appointmentSpec = new AppointmentSpecifications(doctor.Id, today);
             var bookedAppointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
-            if (doctor.WorkSchedules.IsNullOrEmpty())
+            if (doctor.WorkSchedules.IsNullOrEmpty() && doctor.ScheduleExceptions.IsNullOrEmpty())
             {
-                return ServiceResult<Dictionary<DateOnly, List<TimeOnly>>>.Failure("No work schedules found for this doctor.");
+                return ServiceResult<Dictionary<DateOnly, List<TimeOnly>>>.Failure("No schedules found for this doctor.");
             }
 
 

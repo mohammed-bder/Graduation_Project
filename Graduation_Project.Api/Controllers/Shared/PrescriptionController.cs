@@ -208,7 +208,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
             {
-                throw new InvalidOperationException("❌ You cannot Delete this prescription after 24 hour of creation.");
+                return BadRequest(new ApiResponse(400, "You cannot delete this prescription after 24 hour of creation."));
             }
 
             if (prescriptionFromDB.MedicinePrescriptions.Any())
@@ -280,8 +280,6 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionEditFormDto>>(prescriptionsFromDB));
         }
-
-
 
     }
 }

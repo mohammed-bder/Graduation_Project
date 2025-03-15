@@ -9,6 +9,7 @@ using Graduation_Project.Service;
 using Graduation_Project.Service.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -64,12 +65,14 @@ namespace Graduation_Project.Api
 
 
             builder.Services.AddScoped(typeof(ExistingIdFilter<>));
-            //builder.Services.AddScoped<INotificationService, NotificationService>();
 
             /****************************** Add Application Services ********************************/
             builder.Services.AddApplicationServices();
 
             builder.Services.AddIdentityServices(builder.Configuration);
+
+            /****************************** notification Services ********************************/
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
             builder.Services.AddSignalR();
 
