@@ -79,7 +79,7 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + ' ' + src.LastName
                 ))
                 .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
-                    src.Specialty != null ? src.Specialty.Name_ar : null
+                    src.Specialty != null ? src.Specialty.Name_en : null
                 ))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>());
 
@@ -87,7 +87,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Doctor, DoctorDetailsDto>()
                .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
-                    src.Specialty != null ? src.Specialty.Name_ar : null
+                    src.Specialty != null ? src.Specialty.Name_en : null
                 ))
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName

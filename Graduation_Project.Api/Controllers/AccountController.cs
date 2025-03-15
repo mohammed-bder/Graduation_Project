@@ -78,7 +78,7 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
                     Role = role,
-                    Speciality = doctor.Specialty.Name_ar,
+                    Speciality = doctor.Specialty.Name_en,
                     Description = doctor.Description,
                     PictureUrl = doctor.PictureUrl
                 };
@@ -158,7 +158,9 @@ namespace Graduation_Project.Api.Controllers
                 Gender = model.Gender,
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
-                SlotDurationMinutes = 20
+                SlotDurationMinutes = 20,
+                //PictureUrl = 
+                
             };
 
          
