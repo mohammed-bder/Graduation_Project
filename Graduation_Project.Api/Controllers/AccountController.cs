@@ -9,7 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Talabat.API.Dtos.Account;
+using System.Security.Cryptography;
+using Graduation_Project.Core.DTOs;
+using Graduation_Project.Service;
 
 namespace Graduation_Project.Api.Controllers
 {
@@ -54,57 +58,79 @@ namespace Graduation_Project.Api.Controllers
         [HttpPost("login")] // POST: api/account/login
         public async Task<ActionResult<object>> Login(LoginDTO model)
         {
-            // 1. check if email is founded
+            // 1. Check if email exists
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user is null)
-                return Unauthorized(new ApiResponse(401));
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
+
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
             if (!result.Succeeded)
-                return Unauthorized(new ApiResponse(401));
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized));
 
             var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-            // service get the current (Patient or Doctor) (user.id, role)
-            var BusinessUser = await _userService.GetCurrentBusinessUserAsync(user.Id, (UserRoleType)Enum.Parse(typeof(UserRoleType),role));
+            // Get the current business user (Doctor or Patient)
+            var BusinessUser = await _userService.GetCurrentBusinessUserAsync(user.Id,
+                (UserRoleType)Enum.Parse(typeof(UserRoleType), role));
 
-            if(BusinessUser is Doctor doctor)
+            // Generate JWT Token
+            var token = await _authServices.CreateTokenAsync(user, _userManager);
+
+            // Generate or Retrieve Active Refresh Token
+            var refreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+            if (refreshToken == null)
             {
-                var doctorDto = new DoctorDto()
+                refreshToken = TokenHelper.GenerateRefreshToken();
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
+
+            // Set refresh token in cookie
+            SetRefreshTokenInCookie(refreshToken.Token, refreshToken.ExpiresOn);
+
+            // Handle Doctor
+            if (BusinessUser is Doctor doctor)
+            {
+                var doctorDto = new DoctorDTO()
                 {
                     FullName = user.FullName,
                     Email = user.Email,
-                    Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Token = token,
                     Role = role,
                     Speciality = doctor.Specialty.Name_ar,
                     Description = doctor.Description,
-                    PictureUrl = doctor.PictureUrl
+                    PictureUrl = doctor.PictureUrl,
+                    RefreshToken = refreshToken.Token,
+                    RefreshTokenExpiration = refreshToken.ExpiresOn,
+                    IsAuthenticated = true
                 };
                 return Ok(doctorDto);
             }
+            // Handle Patient
             else if (BusinessUser is Patient patient)
             {
-                var patientDto = new PatientDto()
+                var patientDto = new PatientDTO()
                 {
                     FullName = user.FullName,
                     Email = user.Email,
-                    Token = await _authServices.CreateTokenAsync(user, _userManager),
+                    Token = token,
                     Role = role,
                     PictureUrl = patient.PictureUrl,
                     BloodType = patient.BloodType,
-                    Points = patient.Points, 
-                    Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null
+                    Points = patient.Points,
+                    Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null,
+                    RefreshToken = refreshToken.Token,
+                    RefreshTokenExpiration = refreshToken.ExpiresOn,
+                    IsAuthenticated = true
                 };
                 return Ok(patientDto);
             }
 
-
             return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest));
         }
-
-
 
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
         public async Task<ActionResult<UserDTO>> DoctorRegister(DoctorRegisterDTO model)
@@ -113,8 +139,8 @@ namespace Graduation_Project.Api.Controllers
             if (CheckEmailExists(model.Email).Result.Value)
                 return BadRequest(new ApiValidationErrorResponse() {Errors = new string[] { "This Email is Already Exist" } });
 
-            //if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2 )
-            //    return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
+            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(" ").Length != 2)
+                return BadRequest(new ApiResponse(400, "Full Name must include first and last name."));
 
             var user = new AppUser()
             {
@@ -161,15 +187,10 @@ namespace Graduation_Project.Api.Controllers
                 SlotDurationMinutes = 20
             };
 
-         
-
-
-
             try
             {
                 // Add Doctor to the application database
               var regDoctor =  await _doctorRepo.AddWithSaveAsync(newDoctor);
-
 
                 var newClinic = new Clinic()
                 {
@@ -179,26 +200,10 @@ namespace Graduation_Project.Api.Controllers
                 };
 
                 await _clinicRepo.AddWithSaveAsync(newClinic);
-
-
-                //await _clinicRepo.SaveAsync();
-
-                //// Use the IDs directly after saving
-                //var newDoctorClinic = new DoctorClinic
-                //{
-                //    DoctorId = createdDoctor.Id,
-                //    ClinicId = createdClinic.Id
-                //};
-
-                //await _doctorClinicRepo.AddAsync(newDoctorClinic);
-                //await _doctorClinicRepo.SaveAsync();
-
-
             }
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "Database update error while creating doctor for user: {Email}", model.Email);
-
 
                 // Rollback: If doctor creation fails, delete the user from identity DB
                 await _userManager.DeleteAsync(registeredUser);
@@ -206,10 +211,6 @@ namespace Graduation_Project.Api.Controllers
                 return BadRequest(new ApiResponse(500, "An unexpected error occurred."));
 
             }
-
-     
-
-  
 
             _logger.LogInformation("Doctor registered successfully: {Email}", model.Email);
 
@@ -220,7 +221,6 @@ namespace Graduation_Project.Api.Controllers
                 Token = await _authServices.CreateTokenAsync(user, _userManager),
                 Role = UserRoleType.Doctor.ToString()
             });
-
         }
 
 
@@ -230,8 +230,8 @@ namespace Graduation_Project.Api.Controllers
             if (CheckEmailExists(model.Email).Result.Value)
                 return BadRequest(new ApiValidationErrorResponse() { Errors = new string[] { "This Email is Already Exist" } });
 
-            //if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(' ').Length != 2)
-            //    return BadRequest(new ApiResponse(500, "you must enter first name and last name."));
+            if (string.IsNullOrWhiteSpace(model.FullName) || model.FullName.Split(' ').Length != 2)
+                return BadRequest(new ApiResponse(500, "you must enter first name and last name."));
 
             var user = new AppUser()
             {
@@ -324,7 +324,52 @@ namespace Graduation_Project.Api.Controllers
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok(new ApiResponse(200, "Logged out successfully."));
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Logged out successfully."));
+        }
+
+        [HttpGet("RefreshToken")] // GET: api/Account/refreshToken
+        public async Task<IActionResult> RefreshTokenAsync()
+        {
+
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Refresh token is missing"));
+
+            var result = await _authServices.RefreshTokenAsync(refreshToken);
+
+            if (!result.IsAuthenticated)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, result.Message));
+
+            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
+
+            return Ok(result);
+        }
+
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model)
+        {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is required"));
+
+            var result = await _authServices.RevokeTokenAsync(token);
+
+            if (!result)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is invalid"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Token revoked"));
+        }
+        private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
+        {
+            var cookiOption = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = expires.ToLocalTime(),
+            };
+
+            Response.Cookies.Append("refreshToken", refreshToken, cookiOption);
         }
     }
 }

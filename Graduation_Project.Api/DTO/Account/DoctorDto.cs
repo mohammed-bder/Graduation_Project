@@ -1,4 +1,6 @@
-﻿namespace Graduation_Project.Api.DTO.Account
+﻿using System.Text.Json.Serialization;
+
+namespace Graduation_Project.Api.DTO.Account
 {
     public class DoctorDto
     {
@@ -16,6 +18,9 @@
 
         public string? PictureUrl { get; set; }
 
+        [JsonIgnore]
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiration { get; set; }
 
     }
 }
