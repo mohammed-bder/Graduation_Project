@@ -85,7 +85,7 @@ namespace Graduation_Project.Service
                 // 1. Registered claims
                 audience: _configuration["JWT:ValidAudience"],
                 issuer: _configuration["JWT:ValidIssuer"],
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["JWT:DurationInMinutes"])),
+                expires: DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:DurationInDays"])),
 
                 // 2. Private claims
                 claims: authClams,
@@ -112,11 +112,16 @@ namespace Graduation_Project.Service
             if (!refreshToken.IsActive)
                 return new UserDto { IsAuthenticated = false , Message = "Inactive refresh token." };
 
-            refreshToken.RevokedOn = DateTime.UtcNow;
+            //refreshToken.RevokedOn = DateTime.UtcNow;
 
-            var newRefreshToken = TokenHelper.GenerateRefreshToken();
+            //var newRefreshToken = TokenHelper.GenerateRefreshToken();
+            //user.RefreshTokens.Add(newRefreshToken);
+            //await _userManager.UpdateAsync(user);
+
+            var newRefreshToken = refreshToken;
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
+
 
             var jwtToken = await CreateTokenAsync(user, _userManager);
 
