@@ -41,9 +41,6 @@ namespace Graduation_Project.Service
 
         public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
         {
-            //throw new NotImplementedException();
-
-
             // 1. Private Clam (User-Defined)
             var authClams = new List<Claim>()
             {

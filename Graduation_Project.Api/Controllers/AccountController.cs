@@ -295,7 +295,7 @@ namespace Graduation_Project.Api.Controllers
         }
 
 
-
+        /******************************** Get Current User ********************************/
         [Authorize]
         [HttpGet] // GET: api/Account/GetCurrentUser
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
@@ -320,17 +320,28 @@ namespace Graduation_Project.Api.Controllers
             return await _userManager.FindByEmailAsync(email) is not null;
         }
 
+        /******************************** Logout ********************************/
         [HttpPost("logout")] // POST: api/Account/logout
-        public async Task<ActionResult> Logout()
+        public async Task<IActionResult> Logout()
         {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new { message = "No refresh token found" });
+
+            var result = await _authServices.RevokeTokenAsync(refreshToken);
+            if (!result)
+                return BadRequest(new { message = "Failed to revoke token" });
+
+            Response.Cookies.Delete("refreshToken");
             await _signInManager.SignOutAsync();
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "Logged out successfully."));
+
+            return Ok(new { message = "Logged out successfully" });
         }
 
+        /******************************** Refresh Token ********************************/
         [HttpGet("RefreshToken")] // GET: api/Account/refreshToken
         public async Task<IActionResult> RefreshTokenAsync()
         {
-
             var refreshToken = Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(refreshToken))
@@ -346,6 +357,7 @@ namespace Graduation_Project.Api.Controllers
             return Ok(result);
         }
 
+        /******************************** Revoke Token ********************************/
         [HttpPost("RevokeToken")]
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model)
         {
