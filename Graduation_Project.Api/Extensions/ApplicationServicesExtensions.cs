@@ -2,7 +2,9 @@
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 
 namespace Graduation_Project.Api.Extensions
 {
@@ -45,6 +47,9 @@ namespace Graduation_Project.Api.Extensions
                     return new BadRequestObjectResult(ValidationErrorResponse);
                 };
             });
+
+            /****************************** Email Service ********************************/
+            services.AddTransient<IEmailService, EmailService>();
 
             return services;
         }
