@@ -49,7 +49,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             // mapping for Dto
             var patientForProfileToReturnDto = new PatientForProfileToReturnDto
             {
-                Email = email
+                Email = email??""
             };
 
             patientForProfileToReturnDto = _mapper.Map(patient, patientForProfileToReturnDto);
@@ -59,7 +59,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPut("EditProfile")]
-        public async Task<ActionResult<PatientForProfileDto>> EditProfile(PatientForProfileDto patientProfileFromRequest)
+        public async Task<ActionResult<PatientForProfileToReturnDto>> EditProfile(PatientForProfileDto patientProfileFromRequest)
         {
             // Get current user id
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
@@ -76,7 +76,12 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();
 
-            return Ok(patientProfileFromRequest);
+            PatientForProfileToReturnDto patientForProfileToReturnDto = new PatientForProfileToReturnDto
+            {
+                Email = User.FindFirstValue(ClaimTypes.Email)??""
+            };
+
+            return Ok(_mapper.Map(patientProfileFromRequest, patientForProfileToReturnDto));
         }
 
         /****************************************** Medicl Category ******************************************/
