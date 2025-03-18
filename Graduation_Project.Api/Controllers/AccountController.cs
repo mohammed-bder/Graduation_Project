@@ -30,6 +30,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -40,13 +41,15 @@ namespace Graduation_Project.Api.Controllers
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
-            IUserService userService)
+            IUserService userService,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
             _logger = logger;
             _userService = userService;
+            _emailService = emailService;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -75,6 +78,9 @@ namespace Graduation_Project.Api.Controllers
             // Get the current business user (Doctor or Patient)
             var BusinessUser = await _userService.GetCurrentBusinessUserAsync(user.Id,
                 (UserRoleType)Enum.Parse(typeof(UserRoleType), role));
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Please verify your email first."));
 
             // Generate JWT Token
             var token = await _authServices.CreateTokenAsync(user, _userManager);
@@ -162,6 +168,14 @@ namespace Graduation_Project.Api.Controllers
             if (registeredUser == null)
                 return BadRequest(new ApiResponse(400, "User registration failed."));
 
+            var OTP = await _userManager.GenerateEmailConfirmationTokenAsync(registeredUser);
+            registeredUser.OtpCode = OTP;
+            registeredUser.OtpExpiry = DateTime.Now.AddMinutes(5);
+            await _userManager.UpdateAsync(registeredUser);
+
+            var emailsent = await _emailService.SendEmailAsync(model.Email, "OTP Code", OTP);
+            if(!emailsent)
+                return StatusCode(500,new ApiResponse(500, "Failed to send OTP code to your email."));
            
             // split the full name into first and last name
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
@@ -222,7 +236,26 @@ namespace Graduation_Project.Api.Controllers
                 Role = UserRoleType.Doctor.ToString()
             });
         }
+        [HttpPost("VerifyOTP")]
+        public async Task<IActionResult> VerifyOTP(string email , string OTP)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
 
+            if (user.OtpCode != OTP || user.OtpExpiry < DateTime.Now)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid OTP"));
+
+            user.EmailConfirmed = true;
+            user.OtpCode = null;
+            user.OtpExpiry = null;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to verify OTP"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Email verified successfully"));
+        }
 
         [HttpPost("PatientRegister")] // post: api/account/PatientRegister
         public async Task<ActionResult<UserDTO>> PatientRegister(PatientRegisterDTO model)
