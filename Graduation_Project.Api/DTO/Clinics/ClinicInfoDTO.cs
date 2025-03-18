@@ -12,8 +12,9 @@
 
         public string? Address { get; set; }     //  Address or location of the clinic
 
+        
         public ClinicType? Type { get; set; }
-        // Relationships
+     
         public int RegionId { get; set; }
         public String RegionName { get; set; }
 
@@ -21,14 +22,6 @@
         public int GovernorateId { get; set; }
         public string GovernorateName { get; set; }
 
-
-        ////public ICollection<DoctorClinic> DoctorClinics { get; set; } // Navigation property: a clinic can have multiple doctors
-        //public ICollection<ContactNumber>? ContactNumbers { get; set; } // Navigation property: a clinic can have multiple doctors
-
-
-        //public ICollection<Appointment>? Appointments { get; set; } // Navigation property: a clinic can have multiple doctors
-        //public ICollection<TherapySession>? therapySessions { get; set; } // Navigation property: a clinic can have multiple doctors
-        //public ICollection<ClincSecretary>? clincSecretarys { get; set; } // Navigation property: a clinic can have multiple Secretary
 
     }
 }
