@@ -16,5 +16,7 @@ namespace Graduation_Project.Api.DTO.Shared
         public int PatientId { get; set; }
 
         public ICollection<MedicinePrescriptionDto> MedicinePrescriptions { get; set; }
+
+        public ICollection<PrescriptionImageDTO>? PrescriptionImages { get; set; }
     }
 }
