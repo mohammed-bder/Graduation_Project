@@ -34,6 +34,8 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + ' ' + src.LastName
                 )).ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorForProfileToReturnDto>>());
 
+
+            CreateMap<ClinicEditDTO, Clinic>();
             
 
             CreateMap<DoctorForProfileDto, Doctor>()
@@ -101,8 +103,24 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<ClinicAboutDto, DoctorAboutDto>();
 
+           
 
             CreateMap<Education, DoctorAboutDto>();
+
+            // ========================================== Clinic ==========================================
+            CreateMap<Clinic, ClinicInfoToReturnDTO>()
+                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name_en))
+                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name_en))
+                .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
+                .ForMember(dest => dest.contactNumbers , 
+                O => O.MapFrom(
+                    src => src.ContactNumbers.Select(cn => cn.PhoneNumber).ToList()
+                    ))
+                ;
+
+            CreateMap<ContactNumber, ContactNumberDTO>();
+
+
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
@@ -134,13 +152,7 @@ namespace Graduation_Project.APIs.Helpers
                     ));
 
 
-            // ========================================== Clinic ==========================================
-            CreateMap<Clinic, ClinicInfoDTO>()
-                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name_en))
-                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name_en))
-                .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
-                ;
-
+     
 
 
             // ========================================== Governorate ==========================================

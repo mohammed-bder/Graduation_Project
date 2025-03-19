@@ -9,5 +9,8 @@
         //public double Longitude { get; set; }  // Longitude coordinate
 
         public string? Address { get; set; }     //  Address or location of the clinic
+
+
+        public ICollection<ContactNumberDTO>? contactNumbers { get; set; }
     }
 }
