@@ -60,7 +60,9 @@
                 .HasKey(cs => new { cs.ClincId, cs.SecretaryId });
 
             modelBuilder.Entity<ContactNumber>()
-                .HasKey(cn => new { cn.ClinicId, cn.PhoneNumber });
+                .HasIndex(cn => new {cn.PhoneNumber })
+                .IsUnique();
+                
 
             //modelBuilder.Entity<DoctorClinic>()
             //    .HasKey(dc => new { dc.DoctorId, dc.ClinicId });

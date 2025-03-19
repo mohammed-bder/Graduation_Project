@@ -5,6 +5,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
+<<<<<<< HEAD
     <NameOfLastUsedPublishProfile>D:\01_DotNET\Graduation Project\gp2\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+=======
+    <NameOfLastUsedPublishProfile>D:\01_DotNET\Graduation Project\gp2\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy2.pubxml</NameOfLastUsedPublishProfile>
+>>>>>>> imagePrescription
   </PropertyGroup>
 </Project>
