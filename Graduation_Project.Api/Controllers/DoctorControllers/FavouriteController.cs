@@ -127,7 +127,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var favourite = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(specs);
             if (favourite == null)
                 return NotFound(new ApiResponse(StatusCodes.Status400BadRequest, "Doctor is not Favourite for the current patient"));
-            // add favourite record
+            // remove favourite record
 
             unitOfWork.Repository<Favorite>().Delete(favourite);
             await unitOfWork.Repository<Favorite>().SaveAsync();
