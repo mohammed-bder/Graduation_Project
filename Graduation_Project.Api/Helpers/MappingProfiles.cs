@@ -62,6 +62,8 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + " " + src.LastName
                 ));
 
+            CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>();
+
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
                     src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0]

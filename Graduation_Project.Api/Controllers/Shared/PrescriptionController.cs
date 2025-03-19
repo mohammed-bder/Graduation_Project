@@ -26,12 +26,14 @@ namespace Graduation_Project.Api.Controllers.Shared
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         private readonly IUserService _userService;
 
-        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
+        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper,INotificationService notificationService, IUserService userService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _notificationService = notificationService;
             _userService = userService;
         }
 
@@ -100,8 +102,8 @@ namespace Graduation_Project.Api.Controllers.Shared
                 }
 
                 var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
-
-               
+                // push notification
+                await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New Prescription From Doctor {doctor.FirstName}", "New Prescription");
                 return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
@@ -254,8 +256,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-                var pspec = new PatientForProfileSpecs(patientId);
-                var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(pspec);
+                var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
                 if (patient is null)
                 {
                     return NotFound(new ApiResponse(404));
