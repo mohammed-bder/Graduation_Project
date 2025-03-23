@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+<<<<<<< HEAD
+    <NameOfLastUsedPublishProfile>D:\4th Computer\GraduationProject\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy2.pubxml</NameOfLastUsedPublishProfile>
+=======
+    <ActiveDebugProfile>http</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>D:\01_DotNET\Graduation Project\gp2\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy3.pubxml</NameOfLastUsedPublishProfile>
+>>>>>>> 39303f521b03e499dd3b0f7f6ae51f89fca7f09f
+  </PropertyGroup>
+</Project>
