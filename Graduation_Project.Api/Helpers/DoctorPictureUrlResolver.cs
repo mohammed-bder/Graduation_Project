@@ -15,7 +15,7 @@ namespace Graduation_Project.Api.Helpers
 
         public string Resolve(Appointment source, AppointmentForPatientDto destination, string destMember, ResolutionContext context)
         {
-            if (source.Doctor != null && !string.IsNullOrEmpty(source.Doctor.PictureUrl))
+            if (source.Doctor != null && string.IsNullOrEmpty(source.Doctor.PictureUrl))
                 return string.Empty;
 
             // Get Doctor's PictureUrl and MedicalLicensePictureUrl dynamically

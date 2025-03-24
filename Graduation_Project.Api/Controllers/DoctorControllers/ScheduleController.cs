@@ -129,8 +129,6 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (durationMinutes <= 0)
                 return BadRequest(new ApiResponse(400, "Slot duration must be greater than zero."));
 
-            if (doctor.WorkSchedules.IsNullOrEmpty() && doctor.ScheduleExceptions.IsNullOrEmpty())
-                return NotFound(new ApiResponse(404, "No WorkSchedules or Schedule Exceptions found for this Doctor."));
 
             // 2️⃣ Fetch all booked appointments for the doctor
             var appointmentSpec = new AppointmentSpecifications(doctor.Id, DateOnly.FromDateTime(DateTime.Today));
@@ -147,6 +145,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                                   : BadRequest(new ApiResponse(400, "Failed to change Slot Duration"));
             }
 
+            if (doctor.WorkSchedules.IsNullOrEmpty() && doctor.ScheduleExceptions.IsNullOrEmpty())
+                return NotFound(new ApiResponse(404, "No WorkSchedules or Schedule Exceptions found for this Doctor."));
             // 3️⃣ Check if the new slot duration is smaller or bigger
             bool isReducingSlots = durationMinutes < doctor.SlotDurationMinutes;
 
