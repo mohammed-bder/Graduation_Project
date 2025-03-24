@@ -100,6 +100,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
         {
             IReadOnlyList<Doctor>? doctors;
+            int count;
             if (specParams.RegionId.HasValue || specParams.GovernorateId.HasValue)
             {
                 // filter the doctors based on the region & governorate 
@@ -110,7 +111,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 var doctorSpecs = new SortingDoctorWithSpecificaitonWithOutPagination(specParams);
                 doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecs);
                 doctors = FilteredDoctors(doctors, specParams.RegionId, specParams.GovernorateId);
-
+                count = doctors.Count;
                 // apply pagination 
                 doctors = doctors.Skip((specParams.PageIndex - 1) * specParams.PageSize).Take(specParams.PageSize).ToList();
             }
@@ -118,12 +119,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             {
                 var doctorSpecification = new SortingDoctorWithSpecificaiton(specParams);
                 doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+                var countSpec = new DoctorWithFilterCountSpecification(specParams);
+                count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
             }
 
             var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
-            var countSpec = new DoctorWithFilterCountSpecification(specParams);
-            var count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
-
             return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
