@@ -189,7 +189,6 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpDelete("cancel-booking/{id:int}")]
-        [ServiceFilter(typeof(ExistingIdFilter<Appointment>))]
         public async Task<ActionResult> CancelAppointment(int id)
         {
             // Step 1: Get the appointment and related entities
@@ -200,7 +199,13 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return NotFound(new ApiResponse(404, "Appointment not found"));
             }
 
-            if(appointment.Status == AppointmentStatus.Cancelled)
+            var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            if(appointment.PatientId != PatientId)
+            {
+                return Unauthorized(new ApiResponse(401, "This Appointment Doesnt belong to this Patient"));
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
             {
                 BadRequest(new ApiResponse(400, "Appointment Already Cancelled"));
             }
@@ -309,7 +314,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             // Convert to DTOs for cleaner response
             var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
-
+            
             Dictionary<string, Dictionary<string, AppointmentForPatientDto>>? groupedAppointments = appointmentDtos
             .GroupBy(a => a.AppointmentDate) // Group by date first
             .ToDictionary(
@@ -323,7 +328,8 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             return Ok(groupedAppointments);
         }
-    }
 
+
+    }
 }
 

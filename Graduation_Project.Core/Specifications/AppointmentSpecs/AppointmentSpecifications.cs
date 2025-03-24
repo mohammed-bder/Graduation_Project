@@ -8,11 +8,10 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
 {
     public class AppointmentSpecifications : BaseSpecifications<Appointment>
     {
-        public AppointmentSpecifications(int doctorId, DateOnly selectedWeek)
+        public AppointmentSpecifications(int doctorId, DateOnly fromDate)
             : base(a =>
                 a.DoctorId == doctorId &&
-                a.AppointmentDate >= selectedWeek &&
-                a.AppointmentDate < selectedWeek.AddDays(7)
+                a.AppointmentDate >= fromDate
             )
         {
 
