@@ -16,11 +16,15 @@ namespace Graduation_Project.Api.Helpers
         public string Resolve(Appointment source, AppointmentForPatientDto destination, string destMember, ResolutionContext context)
         {
             if (source.Doctor != null && !string.IsNullOrEmpty(source.Doctor.PictureUrl))
-            {
-                return $"{_configuration["ServerUrl"]}/{source.Doctor.PictureUrl}";
-            }
+                return string.Empty;
 
-            return string.Empty; // Return empty if there is no picture
+            // Get Doctor's PictureUrl and MedicalLicensePictureUrl dynamically
+            var pictureUrl = source.Doctor.PictureUrl;
+
+            if (!string.IsNullOrEmpty(pictureUrl))
+                return pictureUrl[0] == '/' ? $"{_configuration["ServerUrl"]}{pictureUrl}" : $"{_configuration["ServerUrl"]}/{pictureUrl}";
+
+            return string.Empty;
         }
     }
     
