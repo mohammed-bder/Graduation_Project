@@ -85,7 +85,9 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
                     src.Specialty != null ? src.Specialty.Name_en : null
                 ))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>());
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>())
+                .ForMember(dest => dest.Region, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Region.Name_en ))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Governorate.Name_en));
 
             /****************************************** Mapping for Doctor From Patient ******************************************/
 

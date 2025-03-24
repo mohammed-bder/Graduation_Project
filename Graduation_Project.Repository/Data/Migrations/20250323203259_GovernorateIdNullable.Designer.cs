@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250323203259_GovernorateIdNullable")]
+    partial class GovernorateIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +54,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GovernorateId")
+                    b.Property<int?>("GovernorateId")
                         .HasColumnType("int");
 
                     b.Property<double>("Latitude")
@@ -1220,9 +1223,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Governorate", "Governorate")
                         .WithMany("clinics")
-                        .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GovernorateId");
 
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Region", "Region")
                         .WithMany("clinics")

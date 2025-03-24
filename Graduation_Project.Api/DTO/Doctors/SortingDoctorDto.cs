@@ -10,5 +10,8 @@ namespace Graduation_Project.Api.DTO.Doctors
         public string Specialty { get; set; }
         public string? PictureUrl { get; set; }
         public double? Rating { get; set; }
+        public string? Region { get; set; }
+        public string? Governorate { get; set; }
+
     }
 }

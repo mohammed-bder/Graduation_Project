@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250323205017_RemoveGovernorateId2")]
+    partial class RemoveGovernorateId2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,9 +54,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GovernorateId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
 
@@ -81,8 +81,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasIndex("DoctorId")
                         .IsUnique()
                         .HasFilter("[DoctorId] IS NOT NULL");
-
-                    b.HasIndex("GovernorateId");
 
                     b.HasIndex("RegionId");
 
@@ -1218,12 +1216,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .WithOne("Clinic")
                         .HasForeignKey("Graduation_Project.Core.Models.Clinics.Clinic", "DoctorId");
 
-                    b.HasOne("Graduation_Project.Core.Models.Clinics.Governorate", "Governorate")
-                        .WithMany("clinics")
-                        .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Region", "Region")
                         .WithMany("clinics")
                         .HasForeignKey("RegionId")
@@ -1231,8 +1223,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
-
-                    b.Navigation("Governorate");
 
                     b.Navigation("Region");
                 });
@@ -1635,8 +1625,6 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Governorate", b =>
                 {
-                    b.Navigation("clinics");
-
                     b.Navigation("regions");
                 });
 

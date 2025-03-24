@@ -7,7 +7,11 @@
         [Required(ErrorMessage = "Governorate name is required. Please provide a name.")]
         public string Name_en { get; set; }
 
+        // Relations
         public List<Region> regions { get; set; }
+
+        public List<Clinic>? clinics { get; set; }
+
 
     }
 }

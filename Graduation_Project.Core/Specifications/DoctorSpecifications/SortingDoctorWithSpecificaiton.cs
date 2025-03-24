@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
@@ -68,6 +69,10 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             {
                 AddOrderByDescending(p => p.Rating);
             }
+
+            ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Governorate));
+            ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Region));
+
 
             Includes.Add(d => d.Specialty);
             ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
