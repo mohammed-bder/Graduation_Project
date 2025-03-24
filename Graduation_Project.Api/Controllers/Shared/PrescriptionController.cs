@@ -26,12 +26,14 @@ namespace Graduation_Project.Api.Controllers.Shared
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         private readonly IUserService _userService;
 
-        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
+        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper,INotificationService notificationService, IUserService userService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _notificationService = notificationService;
             _userService = userService;
         }
 
@@ -75,7 +77,33 @@ namespace Graduation_Project.Api.Controllers.Shared
                     }
                 }
 
+                if(!prescriptionFromUser.PrescriptionImages.IsNullOrEmpty())
+                {
+                    var prescriptionImages = prescriptionFromUser.PrescriptionImages.Select(
+                        prescriptionImage => new PrescriptionImage()
+                        {
+                            PrescriptionId = createdPrescription.Id,
+                            Name = prescriptionImage.Name,
+                            ImageUrl = prescriptionImage.ImageUrl
+                        }).ToList();
+
+                    await _unitOfWork.Repository<PrescriptionImage>().AddRangeAsync(prescriptionImages);
+                    var result = await _unitOfWork.CompleteAsync();
+                    if(result == 0)
+                    {
+                        return BadRequest(new ApiResponse(400));
+                    }
+                    else
+                    {
+                        Console.WriteLine("prescriptionImages Added Successfully");
+                    }
+
+
+                }
+
                 var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
+                // push notification
+                await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New Prescription From Doctor {doctor.FirstName}", "New Prescription");
                 return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
@@ -90,7 +118,7 @@ namespace Graduation_Project.Api.Controllers.Shared
         [ServiceFilter(typeof(ExistingIdFilter<Prescription>))]
         public async Task<ActionResult<PrescriptionEditFormDto>> EditPrescription(PrescriptionEditFormDto updateDto, int id)
         {
-            var spec = new PrescriptionWithMedicinePrescriptionsSpec(id);
+            var spec = new PrescriptionWithMedicinePrescriptionsAndImageSpec(id);
             var prescriptionFromDB = await _unitOfWork.Repository<Prescription>().GetWithSpecsAsync(spec);
             if(prescriptionFromDB is null)
             {
@@ -167,7 +195,7 @@ namespace Graduation_Project.Api.Controllers.Shared
         [ServiceFilter(typeof(ExistingIdFilter<Prescription>))]
         public async Task<ActionResult> DeletePrescription(int id)
         {
-            var spec = new PrescriptionWithMedicinePrescriptionsSpec(id);
+            var spec = new PrescriptionWithMedicinePrescriptionsAndImageSpec(id);
             var prescriptionFromDB = await _unitOfWork.Repository<Prescription>().GetWithSpecsAsync(spec);
             if(prescriptionFromDB is null)
             {
@@ -182,7 +210,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
             {
-                throw new InvalidOperationException("❌ You cannot Delete this prescription after 24 hour of creation.");
+                return BadRequest(new ApiResponse(400, "You cannot delete this prescription after 24 hour of creation."));
             }
 
             if (prescriptionFromDB.MedicinePrescriptions.Any())
@@ -205,7 +233,7 @@ namespace Graduation_Project.Api.Controllers.Shared
         [HttpGet("GetById/{id:int}")]
         public async Task<ActionResult<Prescription>> GetPrescriptionById(int id)
         {
-            var spec = new PrescriptionWithMedicinePrescriptionsSpec(id);
+            var spec = new PrescriptionWithMedicinePrescriptionsAndImageSpec(id);
             var prescriptionFromDB = await _unitOfWork.Repository<Prescription>().GetWithSpecsAsync(spec);
             if(prescriptionFromDB is null)
             {
@@ -213,8 +241,8 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
-
         }
+
 
         [Authorize(Roles = $"{nameof(UserRoleType.Doctor)},{nameof(UserRoleType.Patient)}")]
         [HttpGet("GetAllForPatient")]
@@ -228,8 +256,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-                var pspec = new PatientForProfileSpecs(patientId);
-                var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(pspec);
+                var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
                 if (patient is null)
                 {
                     return NotFound(new ApiResponse(404));
@@ -245,7 +272,7 @@ namespace Graduation_Project.Api.Controllers.Shared
                 }
             }
             
-            var spec = new AllPrescriptionsForPatientWithMedicinePrescriptionsSpec(id.Value);
+            var spec = new AllPrescriptionsForPatientWithMedicinePrescriptionsAndImageSpec(id.Value);
             var prescriptionsFromDB = await _unitOfWork.Repository<Prescription>().GetAllWithSpecAsync(spec);
             if (prescriptionsFromDB.IsNullOrEmpty())
             {
@@ -254,8 +281,6 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionEditFormDto>>(prescriptionsFromDB));
         }
-
-
 
     }
 }

@@ -64,7 +64,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 Email = email,
             };
 
-            doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
+            //doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
+            doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
             return Ok(doctorForProfileToReturnDto);
         }
@@ -88,17 +89,37 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
 
+           //var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
+
             return Ok(doctorDtoFromRequest);
 
         }
 
         //[Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("DoctorWithFilter")]
-        public async Task<ActionResult<Pagination<Doctor>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
+        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
         {
-            //var doctorSpecification = new SortingDoctorWithSpecificaiton(sort);
-            var doctorSpecification = new SortingDoctorWithSpecificaiton(specParams);
-            var doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+            IReadOnlyList<Doctor>? doctors;
+            if (specParams.RegionId.HasValue || specParams.GovernorateId.HasValue)
+            {
+                // filter the doctors based on the region & governorate 
+                if (!specParams.GovernorateId.HasValue && specParams.RegionId.HasValue)
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "RegionId Must Have GovernorateId"));
+
+                // apply pagination after fetching data from the dataBase that have the includes
+                var doctorSpecs = new SortingDoctorWithSpecificaitonWithOutPagination(specParams);
+                doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecs);
+                doctors = FilteredDoctors(doctors, specParams.RegionId, specParams.GovernorateId);
+
+                // apply pagination 
+                doctors = doctors.Skip((specParams.PageIndex - 1) * specParams.PageSize).Take(specParams.PageSize).ToList();
+            }
+            else
+            {
+                var doctorSpecification = new SortingDoctorWithSpecificaiton(specParams);
+                doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(doctorSpecification);
+            }
+
             var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
             var countSpec = new DoctorWithFilterCountSpecification(specParams);
             var count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
@@ -182,8 +203,19 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(doctorAboutDto);
         }
 
+        private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
+        {
+            if (regionId == null && governorateId == null)
+                return doctors;
 
-        
+            if (governorateId.HasValue && !regionId.HasValue)
+                doctors = doctors.Where(d => d.Clinic?.GovernorateId == governorateId).ToList();
+            else
+                doctors = doctors.Where(d => (d.Clinic?.GovernorateId == governorateId) && (d.Clinic?.RegionId == regionId)).ToList();
+
+            return doctors;
+        }
+
     }
 
 }

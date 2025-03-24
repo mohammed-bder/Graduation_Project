@@ -22,6 +22,7 @@ namespace Graduation_Project.Api.Extensions
             //unitOfWork replaces GenericRepository
             //this line is equivalent to the following line
 
+            //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             /****************************** add services for AutoMapper ********************************/

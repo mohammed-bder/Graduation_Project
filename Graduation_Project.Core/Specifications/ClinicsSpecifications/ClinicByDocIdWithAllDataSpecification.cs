@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.ClinicsSpecifications
 {
-    public class ClinicWithAllDataSpecification : BaseSpecifications<Clinic>
+    public class ClinicByDocIdWithAllDataSpecification : BaseSpecifications<Clinic>
     {
 
-        public ClinicWithAllDataSpecification() : base()
+        public ClinicByDocIdWithAllDataSpecification() : base()
         {
             //Includes.Add(c => c.Region);
             //Includes.Add(C => C.ContactNumbers);
@@ -24,7 +24,7 @@ namespace Graduation_Project.Core.Specifications.ClinicsSpecifications
         }
 
 
-        public ClinicWithAllDataSpecification(int id) : base( c => c.Id == id)
+        public ClinicByDocIdWithAllDataSpecification(int doctorId) : base( c => c.DoctorId == doctorId)
         {
             //Includes.Add(c => c.Region);
             //Includes.Add(C => C.ContactNumbers);

@@ -15,6 +15,9 @@ namespace Graduation_Project.Api.DTO.Doctors
 
         public double? Rating { get; set; }
 
+
+        public string? MedicalLicensePictureUrl { get; set; }
+
         public string? PictureUrl { get; set; }
 
         public int? ExperianceYears { get; set; }

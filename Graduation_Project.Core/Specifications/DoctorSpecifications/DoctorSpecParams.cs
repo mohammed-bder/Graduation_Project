@@ -35,6 +35,8 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
         public string? Sort { get; set; }
         public int? SpecialtyId { get; set; }
         public int? SubSpecialtyId { get; set; }
+        public int? RegionId { get; set; }
+        public int? GovernorateId { get; set; }
         public Gender? Gender { get; set; }
         public string? FirstNameSearch { get; private set; }
         public string? LastNameSearch { get; private set; }

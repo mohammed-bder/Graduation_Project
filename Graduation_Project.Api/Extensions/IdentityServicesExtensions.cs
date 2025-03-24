@@ -46,6 +46,22 @@ namespace Graduation_Project.Api.Extensions
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:DurationInDays"])),
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // Allow JWT token via WebSockets
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            context.HttpContext.Request.Path.StartsWithSegments("/Hubs/NotificationHub"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             return services;

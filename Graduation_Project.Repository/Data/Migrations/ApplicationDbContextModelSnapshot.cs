@@ -51,6 +51,9 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
+                    b.Property<int>("GovernorateId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
 
@@ -79,6 +82,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsUnique()
                         .HasFilter("[DoctorId] IS NOT NULL");
 
+                    b.HasIndex("GovernorateId");
+
                     b.HasIndex("RegionId");
 
                     b.ToTable("clinics");
@@ -86,13 +91,25 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ContactNumber", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("ClinicId")
                         .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ClinicId", "PhoneNumber");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
 
                     b.ToTable("contactNumbers");
                 });
@@ -247,7 +264,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PolicyId")
+                    b.Property<int>("PolicyId")
                         .HasColumnType("int");
 
                     b.Property<int>("RescheduleCount")
@@ -625,7 +642,7 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsRead")
+                    b.Property<bool?>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<int>("NotificationId")
@@ -1115,6 +1132,31 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.ToTable("Prescription");
                 });
 
+            modelBuilder.Entity("Graduation_Project.Core.Models.Shared.PrescriptionImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PrescriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrescriptionId");
+
+                    b.ToTable("PrescriptionImage");
+                });
+
             modelBuilder.Entity("MedicineMedicinePharmacy", b =>
                 {
                     b.Property<int>("MedicinesId")
@@ -1176,6 +1218,12 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .WithOne("Clinic")
                         .HasForeignKey("Graduation_Project.Core.Models.Clinics.Clinic", "DoctorId");
 
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Governorate", "Governorate")
+                        .WithMany("clinics")
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Region", "Region")
                         .WithMany("clinics")
                         .HasForeignKey("RegionId")
@@ -1183,6 +1231,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Governorate");
 
                     b.Navigation("Region");
                 });
@@ -1253,7 +1303,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasOne("Graduation_Project.Core.Models.Doctors.DoctorPolicy", "Policy")
                         .WithMany()
                         .HasForeignKey("PolicyId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("Doctor");
 
@@ -1532,6 +1583,17 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("Graduation_Project.Core.Models.Shared.PrescriptionImage", b =>
+                {
+                    b.HasOne("Graduation_Project.Core.Models.Shared.Prescription", "Prescription")
+                        .WithMany("PrescriptionImages")
+                        .HasForeignKey("PrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prescription");
+                });
+
             modelBuilder.Entity("MedicineMedicinePharmacy", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Pharmacies.Medicine", null)
@@ -1573,6 +1635,8 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Governorate", b =>
                 {
+                    b.Navigation("clinics");
+
                     b.Navigation("regions");
                 });
 
@@ -1603,8 +1667,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Feedbacks");
-
-                    b.Navigation("NotificationRecipients");
 
                     b.Navigation("Policies");
 
@@ -1685,6 +1747,8 @@ namespace Graduation_Project.Repository.Data.Migrations
             modelBuilder.Entity("Graduation_Project.Core.Models.Shared.Prescription", b =>
                 {
                     b.Navigation("MedicinePrescriptions");
+
+                    b.Navigation("PrescriptionImages");
                 });
 #pragma warning restore 612, 618
         }

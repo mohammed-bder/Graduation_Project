@@ -24,15 +24,17 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IUserService userService;
-        
+        private readonly INotificationService notificationService;
         private readonly IMapper _mapper;
 
         public FavouriteController(IUnitOfWork unitOfWork
-                                , IUserService userService
+                                , IUserService userService 
+                                , INotificationService notificationService
                                 , IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.userService = userService;
+            this.notificationService = notificationService;
             _mapper = mapper;
         }
 
@@ -107,9 +109,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             // Push New Notification for the doctor
             var doctor = await unitOfWork.Repository<Doctor>().GetAsync(id);
 
-            var currentPatient = await userService.GetCurrentUserAsync();
-
-            //await _notificationService.SendNotificationAsync(currentPatient.Id, "A New Patient Add you to favourite", "New Favourite");
+            await notificationService.SendNotificationAsync(doctor.ApplicationUserId, "A New Patient Add you to favourite", "New Favourite");
 
             return Ok(new ApiResponse(StatusCodes.Status201Created,"Created Successfully"));
         }
@@ -127,7 +127,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var favourite = await unitOfWork.Repository<Favorite>().GetWithSpecsAsync(specs);
             if (favourite == null)
                 return NotFound(new ApiResponse(StatusCodes.Status400BadRequest, "Doctor is not Favourite for the current patient"));
-            // add favourite record
+            // remove favourite record
 
             unitOfWork.Repository<Favorite>().Delete(favourite);
             await unitOfWork.Repository<Favorite>().SaveAsync();
