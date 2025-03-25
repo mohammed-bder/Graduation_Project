@@ -39,23 +39,24 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
                 (!specParams.SpecialtyId.HasValue || d.SpecialtyId == specParams.SpecialtyId) &&
                 // ✅ Apply Availability Filter
                 (
-                    (specParams.availability == AvailabilityFilter.AllTimes &&
-                        (d.WorkSchedules.Any() || d.ScheduleExceptions.Any())
+                    (!specParams.Availability.HasValue) ||
+                    (specParams.Availability == AvailabilityFilter.AllTimes &&
+                        (d.ScheduleExceptions.Any(se => se.IsAvailable) || d.WorkSchedules.Any())
                     ) ||                                    // ✅ Ensure doctor has at least one schedule
-                    (specParams.availability == AvailabilityFilter.Today &&
+                    (specParams.Availability == AvailabilityFilter.Today &&
                         (
-                            d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(DateTime.Today) && se.IsAvailable)
+                            d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Today) && se.IsAvailable)
                             ||
-                            (!d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(DateTime.Today) && !se.IsAvailable)
-                             && d.WorkSchedules.Any(ws => ws.Day == DateTime.Today.DayOfWeek))
+                            (!d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Today) && !se.IsAvailable)
+                             && d.WorkSchedules.Select(ws => ws.Day).Contains(specParams.Today.DayOfWeek))
                         )
                     ) ||
-                    (specParams.availability == AvailabilityFilter.Tomorrow &&
+                    (specParams.Availability == AvailabilityFilter.Tomorrow &&
                         (
-                            (d.WorkSchedules.Any(ws => ws.Day == DateTime.Today.AddDays(1).DayOfWeek) ||
-                             d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(DateTime.Today.AddDays(1)) && se.IsAvailable))
-                            &&
-                            !d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(DateTime.Today.AddDays(1)) && !se.IsAvailable)
+                            d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Tomorrow) && se.IsAvailable)
+                            ||
+                            (!d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Tomorrow) && !se.IsAvailable)
+                             && d.WorkSchedules.Select(ws => ws.Day).Contains(specParams.Tomorrow.DayOfWeek))
                         )
                     )
                 )
