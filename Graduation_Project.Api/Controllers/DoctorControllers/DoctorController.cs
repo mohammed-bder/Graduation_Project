@@ -32,17 +32,21 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         //private readonly IUnitOfWork unitOfWork;
         //private readonly IUserService userService;
         private readonly IMapper _mapper;
+        private readonly IFileUploadService _fileUploadService;
         private readonly IUnitOfWork _unitOfWork;
 
         public DoctorController(UserManager<AppUser> userManager
                                 , IUnitOfWork unitOfWork
                                 , IUserService userService
-                                , IMapper mapper)
+                                , IMapper mapper
+            , IFileUploadService fileUploadService
+            )
         {
             _userManager = userManager;
             //this.unitOfWork = unitOfWork;
             //this.userService = userService;
             _mapper = mapper;
+            _fileUploadService = fileUploadService;
             _unitOfWork = unitOfWork;
         }
 

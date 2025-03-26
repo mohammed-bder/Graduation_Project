@@ -26,6 +26,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
+        private readonly IFileUploadService _fileUploadService;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -36,13 +37,16 @@ namespace Graduation_Project.Api.Controllers
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
-            IUserService userService)
+            IUserService userService,
+            IFileUploadService fileUploadService
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
             _logger = logger;
             _userService = userService;
+            this._fileUploadService = fileUploadService;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -149,6 +153,14 @@ namespace Graduation_Project.Api.Controllers
                 await _userManager.DeleteAsync(registeredUser);
                 return BadRequest(new ApiResponse(400, "please enter valid specialty"));
             }
+
+
+            // upload MedicalLicensePictureUrl
+
+            var medicalLicensePictureUrl =  await _fileUploadService.UploadFileAsync(model.ImageFile! , $"Doctor/License/{registeredUser.Id}");
+
+
+
             var newDoctor = new Doctor()
             {
                 FirstName = nameParts.Length > 0 ? nameParts[0] : string.Empty,
@@ -159,8 +171,7 @@ namespace Graduation_Project.Api.Controllers
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
                 SlotDurationMinutes = 20,
-                //PictureUrl = 
-                
+                MedicalLicensePictureUrl = medicalLicensePictureUrl
             };
 
          
