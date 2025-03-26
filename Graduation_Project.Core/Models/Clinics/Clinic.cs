@@ -18,6 +18,9 @@
         public int RegionId { get; set; }
         public Region Region { get; set; }
 
+        public int? GovernorateId { get; set; }
+        public Governorate Governorate { get; set; }
+
 
         // Required foreign key and navigation property
         [ForeignKey("Doctor")]

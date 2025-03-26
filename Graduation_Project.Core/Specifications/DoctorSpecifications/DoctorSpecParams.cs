@@ -29,11 +29,17 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 
         }
 
+        public DateTime Today = DateTime.Today;
+        public DateTime Tomorrow = DateTime.Today.AddDays(1);
+
+        public AvailabilityFilter? Availability { get; set; }
         public int? MaxPrice { get; set; }
         public int? MinPrice { get; set; }
         public string? Sort { get; set; }
         public int? SpecialtyId { get; set; }
         public int? SubSpecialtyId { get; set; }
+        public int? RegionId { get; set; }
+        public int? GovernorateId { get; set; }
         public Gender? Gender { get; set; }
         public string? FirstNameSearch { get; private set; }
         public string? LastNameSearch { get; private set; }
@@ -49,4 +55,6 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             }
         }
     }
+
+
 }

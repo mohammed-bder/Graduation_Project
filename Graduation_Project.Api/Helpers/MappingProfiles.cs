@@ -85,7 +85,9 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
                     src.Specialty != null ? src.Specialty.Name_en : null
                 ))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>());
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>())
+                .ForMember(dest => dest.Region, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Region.Name_en ))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Governorate.Name_en));
 
             /****************************************** Mapping for Doctor From Patient ******************************************/
 
@@ -218,7 +220,13 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
                 .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => src.AppointmentTime.ToString("HH:mm:ss")))
                 .ForMember(dest => dest.AppointmentDate, opt => opt.MapFrom(src => src.AppointmentDate.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())); // Convert enum to string
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())) // Convert enum to string
+                .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
+                    src.Doctor.Specialty != null ? src.Doctor.Specialty.Name_ar : null
+                ))
+                .ForMember(dest => dest.ConsultationFees, opt => opt.MapFrom(src => src.Doctor.ConsultationFees))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Doctor.Rating))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<DoctorPictureUrlResolver>());
 
         }
     }

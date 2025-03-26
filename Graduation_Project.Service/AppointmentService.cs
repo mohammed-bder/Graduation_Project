@@ -22,7 +22,7 @@ namespace Graduation_Project.Service
             _unitOfWork = unitOfWork;
         }
 
-        public static List<TimeOnly> GenerateTimeSlots(WorkSchedule schedule, int slotDurationMinutes)
+        public List<TimeOnly> GenerateTimeSlots(WorkSchedule schedule, int slotDurationMinutes)
         {
             var slots = new List<TimeOnly>();
             TimeOnly currentSlot = schedule.StartTime; // ✅ Keep the original StartTime untouched

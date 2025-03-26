@@ -33,8 +33,8 @@ namespace Graduation_Project.Core.Models.Doctors
 
     public enum AppointmentStatus
     {
-        Pending = 0,    // Waiting for doctor approval
-        Confirmed = 1,  // Approved by doctor
+        Pending = 0,    // Waiting for payment
+        Confirmed = 1,  // Approved by payment
         Cancelled = 2,   // Canceled by patient or doctor
         Completed = 3  // Appointment was successfully completed
     }

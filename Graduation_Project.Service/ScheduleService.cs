@@ -62,5 +62,48 @@ namespace Graduation_Project.Service
             return exception1.StartTime.Value < exception2.EndTime.Value &&
                    exception1.EndTime.Value > exception2.StartTime.Value;
         }
+
+        public async Task<bool> ExtendWorkHoursIfPossible(Doctor doctor, DateOnly date, int extraPatients, int slotDuration)
+        {
+            var existingSchedule = doctor.WorkSchedules.FirstOrDefault(s => s.Day == date.DayOfWeek);
+            var existingException = doctor.ScheduleExceptions.FirstOrDefault(e => e.Date == date);
+
+            // Calculate extra time needed
+            int extraMinutesNeeded = extraPatients * slotDuration;
+            TimeOnly? newEndTime = existingException?.EndTime?.AddMinutes(extraMinutesNeeded)
+                                   ?? existingSchedule?.EndTime.AddMinutes(extraMinutesNeeded);
+
+            // Example: Check hospital max working hours (11 PM limit)
+            if (newEndTime > TimeOnly.Parse("24:00"))
+                return false;
+
+            if (existingException != null)
+            {
+                // Extend the existing exception
+                existingException.EndTime = newEndTime;
+                _unitOfWork.Repository<ScheduleException>().Update(existingException);
+            }
+            else if (existingSchedule != null)
+            {
+                // Create a new schedule exception for this date
+                var scheduleException = new ScheduleException
+                {
+                    DoctorId = doctor.Id,
+                    Date = date,
+                    StartTime = existingSchedule?.StartTime ?? TimeOnly.Parse("08:00"), // Default start if no base schedule
+                    EndTime = newEndTime,
+                    IsAvailable = true
+                };
+
+                await _unitOfWork.Repository<ScheduleException>().AddAsync(scheduleException);
+            }
+            else
+            {
+                return false;
+            }
+
+            return await _unitOfWork.CompleteAsync() > 0;
+        }
+
     }
 }

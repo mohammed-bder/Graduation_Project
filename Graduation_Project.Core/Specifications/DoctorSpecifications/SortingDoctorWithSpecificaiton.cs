@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 {
@@ -42,8 +43,30 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 
                 (!specParams.Gender.HasValue || d.Gender == specParams.Gender) &&
                 (!specParams.SubSpecialtyId.HasValue || d.DoctorSubspeciality.Any(ds => ds.SubSpecialitiesId == specParams.SubSpecialtyId.Value)) &&
-                (!specParams.SpecialtyId.HasValue || d.SpecialtyId == specParams.SpecialtyId)
-                //)
+                (!specParams.SpecialtyId.HasValue || d.SpecialtyId == specParams.SpecialtyId) &&
+                // ✅ Apply Availability Filter
+                (
+                    (!specParams.Availability.HasValue) ||
+                    (specParams.Availability == AvailabilityFilter.AllTimes &&
+                        (d.ScheduleExceptions.Any(se => se.IsAvailable) || d.WorkSchedules.Any())
+                    ) ||                                    // ✅ Ensure doctor has at least one schedule
+                    (specParams.Availability == AvailabilityFilter.Today &&
+                        (
+                            d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Today) && se.IsAvailable)
+                            ||
+                            (!d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Today) && !se.IsAvailable)
+                             && d.WorkSchedules.Select(ws => ws.Day).Contains(specParams.Today.DayOfWeek))
+                        )
+                    ) ||
+                    (specParams.Availability == AvailabilityFilter.Tomorrow &&
+                        (
+                            d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Tomorrow) && se.IsAvailable) 
+                            ||
+                            (!d.ScheduleExceptions.Any(se => se.Date == DateOnly.FromDateTime(specParams.Tomorrow) && !se.IsAvailable)
+                             && d.WorkSchedules.Select(ws => ws.Day).Contains(specParams.Tomorrow.DayOfWeek))
+                        )
+                    )
+                )
             )
         {
             if (!string.IsNullOrEmpty(specParams.Sort))
@@ -68,6 +91,10 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             {
                 AddOrderByDescending(p => p.Rating);
             }
+
+            ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Governorate));
+            ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Region));
+
 
             Includes.Add(d => d.Specialty);
             ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
