@@ -95,7 +95,8 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Governorate));
             ThenIncludes.Add(d => d.Include(d => d.Clinic).ThenInclude(d => d.Region));
 
-
+            Includes.Add(d => d.WorkSchedules);
+            Includes.Add(d => d.ScheduleExceptions);
             Includes.Add(d => d.Specialty);
             ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
         }

@@ -123,7 +123,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
             }
 
-            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
+            var data = _mapper.Map<IReadOnlyList<SortingDoctorDto>>(doctors, opts =>
+                opts.Items["AvailabilityFilter"] = specParams.Availability);
             return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
