@@ -37,8 +37,10 @@ namespace Talabat.API.Dtos.Account
         [Required(ErrorMessage = "Region is required.")]
         public int RegionId { get; set; }
 
-        [Required(ErrorMessage = "MedicalLicensePicture is required.")]
-        public string MedicalLicensePictureUrl { get; set; }
+        //[Required(ErrorMessage = "MedicalLicensePicture is required.")]
+        public string? MedicalLicensePictureUrl { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
 
         [Required(ErrorMessage = "Consultation fees are required.")]
         [Range(0.0, 10000.0, ErrorMessage = "Consultation fees must be a positive number.")]

@@ -27,6 +27,8 @@
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\uploads\Doctor\License\" />
+    <Folder Include="wwwroot\uploads\Doctor\ProfilePic\" />
   </ItemGroup>
 
 </Project>
