@@ -63,9 +63,9 @@ namespace Graduation_Project.Api.Helpers
                 }
                 else if (nextAvailableWorkSchedule != null)
                 {
-                    string dateDisplay = (nextAvailableScheduleException.Date >= today && nextAvailableScheduleException.Date <= endOfWeek)
-                        ? nextAvailableScheduleException.Date.DayOfWeek.ToString()  // Show the day name (e.g., "Monday")
-                        : nextAvailableScheduleException.Date.ToString("dd/MM/yyyy"); // Show the full date (e.g., "31/03/2025")
+                    string dateDisplay = (nextAvailableWorkSchedule.Date >= today && nextAvailableWorkSchedule.Date <= endOfWeek)
+                        ? nextAvailableWorkSchedule.Date.DayOfWeek.ToString()  // Show the day name (e.g., "Monday")
+                        : nextAvailableWorkSchedule.Date.ToString("dd/MM/yyyy"); // Show the full date (e.g., "31/03/2025")
                     return $"Open Time: {nextAvailableWorkSchedule.StartTime:hh:mm tt} - {nextAvailableWorkSchedule.EndTime:hh:mm tt} ({dateDisplay})";
                 }
             }
@@ -78,13 +78,13 @@ namespace Graduation_Project.Api.Helpers
                     .FirstOrDefault(se => se.Date == targetDate && se.IsAvailable);
 
                 if (scheduleException != null)
-                    return $"Open Time: {scheduleException.StartTime:hh:mm tt} - {scheduleException.EndTime:hh:mm tt} ({dayLabel})";
+                    return $"Open Time: {scheduleException.StartTime:hh:mm tt} - {scheduleException.EndTime:hh:mm tt}{dayLabel}";
 
                 var workSchedule = source.WorkSchedules
                     .FirstOrDefault(ws => ws.Day == targetDate.DayOfWeek);
 
                 if (workSchedule != null)
-                    return $"Open Time: {workSchedule.StartTime:hh:mm tt} - {workSchedule.EndTime:hh:mm tt} ({dayLabel})";
+                    return $"Open Time: {workSchedule.StartTime:hh:mm tt} - {workSchedule.EndTime:hh:mm tt}{dayLabel}";
             }
 
             // If availability is NULL, return nearest available day OR "Unavailable"
@@ -118,12 +118,6 @@ namespace Graduation_Project.Api.Helpers
                 return $"({date.DayOfWeek})"; // Show day name if it's in this week
             else
                 return $"({date:dd/MM/yyyy})"; // Show full date if it's in the next week or later
-        }
-
-        private DateOnly GetNextWeekdayDate(DayOfWeek targetDay, DateOnly referenceDate)
-        {
-            int daysUntilNext = ((int)targetDay - (int)referenceDate.DayOfWeek + 7) % 7;
-            return referenceDate.AddDays(daysUntilNext == 0 ? 7 : daysUntilNext); // Avoid selecting today if today matches
         }
 
         private IEnumerable<DateOnly> GetDatesForDayOfWeek(DayOfWeek targetDay, DateOnly startDate, DateOnly endDate)
