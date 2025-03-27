@@ -23,6 +23,9 @@ namespace Graduation_Project.Api.DTO.Patients
         [StringLength(500, ErrorMessage = "PictureUrl cannot exceed 500 characters.")]
         public string? PictureUrl { get; set; }
 
+        public IFormFile? PictureFile { get; set; }
+
+
         [ValidEnumValue<BloodType>(ErrorMessage = "Invalid value for BloodTrpe.")]
         public BloodType? BloodType { get; set; }
     }

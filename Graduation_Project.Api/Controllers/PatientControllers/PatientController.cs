@@ -6,6 +6,7 @@ using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
@@ -22,14 +23,18 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileUploadService _fileUploadService;
 
         public PatientController(UserManager<AppUser> userManager,
                                 IMapper mapper,
-                                IUnitOfWork unitOfWork)
+                                IUnitOfWork unitOfWork , 
+                                IFileUploadService fileUploadService
+                                )
         {
             _userManager = userManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _fileUploadService = fileUploadService;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
@@ -71,6 +76,14 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // mapping for Patient 
             patient = _mapper.Map(patientProfileFromRequest, patient);
+
+
+            // upload Paitent Profile Picture
+
+           var uploadedPictureUrl =  await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture",  User);
+
+            patient.PictureUrl = uploadedPictureUrl;
+
 
             // Update Patient 
             _unitOfWork.Repository<Patient>().Update(patient);

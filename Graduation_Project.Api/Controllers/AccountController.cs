@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Talabat.API.Dtos.Account;
 
 namespace Graduation_Project.Api.Controllers
@@ -157,7 +158,12 @@ namespace Graduation_Project.Api.Controllers
 
             // upload MedicalLicensePictureUrl
 
-            var medicalLicensePictureUrl =  await _fileUploadService.UploadFileAsync(model.ImageFile! , $"Doctor/License/{registeredUser.Id}");
+            var sanitizedFileName = Regex.Replace(registeredUser.FullName, @"[^a-zA-Z0-9_-]", ""); // Remove special chars
+            var finalFileName = $"{sanitizedFileName}-{registeredUser.Id}";
+            var medicalLicensePictureUrl =  await _fileUploadService.UploadFileAsync(model.ImageFile! ,
+                                                                                        "Doctor/License/" , 
+                                                                                        User,
+                                                                                        customFileName: finalFileName);
 
 
 

@@ -79,15 +79,23 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
         {
             // Get Current Doctor Id
-            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
 
             //Get Doctor From Doctor Table in business DB
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAsync(doctorId);
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
+            var x = User.FindFirstValue(ClaimTypes.GivenName);
+            // upload Doctor Picture and save its relative path in database
+            var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+
+            doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+
+
             // mapping 
             doctor = _mapper.Map(doctorDtoFromRequest, doctor);
+
 
             // Update Business DB
             _unitOfWork.Repository<Doctor>().Update(doctor);

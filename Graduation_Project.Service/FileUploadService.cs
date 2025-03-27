@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace Graduation_Project.Service
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, string folderName)
+        public async Task<string> UploadFileAsync(IFormFile file, string folderName , ClaimsPrincipal? user, string? customFileName = null)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is required.");
@@ -39,9 +40,21 @@ namespace Graduation_Project.Service
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("Folder name is required.");
 
-            string uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            //if(CustomFileName is null)
+            //{
+            //    string uniqueFileName = $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}";
+            //}
+            //else
+            //{
 
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
+            //}
+
+            string uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+                ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
+                : $"{customFileName}{extension}"
+                ;
+
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
 
             // Ensure the directory exists
             if (!Directory.Exists(uploadsFolder))
