@@ -79,9 +79,19 @@ namespace Graduation_Project.Api.Extensions
                         httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
                         key => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 3,  
+                            PermitLimit = 5,  
                             Window = TimeSpan.FromMinutes(15) 
                         }));
+
+                options.AddPolicy("PasswordLimiter", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        key => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 3,  
+                            Window = TimeSpan.FromMinutes(10) 
+                        }));
+
             });
 
             return services;

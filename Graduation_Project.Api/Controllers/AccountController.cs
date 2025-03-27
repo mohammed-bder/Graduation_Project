@@ -17,6 +17,9 @@ using Graduation_Project.Service;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static System.Net.WebRequestMethods;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Data;
+using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Graduation_Project.Core;
 
 namespace Graduation_Project.Api.Controllers
 {
@@ -34,6 +37,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -45,7 +49,7 @@ namespace Graduation_Project.Api.Controllers
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
             IUserService userService,
-            IEmailService emailService)
+            IEmailService emailService, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -53,6 +57,7 @@ namespace Graduation_Project.Api.Controllers
             _logger = logger;
             _userService = userService;
             _emailService = emailService;
+            _unitOfWork = unitOfWork;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -60,7 +65,7 @@ namespace Graduation_Project.Api.Controllers
             _specialtyRepo = specialtyRepo;
         }
 
-        [EnableRateLimiting("LoginRateLimit")]
+        //[EnableRateLimiting("LoginRateLimit")]
         [HttpPost("login")]
         public async Task<ActionResult<object>> Login(LoginDTO model)
         {
@@ -179,7 +184,8 @@ namespace Graduation_Project.Api.Controllers
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
 
-           var specialty = await _specialtyRepo.GetAsync(model.SpecialtyId);
+           //var specialty = await _specialtyRepo.GetAsync(model.SpecialtyId);
+           var specialty = await _unitOfWork.Repository<Specialty>().GetAsync(model.SpecialtyId);
             
             if(specialty is  null)
             {
@@ -202,7 +208,8 @@ namespace Graduation_Project.Api.Controllers
             try
             {
                 // Add Doctor to the application database
-              var regDoctor =  await _doctorRepo.AddWithSaveAsync(newDoctor);
+              //var regDoctor =  await _doctorRepo.AddWithSaveAsync(newDoctor);
+              var regDoctor = await _unitOfWork.Repository<Doctor>().AddWithSaveAsync(newDoctor);
 
                 var newClinic = new Clinic()
                 {
@@ -286,9 +293,8 @@ namespace Graduation_Project.Api.Controllers
 
             try
             {
-                await _patientRepo.AddAsync(newPatient);
-                await _patientRepo.SaveAsync();
-
+                await _unitOfWork.Repository<Patient>().AddWithSaveAsync(newPatient);
+                await _unitOfWork.CompleteAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -319,15 +325,20 @@ namespace Graduation_Project.Api.Controllers
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
+            if (email.IsNullOrEmpty())
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
+
             var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
 
             var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+            //var role = User.FindFirstValue(ClaimTypes.Role);
 
             return Ok(new UserDTO
             {
                 FullName = user.FullName,
                 Email = user.Email,
-                Token = await _authServices.CreateTokenAsync(user, _userManager),
                 Role = role
             });
         }
@@ -407,8 +418,6 @@ namespace Graduation_Project.Api.Controllers
             return Ok(new ApiResponse(StatusCodes.Status200OK, "New OTP sent successfully"));
         }
 
-
-
         /******************************** Refresh Token ********************************/
         [HttpGet("RefreshToken")] // GET: api/Account/refreshToken
         public async Task<IActionResult> RefreshTokenAsync()
@@ -446,6 +455,7 @@ namespace Graduation_Project.Api.Controllers
         }
 
         /******************************** Forgot Password ********************************/
+        [EnableRateLimiting("PasswordLimiter")]
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
         {
@@ -462,7 +472,9 @@ namespace Graduation_Project.Api.Controllers
 
             return Ok(new ApiResponse(StatusCodes.Status200OK, "OTP sent successfully"));
         }
+
         /******************************** Reset Password ********************************/
+        [EnableRateLimiting("PasswordLimiter")]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
         {
@@ -481,12 +493,78 @@ namespace Graduation_Project.Api.Controllers
 
             return Ok(new { message = "Password reset successfully" });
         }
-        /******************************** Change Password ********************************/
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> ChangePassword()
-        //{
 
-        //}
+        /******************************** Change Password ********************************/
+        [Authorize]
+        [EnableRateLimiting("PasswordLimiter")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordDto request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
+
+            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, request.OldPassword, false);
+            if (!isPasswordValid.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid Password"));
+
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+            if(!result.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to change password"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Password changed successfully"));
+        }
+
+        /******************************** Delete User ********************************/
+        [Authorize]
+        [HttpDelete("delete-user")]
+        public async Task<ActionResult> DeleteUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (email is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
+
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            switch (role)
+            {
+                case nameof(UserRoleType.Doctor):
+                    var doctor = await _unitOfWork.Repository<Doctor>().GetByConditionAsync(d => d.ApplicationUserId == user.Id);
+                    if (doctor is not null)
+                    {
+                        var clinic = await _unitOfWork.Repository<Clinic>().GetByConditionAsync(c => c.DoctorId == doctor.Id);
+                        if (clinic is not null)
+                        {
+                            _unitOfWork.Repository<Clinic>().Delete(clinic);
+                            await _unitOfWork.CompleteAsync();
+                        }
+                        _unitOfWork.Repository<Doctor>().Delete(doctor);
+                        await _unitOfWork.CompleteAsync();
+                    }
+                    break;
+
+                case nameof(UserRoleType.Patient):
+                    var patient = await _unitOfWork.Repository<Patient>().GetByConditionAsync(p => p.ApplicationUserId == user.Id);
+                    if (patient is not null)
+                    {
+                        _unitOfWork.Repository<Patient>().Delete(patient);
+                        await _unitOfWork.CompleteAsync();
+                    }
+                    break;
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to delete user"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "User deleted successfully"));
+        }
+
         /******************************** Private Method ********************************/
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {

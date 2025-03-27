@@ -22,7 +22,7 @@ namespace Graduation_Project.Core.IRepositories
         public Task SaveAsync();
         public void DeleteRange(IEnumerable<T> entities);
         public Task AddRangeAsync(IEnumerable<T> entities);
-
+        public Task<T?> GetByConditionAsync(Expression<Func<T, bool>> expression);
         public void attaching(T entity);
     }
 }
