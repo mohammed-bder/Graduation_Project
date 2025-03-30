@@ -29,7 +29,10 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 
         }
 
-        public AvailabilityFilter availability = AvailabilityFilter.AllTimes;
+        public DateTime Today = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Egypt Standard Time");
+        public DateTime Tomorrow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Egypt Standard Time").AddDays(1);
+
+        public AvailabilityFilter? Availability { get; set; }
         public int? MaxPrice { get; set; }
         public int? MinPrice { get; set; }
         public string? Sort { get; set; }
@@ -52,11 +55,6 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
             }
         }
     }
-    public enum AvailabilityFilter
-    {
-        AllTimes, // Default - No filtering
-        Today,
-        Tomorrow
-    }
+
 
 }

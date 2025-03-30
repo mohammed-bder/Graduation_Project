@@ -50,7 +50,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             var feedBack = _mapper.Map<FeedbackDto, Feedback>(feedbackDto);
             feedBack.PatientId = patient.Id;
-            feedBack.Date = DateTime.Now;
+            feedBack.Date = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Egypt Standard Time");
 
             try
             {

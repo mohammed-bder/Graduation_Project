@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,8 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
                 a.AppointmentDate < startDate.AddMonths(1) // Fetch appointments within 1 month
             )
         {
-            Includes.Add(a => a.Doctor); // Include patient details
+            Includes.Add(a => a.Doctor); // ✅ Includes Doctor
+            ThenIncludes.Add(q => q.Include(d => d.Doctor.Specialty)); // ✅ Includes Specialty inside Doctor
             AddOrderBy(a => a.AppointmentDate); // Order by date
             AddThenOrderBy(a => a.AppointmentTime); // Then order by time
         }
