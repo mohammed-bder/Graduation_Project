@@ -16,6 +16,5 @@
 
         public string? PictureUrl { get; set; }
 
-
     }
 }

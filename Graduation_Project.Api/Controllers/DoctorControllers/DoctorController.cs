@@ -64,8 +64,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 Email = email,
             };
 
-            //doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
-            doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
+            doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
 
             return Ok(doctorForProfileToReturnDto);
         }
@@ -93,6 +92,23 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             return Ok(doctorDtoFromRequest);
 
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetReviewsAndRating")]
+        public async Task<ActionResult<RatingAndReviews>> GetReviewsAndRating()
+        {
+            // Get Current Doctor Id
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+
+            var specs = new DoctorWithReviewsSpecs(DoctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(specs);
+            if (doctor == null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            var ratingAndReviews = new RatingAndReviews() { Rating = doctor.Rating , Reviews = doctor.Feedbacks?.Count()};
+
+            return Ok(ratingAndReviews);
         }
 
         //[Authorize(Roles = nameof(UserRoleType.Patient))]
