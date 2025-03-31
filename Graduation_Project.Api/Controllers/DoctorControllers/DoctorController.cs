@@ -75,7 +75,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPut("EditProfile")]
-        public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
+        public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile([FromBody] DoctorForProfileDto doctorDtoFromRequest)
         {
             // Get Current Doctor Id
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
@@ -87,14 +87,15 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             var x = User.FindFirstValue(ClaimTypes.GivenName);
             // upload Doctor Picture and save its relative path in database
-            var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+            if (doctorDtoFromRequest.PictureFile != null)
+            {
+                var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
-            doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
-
+                doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+            }
 
             // mapping 
             doctor = _mapper.Map(doctorDtoFromRequest, doctor);
-
 
             // Update Business DB
             _unitOfWork.Repository<Doctor>().Update(doctor);

@@ -112,7 +112,7 @@ namespace Graduation_Project.Api.Controllers
 
 
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
-        public async Task<ActionResult<UserDTO>> DoctorRegister(DoctorRegisterDTO model)
+        public async Task<ActionResult<UserDTO>> DoctorRegister([FromBody] DoctorRegisterDTO model)
         {
 
             if (CheckEmailExists(model.Email).Result.Value)
@@ -225,10 +225,6 @@ namespace Graduation_Project.Api.Controllers
                 return BadRequest(new ApiResponse(500, "An unexpected error occurred."));
 
             }
-
-     
-
-  
 
             _logger.LogInformation("Doctor registered successfully: {Email}", model.Email);
 

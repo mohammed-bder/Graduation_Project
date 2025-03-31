@@ -43,7 +43,7 @@ namespace Graduation_Project.Api
 
 
 
-            //// Detect the environment
+            // Detect the environment
             //var environment = builder.Environment;
             //bool isDevelopment = environment.IsDevelopment();
 
