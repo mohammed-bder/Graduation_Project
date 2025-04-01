@@ -315,14 +315,18 @@ namespace Graduation_Project.Api.Controllers.Shared
             // Convert to DTOs for cleaner response
             var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
             
-            Dictionary<string, Dictionary<string, AppointmentForPatientDto>>? groupedAppointments = appointmentDtos
+            Dictionary<string, Dictionary<string, List<AppointmentForPatientDto>>>? groupedAppointments = appointmentDtos
             .GroupBy(a => a.AppointmentDate) // Group by date first
             .ToDictionary(
                 g => g.Key, // Date as JSON key (yyyy-MM-dd)
                 g => g.GroupBy(a => a.AppointmentTime) // Then group by time
                       .ToDictionary(
                           a => a.Key, // Time as JSON key (HH:mm:ss)
-                          a => a.First() // Use the first appointment in that time slot
+                          a => a.OrderBy(appt => appt.Status == "Pending" ? 0 :
+                                         appt.Status == "Confirmed" ? 1 :
+                                         appt.Status == "Completed" ? 2 :
+                                         3) // Cancelled gets the highest value (pushed to last)
+                        .ToList()
                       )
             );
 
