@@ -141,7 +141,8 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             // Step 2: Check if the selected time is available
-            var availableSlots = availableSlotsResult.Data.Values.Any(daySlots => daySlots.Contains(request.AppointmentTime));
+            var availableSlots = availableSlotsResult.Data.TryGetValue(request.AppointmentDate, out var daySlots)
+                     && daySlots.Any(slot => slot == request.AppointmentTime);
 
             if (!availableSlots)
             {
@@ -299,7 +300,7 @@ namespace Graduation_Project.Api.Controllers.Shared
         
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("get-all-appointments")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentForPatientDto>>>> GetAllAppointmentsAsync()
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, List<AppointmentForPatientDto>>>>> GetAllAppointmentsAsync()
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
             // Define the query specification for today's appointments
