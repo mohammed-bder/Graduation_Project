@@ -78,7 +78,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             var count = await unitOfWork.Repository<Favorite>().GetCountAsync(countSpecs);
 
             // mapping to SortingDoctorDto
-            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(favouriteDoctors);
+            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(favouriteDoctors, opts =>
+                opts.Items["AvailabilityFilter"] = null);
 
             return Ok(new Pagination<SortingDoctorDto>(favrouiteDoctorSpecParams.PageIndex, favrouiteDoctorSpecParams.PageSize, count, data));
         }
