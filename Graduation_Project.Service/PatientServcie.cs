@@ -35,7 +35,7 @@ namespace Graduation_Project.Service
             if (!string.IsNullOrEmpty(patient.PictureUrl))
                 patient.PictureUrl = patient.PictureUrl[0] == '/' ? $"{_configuration["ServerUrl"]}{patient.PictureUrl}" : $"{_configuration["ServerUrl"]}/{patient.PictureUrl}";
 
-            if(Email is null)
+            if (Email is null)
             {
                 var user = await _userManager.FindByIdAsync(patient.ApplicationUserId);
                 if (user is null)
