@@ -29,8 +29,8 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
 
         }
 
-        public DateTime Today = DateTime.Today;
-        public DateTime Tomorrow = DateTime.Today.AddDays(1);
+        public DateTime Today = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Egypt Standard Time");
+        public DateTime Tomorrow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Egypt Standard Time").AddDays(1);
 
         public AvailabilityFilter? Availability { get; set; }
         public int? MaxPrice { get; set; }

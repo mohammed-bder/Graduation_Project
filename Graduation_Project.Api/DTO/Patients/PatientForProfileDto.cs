@@ -20,7 +20,6 @@ namespace Graduation_Project.Api.DTO.Patients
         [PastDate(ErrorMessage = "Date of Birth must be in the past.")]
         public DateOnly? DateOfBirth { get; set; }
 
-        [StringLength(500, ErrorMessage = "PictureUrl cannot exceed 500 characters.")]
         public string? PictureUrl { get; set; }
 
         public IFormFile? PictureFile { get; set; }

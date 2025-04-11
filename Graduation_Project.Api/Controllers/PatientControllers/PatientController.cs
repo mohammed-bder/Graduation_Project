@@ -24,13 +24,17 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPatientService _patientService;
+        private readonly IConfiguration _configuration;
 
         public PatientController(UserManager<AppUser> userManager,
                                 IMapper mapper,
                                 IUnitOfWork unitOfWork , 
-                                IFileUploadService fileUploadService
-                                )
+                                IFileUploadService fileUploadService ,
+                                IPatientService patientService , IConfiguration configuration)
         {
+            _patientService = patientService;
+            _configuration = configuration;
             _userManager = userManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -39,27 +43,20 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetProfile")]
-        public async Task<ActionResult<PatientForProfileToReturnDto>> GetProfile()
+        public async Task<ActionResult<object>> GetProfile()
         {
-            // Get current user id
-            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            // Get current patient from business DB
-            var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
-            if (patient == null)
+            int patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            string? email = User.FindFirstValue(ClaimTypes.Email);
+
+            if(string.IsNullOrEmpty(email))
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email Not Found"));
+
+            var patient = await _patientService.GetInfo(patientId, email);
+            if(patient is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
-            var email = User.FindFirstValue(ClaimTypes.Email);
-
-            // mapping for Dto
-            var patientForProfileToReturnDto = new PatientForProfileToReturnDto
-            {
-                Email = email??""
-            };
-
-            patientForProfileToReturnDto = _mapper.Map(patient, patientForProfileToReturnDto);
-
-            return Ok(patientForProfileToReturnDto);
+            return Ok(patient);
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
@@ -80,11 +77,10 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // upload Paitent Profile Picture
 
-           var uploadedPictureUrl =  await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture",  User);
+            var uploadedPictureUrl = await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture", User);
 
             patient.PictureUrl = uploadedPictureUrl;
-
-
+            
             // Update Patient 
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();

@@ -12,6 +12,6 @@ namespace Graduation_Project.Api.DTO.Doctors
         public double? Rating { get; set; }
         public string? Region { get; set; }
         public string? Governorate { get; set; }
-
+        public string? Availability { get; set; }
     }
 }

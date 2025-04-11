@@ -24,5 +24,7 @@ namespace Graduation_Project.Core.IRepositories
         public Task AddRangeAsync(IEnumerable<T> entities);
 
         public void attaching(T entity);
+
+        public Task<T?> GetByConditionAsync(Expression<Func<T, bool>> expression);
     }
 }

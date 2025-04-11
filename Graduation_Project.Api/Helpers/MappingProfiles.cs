@@ -12,6 +12,12 @@ namespace Graduation_Project.APIs.Helpers
 {
     public class MappingProfiles : Profile
     {
+        private readonly IConfiguration _configuration;
+
+        public MappingProfiles(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public MappingProfiles()
         {
             CreateMap<Person, PersonToReturnDTO>()
@@ -90,7 +96,8 @@ namespace Graduation_Project.APIs.Helpers
                 ))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>())
                 .ForMember(dest => dest.Region, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Region.Name_en ))
-                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Governorate.Name_en));
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Governorate.Name_en))
+                .ForMember(dest => dest.Availability, opt => opt.MapFrom<AvailabilityResolver>());
 
             /****************************************** Mapping for Doctor From Patient ******************************************/
 
@@ -217,7 +224,14 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
                 .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => src.AppointmentTime.ToString("HH:mm:ss")))
                 .ForMember(dest => dest.AppointmentDate, opt => opt.MapFrom(src => src.AppointmentDate.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())); // Convert enum to string
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())) // Convert enum to string
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
+                        src.Patient.DateOfBirth.HasValue
+                            ? (DateTime.Today.Year - src.Patient.DateOfBirth.Value.Year) -
+                              (DateTime.Today.DayOfYear < src.Patient.DateOfBirth.Value.DayOfYear ? 1 : 0)
+                            : (int?)null
+                ))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Patient.Gender.ToString()));
 
             CreateMap<Appointment, AppointmentForPatientDto>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))

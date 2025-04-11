@@ -17,6 +17,7 @@ using Graduation_Project.Core.Specifications.FavouriteSpecifications;
 using Graduation_Project.Core.Specifications.FeedBackSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,24 +30,22 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     public class DoctorController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        //private readonly IUnitOfWork unitOfWork;
-        //private readonly IUserService userService;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPatientService _patientService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DoctorController(UserManager<AppUser> userManager
-                                , IUnitOfWork unitOfWork
-                                , IUserService userService
-                                , IMapper mapper
-            , IFileUploadService fileUploadService
+        public DoctorController(UserManager<AppUser> userManager,
+                                IUnitOfWork unitOfWork,
+                                IMapper mapper,
+                                IFileUploadService fileUploadService,
+                                IPatientService patientService
             )
         {
             _userManager = userManager;
-            //this.unitOfWork = unitOfWork;
-            //this.userService = userService;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            _patientService = patientService;
             _unitOfWork = unitOfWork;
         }
 
@@ -68,8 +67,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 Email = email,
             };
 
-            //doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
-            doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
+            doctorForProfileToReturnDto = _mapper.Map(doctor, doctorForProfileToReturnDto);
 
             return Ok(doctorForProfileToReturnDto);
         }
@@ -88,14 +86,15 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             
             // upload Doctor Picture and save its relative path in database
-            var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+            if (doctorDtoFromRequest.PictureFile != null)
+            {
+                var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
-            doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
-
+                doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+            }
 
             // mapping 
             doctor = _mapper.Map(doctorDtoFromRequest, doctor);
-
 
             // Update Business DB
             _unitOfWork.Repository<Doctor>().Update(doctor);
@@ -105,6 +104,23 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             return Ok(doctorForProfileToReturnDto);
 
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetReviewsAndRating")]
+        public async Task<ActionResult<RatingAndReviews>> GetReviewsAndRating()
+        {
+            // Get Current Doctor Id
+            var DoctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+
+            var specs = new DoctorWithReviewsSpecs(DoctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(specs);
+            if (doctor == null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            var ratingAndReviews = new RatingAndReviews() { Rating = doctor.Rating , Reviews = doctor.Feedbacks?.Count()};
+
+            return Ok(ratingAndReviews);
         }
 
         //[Authorize(Roles = nameof(UserRoleType.Patient))]
@@ -135,7 +151,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 count = await _unitOfWork.Repository<Doctor>().GetCountAsync(countSpec);
             }
 
-            var data = _mapper.Map<IReadOnlyList<Doctor>, IReadOnlyList<SortingDoctorDto>>(doctors);
+            var data = _mapper.Map<IReadOnlyList<SortingDoctorDto>>(doctors, opts =>
+                opts.Items["AvailabilityFilter"] = specParams.Availability);
             return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
@@ -213,6 +230,17 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
 
             return Ok(doctorAboutDto);
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("PatientInfo/{patientId:int}")]
+        public async Task<ActionResult<object>> GetPatientInfo(int patientId)
+        {
+            var patient = await _patientService.GetInfo(patientId, null);
+            if (patient is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            return Ok(patient);
         }
 
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
