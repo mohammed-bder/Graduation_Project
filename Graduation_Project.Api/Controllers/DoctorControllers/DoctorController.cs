@@ -102,6 +102,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
            var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
+            doctorForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+
             return Ok(doctorForProfileToReturnDto);
 
         }
