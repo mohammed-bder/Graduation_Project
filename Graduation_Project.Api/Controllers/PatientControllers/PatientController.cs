@@ -25,16 +25,14 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploadService _fileUploadService;
         private readonly IPatientService _patientService;
-        private readonly IConfiguration _configuration;
 
         public PatientController(UserManager<AppUser> userManager,
                                 IMapper mapper,
                                 IUnitOfWork unitOfWork , 
                                 IFileUploadService fileUploadService ,
-                                IPatientService patientService , IConfiguration configuration)
+                                IPatientService patientService)
         {
             _patientService = patientService;
-            _configuration = configuration;
             _userManager = userManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -90,13 +88,6 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             patientForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
             return Ok(patientForProfileToReturnDto);
-
-            // patientForProfileToReturnDto = new PatientForProfileToReturnDto
-            //{
-            //    Email = User.FindFirstValue(ClaimTypes.Email)??""
-            //};
-
-            //return Ok(_mapper.Map(patientProfileFromRequest, patientForProfileToReturnDto));
         }
 
         /****************************************** Medicl Category ******************************************/
