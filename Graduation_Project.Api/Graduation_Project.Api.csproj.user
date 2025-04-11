@@ -5,6 +5,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
+<<<<<<< HEAD
+    <NameOfLastUsedPublishProfile>D:\4th Computer\GraduationProject\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy5.pubxml</NameOfLastUsedPublishProfile>
+=======
     <NameOfLastUsedPublishProfile>E:\Projects\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+>>>>>>> 77e25f6c924019b9e132652a1ba979daf654133e
   </PropertyGroup>
 </Project>
