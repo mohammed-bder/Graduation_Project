@@ -55,14 +55,17 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + " " + src.LastName
                 ))
                 .ForMember(dest => dest.PictureUrl , opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileDto>>());
-                //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
-                //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
-                //));
+            //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
+            //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
+            //));
 
+            //Patient  , PatientForProfileToReturnDto
             CreateMap<Patient, PatientForProfileToReturnDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + " " + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileToReturnDto>>());
+                ;
 
             CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>();
 

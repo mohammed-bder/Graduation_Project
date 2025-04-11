@@ -89,12 +89,18 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();
 
-            PatientForProfileToReturnDto patientForProfileToReturnDto = new PatientForProfileToReturnDto
-            {
-                Email = User.FindFirstValue(ClaimTypes.Email)??""
-            };
+            var patientForProfileToReturnDto = _mapper.Map<Patient  , PatientForProfileToReturnDto>(patient);
 
-            return Ok(_mapper.Map(patientProfileFromRequest, patientForProfileToReturnDto));
+            patientForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+
+            return Ok(patientForProfileToReturnDto);
+
+            // patientForProfileToReturnDto = new PatientForProfileToReturnDto
+            //{
+            //    Email = User.FindFirstValue(ClaimTypes.Email)??""
+            //};
+
+            //return Ok(_mapper.Map(patientProfileFromRequest, patientForProfileToReturnDto));
         }
 
         /****************************************** Medicl Category ******************************************/

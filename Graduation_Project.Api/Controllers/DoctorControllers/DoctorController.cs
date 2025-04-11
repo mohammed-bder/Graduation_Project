@@ -76,7 +76,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPut("EditProfile")]
-        public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
+        public async Task<ActionResult<DoctorForProfileToReturnDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
         {
             // Get Current Doctor Id
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
@@ -86,7 +86,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
-            var x = User.FindFirstValue(ClaimTypes.GivenName);
+            
             // upload Doctor Picture and save its relative path in database
             var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
@@ -101,9 +101,9 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
 
-           //var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
+           var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
-            return Ok(doctorDtoFromRequest);
+            return Ok(doctorForProfileToReturnDto);
 
         }
 
