@@ -17,6 +17,7 @@ using Graduation_Project.Core.Specifications.FavouriteSpecifications;
 using Graduation_Project.Core.Specifications.FeedBackSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,24 +30,22 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     public class DoctorController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        //private readonly IUnitOfWork unitOfWork;
-        //private readonly IUserService userService;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPatientService _patientService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DoctorController(UserManager<AppUser> userManager
-                                , IUnitOfWork unitOfWork
-                                , IUserService userService
-                                , IMapper mapper
-            , IFileUploadService fileUploadService
+        public DoctorController(UserManager<AppUser> userManager,
+                                IUnitOfWork unitOfWork,
+                                IMapper mapper,
+                                IFileUploadService fileUploadService,
+                                IPatientService patientService
             )
         {
             _userManager = userManager;
-            //this.unitOfWork = unitOfWork;
-            //this.userService = userService;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            _patientService = patientService;
             _unitOfWork = unitOfWork;
         }
 
@@ -232,6 +231,20 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             return Ok(doctorAboutDto);
         }
+
+        //[Authorize(Roles = nameof(UserRoleType.Doctor))]
+        //[HttpGet("GetProfile")]
+        //public async Task<ActionResult<object>> GetProfile(int patientId)
+        //{
+
+        //    var patient = await _patientService.GetInfo(patientId,null);
+        //    if (patient is null)
+        //        return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+        //    // i need here to get the email of ther patient and add it to the patient object
+
+        //    return Ok(patient);
+        //}
 
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
         {
