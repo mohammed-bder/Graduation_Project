@@ -2,7 +2,9 @@
 using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
+using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Patients;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,13 +18,15 @@ namespace Graduation_Project.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<AppUser> _userManager;
 
-        public PatientServcie(IUnitOfWork unitOfWork , IConfiguration configuration)
+        public PatientServcie(IUnitOfWork unitOfWork , IConfiguration configuration, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _userManager = userManager;
         }
-        public async Task<object?> GetInfo(int Id, string Email)
+        public async Task<object?> GetInfo(int Id, string? Email)
         {
             var patient = await _unitOfWork.Repository<Patient>().GetAsync(Id);
             if (patient is null)
@@ -33,7 +37,11 @@ namespace Graduation_Project.Service
 
             if(Email is null)
             {
-                
+                var user = await _userManager.FindByIdAsync(patient.ApplicationUserId);
+                if (user is null)
+                    return null;
+
+                Email = user.Email;
             }
             
             var patientInfo = new

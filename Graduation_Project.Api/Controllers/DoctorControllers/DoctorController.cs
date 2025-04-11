@@ -232,19 +232,16 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(doctorAboutDto);
         }
 
-        //[Authorize(Roles = nameof(UserRoleType.Doctor))]
-        //[HttpGet("GetProfile")]
-        //public async Task<ActionResult<object>> GetProfile(int patientId)
-        //{
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("PatientInfo/{patientId:int}")]
+        public async Task<ActionResult<object>> GetPatientInfo(int patientId)
+        {
+            var patient = await _patientService.GetInfo(patientId, null);
+            if (patient is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
-        //    var patient = await _patientService.GetInfo(patientId,null);
-        //    if (patient is null)
-        //        return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
-
-        //    // i need here to get the email of ther patient and add it to the patient object
-
-        //    return Ok(patient);
-        //}
+            return Ok(patient);
+        }
 
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
         {
