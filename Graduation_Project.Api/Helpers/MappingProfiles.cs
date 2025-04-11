@@ -12,6 +12,12 @@ namespace Graduation_Project.APIs.Helpers
 {
     public class MappingProfiles : Profile
     {
+        private readonly IConfiguration _configuration;
+
+        public MappingProfiles(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public MappingProfiles()
         {
             CreateMap<Person, PersonToReturnDTO>()
@@ -62,9 +68,12 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<Patient, PatientForProfileToReturnDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + " " + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileToReturnDto>>());
 
-            CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>();
+            CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>()
+                .ForMember(dest => dest.PictureUrl, o => o.MapFrom(src => string.IsNullOrEmpty(src.PictureUrl) ? string.Empty : $"{_configuration["ServerUrl"]}{src.PictureUrl}"));
+
 
             CreateMap<PatientForProfileDto, Patient>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>

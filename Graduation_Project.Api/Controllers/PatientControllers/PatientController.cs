@@ -25,14 +25,16 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileUploadService _fileUploadService;
         private readonly IPatientService _patientService;
+        private readonly IConfiguration _configuration;
 
         public PatientController(UserManager<AppUser> userManager,
                                 IMapper mapper,
                                 IUnitOfWork unitOfWork , 
                                 IFileUploadService fileUploadService ,
-                                IPatientService patientService)
+                                IPatientService patientService , IConfiguration configuration)
         {
             _patientService = patientService;
+            _configuration = configuration;
             _userManager = userManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -75,21 +77,18 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // upload Paitent Profile Picture
 
-           var uploadedPictureUrl =  await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture",  User);
+            var uploadedPictureUrl = await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture", User);
 
             patient.PictureUrl = uploadedPictureUrl;
-
-
+            
             // Update Patient 
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();
 
-            PatientForProfileToReturnDto patientForProfileToReturnDto = new PatientForProfileToReturnDto
-            {
-                Email = User.FindFirstValue(ClaimTypes.Email)??""
-            };
+            var data = _mapper.Map<Patient, PatientForProfileToReturnDto>(patient);
+            data.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
-            return Ok(_mapper.Map(patientProfileFromRequest, patientForProfileToReturnDto));
+            return Ok(data);
         }
 
         /****************************************** Medicl Category ******************************************/
