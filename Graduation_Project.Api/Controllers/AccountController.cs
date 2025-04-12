@@ -28,6 +28,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IConfiguration _configuration;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -39,7 +40,8 @@ namespace Graduation_Project.Api.Controllers
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
             IUserService userService,
-            IFileUploadService fileUploadService
+            IFileUploadService fileUploadService,
+            IConfiguration configuration
             )
         {
             _userManager = userManager;
@@ -48,6 +50,7 @@ namespace Graduation_Project.Api.Controllers
             _logger = logger;
             _userService = userService;
             this._fileUploadService = fileUploadService;
+            this._configuration = configuration;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -85,7 +88,7 @@ namespace Graduation_Project.Api.Controllers
                     Role = role,
                     Speciality = doctor.Specialty.Name_en,
                     Description = doctor.Description,
-                    PictureUrl = doctor.PictureUrl
+                    PictureUrl = !String.IsNullOrEmpty(doctor.PictureUrl) ? $"{_configuration["ServerUrl"]}{doctor.PictureUrl}" : string.Empty
                 };
                 return Ok(doctorDto);
             }
@@ -97,7 +100,7 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
                     Role = role,
-                    PictureUrl = patient.PictureUrl,
+                    PictureUrl = !String.IsNullOrEmpty(patient.PictureUrl) ? $"{_configuration["ServerUrl"]}{patient.PictureUrl}" : string.Empty,
                     BloodType = patient.BloodType,
                     Points = patient.Points, 
                     Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null

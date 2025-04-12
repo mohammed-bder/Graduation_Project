@@ -111,5 +111,10 @@ namespace Graduation_Project.Repository
         {
             dbContext.Attach(entity);
         }
+
+        public async Task<T?> GetByConditionAsync(Expression<Func<T, bool>> expression)
+        {
+            return await dbContext.Set<T>().FirstOrDefaultAsync(expression);
+        }
     }
 }

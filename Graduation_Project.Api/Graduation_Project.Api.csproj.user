@@ -7,4 +7,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
+<<<<<<< HEAD
+=======
+  <PropertyGroup>
+    <ActiveDebugProfile>http</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>D:\01_DotNET\Graduation Project\gp2\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy1.pubxml</NameOfLastUsedPublishProfile>
+  </PropertyGroup>
+>>>>>>> 9d89244ca439505b4acd868ff5601db3f336cf50
 </Project>
