@@ -40,21 +40,12 @@ namespace Graduation_Project.Service
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("Folder name is required.");
 
-            //if(CustomFileName is null)
-            //{
-            //    string uniqueFileName = $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}";
-            //}
-            //else
-            //{
-
-            //}
-
             string uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                 ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
-                : $"{customFileName}{extension}"
-                ;
+                : $"{customFileName}{extension}";
+                
 
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
 
             // Ensure the directory exists
             if (!Directory.Exists(uploadsFolder))
