@@ -86,11 +86,16 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             
             // upload Doctor Picture and save its relative path in database
-            if (doctorDtoFromRequest.PictureFile != null)
+            if (doctorDtoFromRequest.PictureFile != null )
             {
-                var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
-                doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+                var (uploadSuccess, uploadMessage, uploadedPicUrlFilePath) = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+                if(!uploadSuccess)
+                {
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+                }
+
+                doctorDtoFromRequest.PictureUrl = uploadedPicUrlFilePath;
             }
 
             // mapping 
