@@ -115,7 +115,7 @@ namespace Graduation_Project.Api.Controllers
 
 
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
-        public async Task<ActionResult<UserDTO>> DoctorRegister([FromBody] DoctorRegisterDTO model)
+        public async Task<ActionResult<UserDTO>> DoctorRegister( DoctorRegisterDTO model)
         {
 
             if (CheckEmailExists(model.Email).Result.Value)
@@ -163,11 +163,24 @@ namespace Graduation_Project.Api.Controllers
 
             var sanitizedFileName = Regex.Replace(registeredUser.FullName, @"[^a-zA-Z0-9_-]", ""); // Remove special chars
             var finalFileName = $"{sanitizedFileName}-{registeredUser.Id}";
-            var medicalLicensePictureUrl =  await _fileUploadService.UploadFileAsync(model.ImageFile! ,
-                                                                                        "Doctor/License/" , 
-                                                                                        User,
-                                                                                        customFileName: finalFileName);
+            if(model.ImageFile is  null)
+            {
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
+                return BadRequest(new ApiResponse(400, "medical License is required"));
+            }
 
+            var (uploadSuccess, uploadMessage, medicalLicensePictureUrlFilePath) =  await _fileUploadService.UploadFileAsync(model.ImageFile! ,
+                                                                                    "Doctor/License/" , 
+                                                                                    User,
+                                                                                    customFileName: finalFileName);
+
+            if(!uploadSuccess)
+            {
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
+                return BadRequest(new ApiResponse(400, uploadMessage));
+            }
 
 
             var newDoctor = new Doctor()
@@ -180,7 +193,7 @@ namespace Graduation_Project.Api.Controllers
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
                 SlotDurationMinutes = 20,
-                MedicalLicensePictureUrl = medicalLicensePictureUrl
+                MedicalLicensePictureUrl = medicalLicensePictureUrlFilePath
             };
 
          

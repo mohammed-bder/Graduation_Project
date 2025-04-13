@@ -9,6 +9,6 @@ namespace Graduation_Project.Core.IServices
 {
     public interface IFileUploadService
     {
-        Task<string> UploadFileAsync(IFormFile file, string folderName ,ClaimsPrincipal? user , string? customFileName = null);
+        Task<(bool Success, string Message, string? FilePath)> UploadFileAsync(IFormFile file, string folderName ,ClaimsPrincipal? user , string? customFileName = null);
     }
 }

@@ -38,7 +38,7 @@ namespace Graduation_Project.APIs.Helpers
 
 
             CreateMap<ClinicEditDTO, Clinic>();
-            
+
 
             CreateMap<DoctorForProfileDto, Doctor>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
@@ -48,7 +48,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 2
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl, opt =>
+                {
+                    opt.MapFrom(src => src.PictureUrl);
+                    opt.Condition(src => !string.IsNullOrEmpty(src.PictureUrl));
+                })
+                ; 
 
             /****************************************** Mapping for Patient Profile ******************************************/
 
@@ -76,7 +82,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 2
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl , opt =>
+                {
+                    opt.MapFrom(src => src.PictureUrl);
+                    opt.Condition(src => !string.IsNullOrEmpty(src.PictureUrl));
+                })
+                ;
 
             /****************************************** Mapping for Home ******************************************/
             CreateMap<Doctor, SortingDoctorDto>()
