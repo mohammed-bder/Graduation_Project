@@ -42,6 +42,20 @@ namespace Graduation_Project.Service
                     return null;
 
                 Email = user.Email;
+
+                // to can return patient id in the Endpoint of Get patient info in Doctor Controller
+                var patientInfoFromDoctor = new
+                {
+                    patientId = Id,
+                    fullName = patient.FirstName + " " + patient.LastName,
+                    email = Email,
+                    phoneNumber = patient.PhoneNumber,
+                    gender = patient.Gender,
+                    dateOfBirth = patient.DateOfBirth,
+                    pictureUrl = patient.PictureUrl,
+                    bloodType = patient.BloodType
+                };
+                return patientInfoFromDoctor;
             }
             
             var patientInfo = new
