@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Graduation_Project.Core.Specifications.FavouriteSpecifications
 {
@@ -21,7 +22,9 @@ namespace Graduation_Project.Core.Specifications.FavouriteSpecifications
 
         public FavouriteSpecs(int patientId, FavrouiteDoctorSpecParams favrouiteDoctorSpecParams) : base (f => f.PatientId == patientId)
         {
-            Includes.Add(f => f.Doctor);
+            ThenIncludes.Add(f => f.Include(f => f.Doctor).ThenInclude(d => d.WorkSchedules));
+            ThenIncludes.Add(f => f.Include(f => f.Doctor).ThenInclude(d => d.ScheduleExceptions));
+
             ApplyPagination((favrouiteDoctorSpecParams.PageIndex - 1) * favrouiteDoctorSpecParams.PageSize, favrouiteDoctorSpecParams.PageSize);
         }
 

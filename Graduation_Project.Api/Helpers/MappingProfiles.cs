@@ -12,14 +12,16 @@ namespace Graduation_Project.APIs.Helpers
 {
     public class MappingProfiles : Profile
     {
+        private readonly IConfiguration _configuration;
+
+        public MappingProfiles(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public MappingProfiles()
         {
             CreateMap<Person, PersonToReturnDTO>()
                 .ForMember(d => d.PictureUrl, O => O.MapFrom<PictureUrlResolver<Person, PersonToReturnDTO>>()); 
-
-            //CreateMap<Specialty, SpecialityDTO>();
-            //CreateMap<SubSpecialities, SubSpecialityDTO>()
-            //    .ForMember(s => s.Specialty, O => O.MapFrom(s => s.Specialty.Name_ar));
 
             /****************************************** Mapping for Doctor Profile ******************************************/
 
@@ -36,7 +38,7 @@ namespace Graduation_Project.APIs.Helpers
 
 
             CreateMap<ClinicEditDTO, Clinic>();
-            
+
 
             CreateMap<DoctorForProfileDto, Doctor>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
@@ -46,7 +48,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 2
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl, opt =>
+                {
+                    opt.MapFrom(src => src.PictureUrl);
+                    opt.Condition(src => !string.IsNullOrEmpty(src.PictureUrl));
+                })
+                ; 
 
             /****************************************** Mapping for Patient Profile ******************************************/
 
@@ -55,14 +63,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.FirstName + " " + src.LastName
                 ))
                 .ForMember(dest => dest.PictureUrl , opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileDto>>());
-                //.ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src =>
-                //    DateOnly.FromDateTime(src.DateOfBirth.Value.Date)
-                //));
 
             CreateMap<Patient, PatientForProfileToReturnDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + " " + src.LastName
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileToReturnDto>>());
+                
 
             CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>();
 
@@ -75,7 +82,13 @@ namespace Graduation_Project.APIs.Helpers
                     src.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 2
                     ? string.Join(" ", src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))
                     : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]
-                ));
+                ))
+                .ForMember(dest => dest.PictureUrl , opt =>
+                {
+                    opt.MapFrom(src => src.PictureUrl);
+                    opt.Condition(src => !string.IsNullOrEmpty(src.PictureUrl));
+                })
+                ;
 
             /****************************************** Mapping for Home ******************************************/
             CreateMap<Doctor, SortingDoctorDto>()
@@ -108,8 +121,6 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<ClinicAboutDto, DoctorAboutDto>();
 
-           
-
             CreateMap<Education, DoctorAboutDto>();
 
             // ========================================== Clinic ==========================================
@@ -117,15 +128,9 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name_en))
                 .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name_en))
                 .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
-                .ForMember(dest => dest.contactNumbers , 
-                O => O.MapFrom(
-                    src => src.ContactNumbers.Select(cn => cn.PhoneNumber).ToList()
-                    ))
-                ;
+                .ForMember(dest => dest.contactNumbers, O => O.MapFrom(src => src.ContactNumbers.Select(cn => cn.PhoneNumber).ToList()));
 
             CreateMap<ContactNumber, ContactNumberDTO>();
-
-
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
@@ -156,22 +161,15 @@ namespace Graduation_Project.APIs.Helpers
                             : (int?)null
                     ));
 
-
-     
-
-
             // ========================================== Governorate ==========================================
 
             CreateMap<Governorate, GovernorateDTO>();
-
 
             // ========================================== Region ==========================================
 
             CreateMap<Region, RegionDTO>();
 
             // ========================================== Prescription ==========================================
-            CreateMap<Prescription, PrescriptionEditFormDto>()
-                .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
             CreateMap<Prescription, PrescriptionEditFormDto>()
                 .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
 
@@ -190,7 +188,6 @@ namespace Graduation_Project.APIs.Helpers
                opt => opt.MapFrom(src => src.IssuedDate.ToString("dd MMM yyyy hh:mm tt")));
 
             CreateMap<PrescriptionImageDTO, PrescriptionImage>();
-
 
             // ========================================== Medicine ==========================================
             CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
@@ -249,7 +246,6 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.ConsultationFees, opt => opt.MapFrom(src => src.Doctor.ConsultationFees))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Doctor.Rating))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<DoctorPictureUrlResolver>());
-
         }
     }
 }

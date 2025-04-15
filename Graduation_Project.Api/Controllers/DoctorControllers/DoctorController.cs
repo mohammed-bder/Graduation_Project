@@ -17,6 +17,7 @@ using Graduation_Project.Core.Specifications.FavouriteSpecifications;
 using Graduation_Project.Core.Specifications.FeedBackSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,24 +30,22 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
     public class DoctorController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        //private readonly IUnitOfWork unitOfWork;
-        //private readonly IUserService userService;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPatientService _patientService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DoctorController(UserManager<AppUser> userManager
-                                , IUnitOfWork unitOfWork
-                                , IUserService userService
-                                , IMapper mapper
-            , IFileUploadService fileUploadService
+        public DoctorController(UserManager<AppUser> userManager,
+                                IUnitOfWork unitOfWork,
+                                IMapper mapper,
+                                IFileUploadService fileUploadService,
+                                IPatientService patientService
             )
         {
             _userManager = userManager;
-            //this.unitOfWork = unitOfWork;
-            //this.userService = userService;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            _patientService = patientService;
             _unitOfWork = unitOfWork;
         }
 
@@ -75,7 +74,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPut("EditProfile")]
-        public async Task<ActionResult<DoctorForProfileDto>> EditDoctorProfile([FromBody] DoctorForProfileDto doctorDtoFromRequest)
+        public async Task<ActionResult<DoctorForProfileToReturnDto>> EditDoctorProfile(DoctorForProfileDto doctorDtoFromRequest)
         {
             // Get Current Doctor Id
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
@@ -85,13 +84,18 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             if (doctor == null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
-            var x = User.FindFirstValue(ClaimTypes.GivenName);
+            
             // upload Doctor Picture and save its relative path in database
-            if (doctorDtoFromRequest.PictureFile != null)
+            if (doctorDtoFromRequest.PictureFile != null )
             {
-                var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
-                doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+                var (uploadSuccess, uploadMessage, uploadedPicUrlFilePath) = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+                if(!uploadSuccess)
+                {
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+                }
+
+                doctorDtoFromRequest.PictureUrl = uploadedPicUrlFilePath;
             }
 
             // mapping 
@@ -101,9 +105,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
 
-           //var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
+           var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
-            return Ok(doctorDtoFromRequest);
+            doctorForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+
+            return Ok(doctorForProfileToReturnDto);
 
         }
 
@@ -231,6 +237,17 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
 
             return Ok(doctorAboutDto);
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("PatientInfo/{patientId:int}")]
+        public async Task<ActionResult<object>> GetPatientInfo(int patientId)
+        {
+            var patient = await _patientService.GetInfo(patientId, null);
+            if (patient is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
+
+            return Ok(patient);
         }
 
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)

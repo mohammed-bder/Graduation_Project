@@ -28,6 +28,7 @@ namespace Graduation_Project.Api.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IConfiguration _configuration;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -39,7 +40,8 @@ namespace Graduation_Project.Api.Controllers
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
             IUserService userService,
-            IFileUploadService fileUploadService
+            IFileUploadService fileUploadService,
+            IConfiguration configuration
             )
         {
             _userManager = userManager;
@@ -48,6 +50,7 @@ namespace Graduation_Project.Api.Controllers
             _logger = logger;
             _userService = userService;
             this._fileUploadService = fileUploadService;
+            this._configuration = configuration;
             _doctorRepo = doctorRepo;
             this._clinicRepo = clinicRepo;
         
@@ -85,7 +88,7 @@ namespace Graduation_Project.Api.Controllers
                     Role = role,
                     Speciality = doctor.Specialty.Name_en,
                     Description = doctor.Description,
-                    PictureUrl = doctor.PictureUrl
+                    PictureUrl = !String.IsNullOrEmpty(doctor.PictureUrl) ? $"{_configuration["ServerUrl"]}{doctor.PictureUrl}" : string.Empty
                 };
                 return Ok(doctorDto);
             }
@@ -97,7 +100,7 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = await _authServices.CreateTokenAsync(user, _userManager),
                     Role = role,
-                    PictureUrl = patient.PictureUrl,
+                    PictureUrl = !String.IsNullOrEmpty(patient.PictureUrl) ? $"{_configuration["ServerUrl"]}{patient.PictureUrl}" : string.Empty,
                     BloodType = patient.BloodType,
                     Points = patient.Points, 
                     Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null
@@ -112,7 +115,7 @@ namespace Graduation_Project.Api.Controllers
 
 
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
-        public async Task<ActionResult<UserDTO>> DoctorRegister([FromBody] DoctorRegisterDTO model)
+        public async Task<ActionResult<UserDTO>> DoctorRegister( DoctorRegisterDTO model)
         {
 
             if (CheckEmailExists(model.Email).Result.Value)
@@ -160,11 +163,24 @@ namespace Graduation_Project.Api.Controllers
 
             var sanitizedFileName = Regex.Replace(registeredUser.FullName, @"[^a-zA-Z0-9_-]", ""); // Remove special chars
             var finalFileName = $"{sanitizedFileName}-{registeredUser.Id}";
-            var medicalLicensePictureUrl =  await _fileUploadService.UploadFileAsync(model.ImageFile! ,
-                                                                                        "Doctor/License/" , 
-                                                                                        User,
-                                                                                        customFileName: finalFileName);
+            if(model.ImageFile is  null)
+            {
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
+                return BadRequest(new ApiResponse(400, "medical License is required"));
+            }
 
+            var (uploadSuccess, uploadMessage, medicalLicensePictureUrlFilePath) =  await _fileUploadService.UploadFileAsync(model.ImageFile! ,
+                                                                                    "Doctor/License/" , 
+                                                                                    User,
+                                                                                    customFileName: finalFileName);
+
+            if(!uploadSuccess)
+            {
+                // Rollback: If doctor creation fails, delete the user from identity DB
+                await _userManager.DeleteAsync(registeredUser);
+                return BadRequest(new ApiResponse(400, uploadMessage));
+            }
 
 
             var newDoctor = new Doctor()
@@ -177,7 +193,7 @@ namespace Graduation_Project.Api.Controllers
                 SpecialtyId = model.SpecialtyId,
                 Specialty = await _specialtyRepo.GetAsync(model.SpecialtyId),
                 SlotDurationMinutes = 20,
-                MedicalLicensePictureUrl = medicalLicensePictureUrl
+                MedicalLicensePictureUrl = medicalLicensePictureUrlFilePath
             };
 
          

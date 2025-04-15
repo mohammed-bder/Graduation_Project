@@ -14,6 +14,8 @@ namespace Graduation_Project.Api.Extensions
             services.AddScoped(typeof(IAuthService), typeof(AuthServices));
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(IUserService), typeof(UserService));
+            
+            services.AddScoped(typeof(IPatientService), typeof(PatientServcie));
 
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IScheduleService, ScheduleService>();
