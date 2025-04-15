@@ -7,6 +7,7 @@ using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Models.Shared;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
@@ -240,47 +241,42 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return NotFound(new ApiResponse(404));
             }
 
-            return Ok(_mapper.Map<Prescription, PrescriptionEditFormDto>(prescriptionFromDB));
+            return Ok(_mapper.Map<Prescription, PrescriptionResponseDTO>(prescriptionFromDB));
         }
 
 
-        [Authorize(Roles = $"{nameof(UserRoleType.Doctor)},{nameof(UserRoleType.Patient)}")]
-        [HttpGet("GetAllForPatient")]
-        public async Task<ActionResult<IReadOnlyList<Prescription>>> GetAllPrescription(int? id)
+        
+        
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("GetAllForDoctorsPatient/{id:int}")]
+        [ServiceFilter(typeof(ExistingIdFilter<Patient>))]
+        public async Task<ActionResult<IReadOnlyList<PrescriptionListViewFormDto>>> GetAllPrescriptionForPatient(int id)
         {
-            var currentUser = await _userService.GetCurrentUserAsync();
-            var userRole = await _userService.GetUserRoleAsync(currentUser);
-
-            //Check if the current user is a patient
-            if (userRole == nameof(UserRoleType.Patient))
-            {
-                var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
-
-                var patient = await _unitOfWork.Repository<Patient>().GetAsync(patientId);
-                if (patient is null)
-                {
-                    return NotFound(new ApiResponse(404));
-                }
-                id = patient.Id; // Override 'id' if patient
-            }
-            else if (userRole == nameof(UserRoleType.Doctor))
-            {
-                // If the request comes from a doctor, ensure the 'id' parameter is provided.
-                if (!id.HasValue)
-                {
-                    return BadRequest("Patient ID is required when a doctor is requesting.");
-                }
-            }
-            
-            var spec = new AllPrescriptionsForPatientWithMedicinePrescriptionsAndImageSpec(id.Value);
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            var spec = new AllPrescriptionsForPatientWithDoctorIntersectionSpec(id, doctorId);
             var prescriptionsFromDB = await _unitOfWork.Repository<Prescription>().GetAllWithSpecAsync(spec);
             if (prescriptionsFromDB.IsNullOrEmpty())
             {
                 return NotFound(new ApiResponse(404));
             }
 
-            return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionEditFormDto>>(prescriptionsFromDB));
+            return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionListViewFormDto>>(prescriptionsFromDB));
         }
 
+
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetAllPrescriptions")]
+        public async Task<ActionResult<IReadOnlyList<PrescriptionListViewFormForPatientDto>>> GetAllPrescriptions()
+        {
+            var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+            var spec = new AllPrescriptionsForPatientSpec(patientId);
+            var prescriptionsFromDB = await _unitOfWork.Repository<Prescription>().GetAllWithSpecAsync(spec);
+            if (prescriptionsFromDB.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404));
+            }
+
+            return Ok(_mapper.Map<IReadOnlyList<Prescription>, IReadOnlyList<PrescriptionListViewFormForPatientDto>>(prescriptionsFromDB));
+        }
     }
 }

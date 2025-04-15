@@ -268,14 +268,22 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("get-todays-appointment")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetTodayAppointmentsAsync()
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetTodayAppointmentsAsync(DateOnly? month = null)
         {
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             // Define the query specification for today's appointments
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            DateOnly today;
+            if (month.HasValue)
+            {
+                today = month.Value;
+            }
+            else
+            {
+                today = DateOnly.FromDateTime(DateTime.Today);
+            }
             var appointmentSpec = new AppointmentsForSearchSpecifications(doctorId, today);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
-
+            
             if (appointments.IsNullOrEmpty())
             {
                 return NotFound(new ApiResponse(404, "No appointments found for this Doctor."));
@@ -289,10 +297,10 @@ namespace Graduation_Project.Api.Controllers.Shared
             .ToDictionary(
                 g => g.Key, // Date as JSON key (yyyy-MM-dd)
                 g => g.GroupBy(a => a.AppointmentTime) // Then group by time
-                      .ToDictionary(
-                          a => a.Key, // Time as JSON key (HH:mm:ss)
-                          a => a.First() // Use the first appointment in that time slot
-                      )
+                .ToDictionary(
+                    a => a.Key, // Time as JSON key (HH:mm:ss)
+                    a => a.First() // Use the first appointment in that time slot
+                )
             );
 
             return Ok(groupedAppointments);
@@ -300,11 +308,19 @@ namespace Graduation_Project.Api.Controllers.Shared
         
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("get-all-appointments")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, List<AppointmentForPatientDto>>>>> GetAllAppointmentsAsync()
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, List<AppointmentForPatientDto>>>>> GetAllAppointmentsAsync(DateOnly? month = null)
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
             // Define the query specification for today's appointments
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            DateOnly today;
+            if (month.HasValue)
+            {
+                today = month.Value;
+            }
+            else
+            {
+                today = DateOnly.FromDateTime(DateTime.Today);
+            }
             var appointmentSpec = new AppointmentsForPatientSearchSpecifications(patientId, today);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
@@ -321,14 +337,14 @@ namespace Graduation_Project.Api.Controllers.Shared
             .ToDictionary(
                 g => g.Key, // Date as JSON key (yyyy-MM-dd)
                 g => g.GroupBy(a => a.AppointmentTime) // Then group by time
-                      .ToDictionary(
-                          a => a.Key, // Time as JSON key (HH:mm:ss)
-                          a => a.OrderBy(appt => appt.Status == "Pending" ? 0 :
-                                         appt.Status == "Confirmed" ? 1 :
-                                         appt.Status == "Completed" ? 2 :
-                                         3) // Cancelled gets the highest value (pushed to last)
-                        .ToList()
-                      )
+                .ToDictionary(
+                    a => a.Key, // Time as JSON key (HH:mm:ss)
+                    a => a.OrderBy(appt => appt.Status == "Pending" ? 0 :
+                        appt.Status == "Confirmed" ? 1 :
+                        appt.Status == "Completed" ? 2 :
+                        3) // Cancelled gets the highest value (pushed to last)
+                .ToList()
+                )
             );
 
             return Ok(groupedAppointments);

@@ -12,6 +12,8 @@ namespace Graduation_Project.Core.Specifications.PrescriptionSpecifications
         {
             Includes.Add(p => p.MedicinePrescriptions);
             Includes.Add(p => p.PrescriptionImages);
+            Includes.Add(p => p.Doctor);
+            Includes.Add(p => p.Patient);
         }
 
     }
