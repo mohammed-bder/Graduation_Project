@@ -47,11 +47,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
         {
             var doctorId =  int.Parse(User.FindFirstValue(Identifiers.DoctorId)!);
 
-            //var spec = new ClinicByDocIdWithAllDataSpecification(doctorId);
-
-            //var clinicRepository =  _unitOfWork.Repository<Clinic>();
-
-            //var clinic = await clinicRepository.GetWithSpecsAsync(spec);
+     
 
             var clinic = await GetClinicForDoctor(doctorId);
 
