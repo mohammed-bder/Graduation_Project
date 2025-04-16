@@ -39,9 +39,24 @@ namespace Graduation_Project.Service
             if (string.IsNullOrWhiteSpace(folderName))
                 return (false, "Folder name is required.", null);
 
-            string uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+
+
+            string uniqueFileName;
+            if ( folderName.Contains("ClinicPicture"))
+            {
+                
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+               ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{Guid.NewGuid()}{extension}"
+               : $"{customFileName}{extension}";
+            }
+            else
+            {
+
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                 ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
                 : $"{customFileName}{extension}";
+            }
+
 
 
             try

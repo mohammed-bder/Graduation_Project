@@ -12,7 +12,7 @@
         public string? Fellowships { get; set; }
         //******************************* Clinic *******************************/
         public string Name { get; set; } // Name of the clinic
-        public string? PictureUrl { get; set; }
+        public ICollection<string>? PictureUrls { get; set; }
         public string? LocationLink { get; set; } //  locationLink of the clinic
         public string? Location { get; set; }     //  Address or location of the clinic
         //public DoctorAboutClinicDto DoctorClinics { get; set; }

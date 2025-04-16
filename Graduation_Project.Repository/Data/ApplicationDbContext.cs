@@ -34,6 +34,8 @@
 
         /* --------------------- Clinics Models -----------------  */
         public DbSet<Clinic> clinics { get; set; }
+
+        public DbSet<ClinicPictures> clinicPictures { get; set; }
         public DbSet<ClincSecretary> clincSecretaries { get; set; }
         public DbSet<ContactNumber> contactNumbers { get; set; }
         public DbSet<Secretary> secretaries { get; set; }
@@ -79,6 +81,12 @@
                 entity.Property(d => d.ConsultationFees)
                       .HasColumnType("decimal(18,2)"); // specify precision and scale
             });
+
+
+            modelBuilder.Entity<Clinic>()
+                .HasMany(c => c.ClinicPictures)
+                .WithOne(p => p.Clinic)
+                .HasForeignKey(p => p.ClinicId);
 
             ///************** Relation with Identity Table **************/
             //modelBuilder.Entity<Doctor>()

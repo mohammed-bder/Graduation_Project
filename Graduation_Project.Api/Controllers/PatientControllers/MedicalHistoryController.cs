@@ -7,6 +7,7 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,27 +22,15 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserService _userService;
+        private readonly IFileUploadService _fileUploadService;
 
-        public MedicalHistoryController(IUnitOfWork unitOfWork , IMapper mapper , UserManager<AppUser> userManager , IUserService userService)
+        public MedicalHistoryController(IUnitOfWork unitOfWork , IMapper mapper , UserManager<AppUser> userManager , IUserService userService ,IFileUploadService fileUploadService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _userService = userService;
-        }
-
-        /****************************************** Get All Medicl History ******************************************/
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("GetMedicalHistory")]
-        public async Task<ActionResult<IReadOnlyList<MedicalHistoryDto>>> GetAllMediclHistory()
-        {
-            var spec = new MedicalHistoryWithPatientAndCategory();
-            var MedicalHistories = await _unitOfWork.Repository<MedicalHistory>().GetAllWithSpecAsync(spec);
-            if (MedicalHistories is null)
-            {
-                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Histories Not Found"));
-            }
-            return Ok(_mapper.Map<IReadOnlyList<MedicalHistory>, IReadOnlyList<MedicalHistoryDto>>(MedicalHistories));
+            _fileUploadService = fileUploadService;
         }
 
         /****************************************** Get Medicl History By Id ******************************************/
@@ -60,19 +49,20 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
         /****************************************** Get All Medical History and Categories for Current User ******************************************/
         [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("GetAllHistoryAndCategories")]
-        public async Task<ActionResult<IReadOnlyList<MedicalHistoryDto>>> GetAllHistoryAndCategories()
+        [HttpGet("GetUserHistoryByCategory/{medicalCategoryId:int}")]
+        public async Task<ActionResult<IReadOnlyList<MedicalHistoryDto>>> GetUserHistoryByCategory(int medicalCategoryId)
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            var spec = new PatientForProfileSpecs(patientId);
-            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
+            var patient = await _unitOfWork.Repository<Patient>().GetByConditionAsync(p => p.Id == patientId);  
 
             if (patient is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "This Patient Not Found"));
 
-            var medicalHistoriesSpec = new MedicalHistoryWithCategorySpec(patient.Id);
-            var medicalHistories = await _unitOfWork.Repository<MedicalHistory>().GetAllWithSpecAsync(medicalHistoriesSpec);
+            var medicalHistories = await _unitOfWork.Repository<MedicalHistory>().GetManyByConditionAsync(m => m.PatientId == patient.Id && m.MedicalCategoryId == medicalCategoryId);
+
+            if (medicalHistories is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Histories Not Found"));
 
             var medicalHistoriesDto = _mapper.Map<IReadOnlyList<MedicalHistory>, IReadOnlyList<MedicalHistoryDto>>(medicalHistories);
 
@@ -86,14 +76,25 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            var spec = new PatientForProfileSpecs(patientId);
-            var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
+            //var spec = new PatientForProfileSpecs(patientId);
+            //var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
+            var patient = await _unitOfWork.Repository<Patient>().GetByConditionAsync(p => p.Id == patientId);
 
             if (patient is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "This Patient Not Found"));
 
             var medicalHistory = _mapper.Map<MedicalHistoryFormDto, MedicalHistory>(model);
             medicalHistory.PatientId = patient.Id;
+
+            if (model.PictureFile is not null)
+            {
+                var (uploadSuccess, uploadMessage, uploadedPictureUrlFilePath) = await _fileUploadService.UploadFileAsync(model.PictureFile, "Patient/MedicalHistory", User);
+
+                if (!uploadSuccess)
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+
+                medicalHistory.MedicalImage = uploadedPictureUrlFilePath;
+            }
 
             try
             {
@@ -117,6 +118,17 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical History Not Found"));
 
             var medicalHistoryMapped = _mapper.Map(model, medicalHistory);
+
+            if (model.PictureFile is not null)
+            {
+                var (uploadSuccess, uploadMessage, uploadedPictureUrlFilePath) = await _fileUploadService.UploadFileAsync(model.PictureFile, "Patient/MedicalHistory", User);
+
+                if (!uploadSuccess)
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+
+                medicalHistory.MedicalImage = uploadedPictureUrlFilePath;
+            }
+
             try
             {
                 _unitOfWork.Repository<MedicalHistory>().Update(medicalHistoryMapped);
@@ -158,5 +170,6 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, ex.Message));
             }
         }
+
     }
 }
