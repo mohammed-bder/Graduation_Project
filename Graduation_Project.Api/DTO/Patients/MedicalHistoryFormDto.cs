@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 namespace Graduation_Project.Api.DTO.Patients
 {
     public class MedicalHistoryFormDto
@@ -15,6 +16,9 @@ namespace Graduation_Project.Api.DTO.Patients
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
         public string? MedicalImage { get; set; }
+
+        [JsonIgnore]
+        public IFormFile? PictureFile { get; set; }
 
         [Required(ErrorMessage = "Medical Category ID is required.")]
         [ExistingId<MedicalCategory>]

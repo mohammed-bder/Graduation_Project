@@ -116,5 +116,10 @@ namespace Graduation_Project.Repository
         {
             return await dbContext.Set<T>().FirstOrDefaultAsync(expression);
         }
+
+        public async Task<IReadOnlyList<T>?> GetManyByConditionAsync(Expression<Func<T, bool>> expression)
+        {
+            return await dbContext.Set<T>().Where(expression).ToListAsync();
+        }
     }
 }

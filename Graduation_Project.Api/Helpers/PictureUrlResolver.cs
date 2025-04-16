@@ -15,20 +15,23 @@ namespace Graduation_Project.Api.Helpers
 
         public string Resolve(TSource source, TDestination destination, string destMember, ResolutionContext context)
         {
-                // Get the PictureUrl property dynamically
-                var pictureUrlProperty = typeof(TSource).GetProperty("PictureUrl");
-             
+            var propertyNames = new[] { "PictureUrl", "MedicalImage" };
+            var pictureUrl = GetFirstValidImageUrl(source, propertyNames);
+            return pictureUrl;
 
-                if (pictureUrlProperty != null)
-                {
-                    var pictureUrl = pictureUrlProperty.GetValue(source) as string;
-                    if (!string.IsNullOrEmpty(pictureUrl))
-                        return pictureUrl[0] == '/' ? $"{_configuration["ServerUrl"]}{pictureUrl}" : $"{_configuration["ServerUrl"]}/{pictureUrl}";
-                }
+        }
 
-             
+        private string GetFirstValidImageUrl(TSource source, string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                var property = typeof(TSource).GetProperty(propertyName);
+                var value = property?.GetValue(source) as string;
 
-                return string.Empty;
+                if (!string.IsNullOrEmpty(value))
+                    return value.StartsWith("/") ? $"{_configuration["ServerUrl"]}{value}" : $"{_configuration["ServerUrl"]}/{value}";
+            }
+            return null;
         }
     }
 }
