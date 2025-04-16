@@ -3,8 +3,8 @@
     public class Doctor: Person
     {
         //[Required(ErrorMessage = "National ID is required.")]
-        [StringLength(14, ErrorMessage = "National ID must be 14 characters.")]
-        public string? NationalID { get; set; }
+        //[StringLength(14, ErrorMessage = "National ID must be 14 characters.")]
+        //public string? NationalID { get; set; }
 
 
         //public string MedicalLicence { get; set; } // we want to talk about this

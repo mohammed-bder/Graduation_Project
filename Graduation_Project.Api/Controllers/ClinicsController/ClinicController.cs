@@ -66,9 +66,6 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             if (clinicFromDB is null)
                 return NotFound(new ApiResponse(404, "Clinic not found"));
 
-
-
-
             _mapper.Map(model , clinicFromDB);
 
 
@@ -77,10 +74,15 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
 
 
             // Generate Google Maps link
-            if (model.Latitude != 0 && model.Longitude != 0)
+            //if (model.Latitude != 0 && model.Longitude != 0)
+            //{
+            //    string mapsLink = $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
+            //    clinicFromDB.LocationLink = mapsLink;
+            //}
+
+            if(model.LocationLink is not null)
             {
-                string mapsLink = $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
-                clinicFromDB.LocationLink = mapsLink;
+                clinicFromDB.LocationLink = model.LocationLink;
             }
          
 
