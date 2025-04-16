@@ -234,7 +234,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.Name = doctorFromDb.Clinic.Name;
             doctorAboutDto.Location = doctorFromDb.Clinic.Address;
             doctorAboutDto.LocationLink = doctorFromDb.Clinic.LocationLink;
-            doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
+
+            doctorAboutDto.PictureUrls = doctorFromDb.Clinic.ClinicPictures is not null ?
+                doctorFromDb.Clinic.ClinicPictures.Select(p => p.ImageUrl).ToList() :
+                new List<string>();
+                
 
             return Ok(doctorAboutDto);
         }

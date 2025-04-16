@@ -16,10 +16,13 @@ namespace Graduation_Project.Core.Specifications.ClinicsSpecifications
             //Includes.Add(c => c.Region);
             //Includes.Add(C => C.ContactNumbers);
 
+            Includes.Add(c => c.ContactNumbers);
+            Includes.Add(c => c.ClinicPictures);
             ThenIncludes.Add(
                 C => C.Include(c => c.Region)
                 .ThenInclude(r => r.governorate)
-                .Include(c => c.ContactNumbers)
+
+
                 );
         }
 
@@ -27,12 +30,14 @@ namespace Graduation_Project.Core.Specifications.ClinicsSpecifications
         public ClinicByDocIdWithAllDataSpecification(int doctorId) : base( c => c.DoctorId == doctorId)
         {
             //Includes.Add(c => c.Region);
+            //Includes.Add(c => c.Governorate);
             //Includes.Add(C => C.ContactNumbers);
-
+            Includes.Add(c => c.ContactNumbers);
+            Includes.Add(c => c.ClinicPictures);
             ThenIncludes.Add(
-                C => C.Include(c => c.Region)
+                C => C
+                .Include(c => c.Region)
                 .ThenInclude(r => r.governorate)
-                .Include(c => c.ContactNumbers)
                 );
         }
     }

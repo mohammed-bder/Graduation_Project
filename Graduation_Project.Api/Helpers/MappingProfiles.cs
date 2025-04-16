@@ -37,7 +37,7 @@ namespace Graduation_Project.APIs.Helpers
                 )).ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorForProfileToReturnDto>>());
 
 
-            CreateMap<ClinicEditDTO, Clinic>();
+           
 
 
             CreateMap<DoctorForProfileDto, Doctor>()
@@ -125,10 +125,14 @@ namespace Graduation_Project.APIs.Helpers
 
             // ========================================== Clinic ==========================================
             CreateMap<Clinic, ClinicInfoToReturnDTO>()
-                .ForMember(dest => dest.RegionName, O => O.MapFrom(src => src.Region.Name_en))
-                .ForMember(dest => dest.GovernorateName, O => O.MapFrom(src => src.Region.governorate.Name_en))
-                .ForMember(dest => dest.GovernorateId, O => O.MapFrom(src => src.Region.governorate.Id))
-                .ForMember(dest => dest.contactNumbers, O => O.MapFrom(src => src.ContactNumbers.Select(cn => cn.PhoneNumber).ToList()));
+                .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.Name_en))
+                .ForMember(dest => dest.GovernorateName, opt => opt.MapFrom(src => src.Governorate.Name_en))
+                .ForMember(dest => dest.GovernorateId, opt => opt.MapFrom(src => src.Governorate.Id))
+                .ForMember(dest => dest.contactNumbers, opt => opt.MapFrom(src => src.ContactNumbers != null ? src.ContactNumbers.Select(cn => cn.PhoneNumber).ToList() : new List<string>()))
+                .ForMember(dest => dest.ClinicPictures, opt => opt.MapFrom<ClinicPictureUrlResolver>());
+
+            CreateMap<ClinicEditDTO, Clinic>();
+                //.ForMember(dest => dest.GovernorateId, opt => opt.Ignore()); // GovernorateId might be inferred from Region, or handled manually
 
             CreateMap<ContactNumber, ContactNumberDTO>();
 

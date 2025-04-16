@@ -4,7 +4,7 @@
     {
 
         public string Name { get; set; } // Name of the clinic
-        public string? PictureUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
 
         public string? LocationLink { get; set; }
