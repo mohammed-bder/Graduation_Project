@@ -134,12 +134,13 @@ namespace Graduation_Project.APIs.Helpers
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
-                .ForMember(dest => dest.MedicalCategory, opt => opt.MapFrom(src => src.MedicalCategory.Name_ar))
-                .ForMember(dest => dest.MedicalImage,  O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryDto>>()); 
+                .ForMember(dest => dest.MedicalImage,  O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryDto>>())
+                .ForMember(dest => dest.Date, O => O.MapFrom(src => src.Date.ToString("yyyy-MM-dd"))); 
 
             CreateMap<MedicalHistoryFormDto, MedicalHistory>();
 
-            CreateMap<MedicalHistory, MedicalHistoryFormDto>();
+            CreateMap<MedicalHistory, MedicalHistoryFormDto>()
+                .ForMember(dest => dest.MedicalImage, O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryFormDto>>());
 
             CreateMap<MedicalHistory, MedicalHistoryInfoDto>();
 
