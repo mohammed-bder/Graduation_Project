@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416122746_delete long lat from clinic and doctor nationalId")]
+    partial class deletelonglatfromclinicanddoctornationalId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,9 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
@@ -78,28 +84,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("clinics");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ClinicPictures", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicId");
-
-                    b.ToTable("clinicPictures");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ContactNumber", b =>
@@ -1244,17 +1228,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ClinicPictures", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Clinics.Clinic", "Clinic")
-                        .WithMany("ClinicPictures")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Clinic");
-                });
-
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ContactNumber", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Clinic", "clinic")
@@ -1644,8 +1617,6 @@ namespace Graduation_Project.Repository.Data.Migrations
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Clinic", b =>
                 {
-                    b.Navigation("ClinicPictures");
-
                     b.Navigation("ContactNumbers");
 
                     b.Navigation("clincSecretarys");

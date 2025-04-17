@@ -5,9 +5,11 @@ using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Clinics;
 using Graduation_Project.Core.Specifications.ClinicsSpecifications;
 using Graduation_Project.Repository;
+using Graduation_Project.Repository.Data.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
 using Microsoft.AspNetCore.Http;
@@ -23,12 +25,18 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileUploadService _fileUploadService;
 
-        public ClinicController( IMapper mapper , UserManager<AppUser> userManager , IUnitOfWork unitOfWork  )
+        public ClinicController( IMapper mapper ,
+            UserManager<AppUser> userManager ,
+            IUnitOfWork unitOfWork ,
+            IFileUploadService fileUploadService
+            )
         {
             this._mapper = mapper;
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
+            this._fileUploadService = fileUploadService;
         }
 
 
@@ -39,11 +47,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
         {
             var doctorId =  int.Parse(User.FindFirstValue(Identifiers.DoctorId)!);
 
-            //var spec = new ClinicByDocIdWithAllDataSpecification(doctorId);
-
-            //var clinicRepository =  _unitOfWork.Repository<Clinic>();
-
-            //var clinic = await clinicRepository.GetWithSpecsAsync(spec);
+     
 
             var clinic = await GetClinicForDoctor(doctorId);
 
@@ -57,7 +61,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPut("Edit")]
         public async Task<ActionResult<ClinicInfoToReturnDTO>> Edit( ClinicEditDTO model)
-        {
+            {
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId)!);
 
 
@@ -67,46 +71,90 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
                 return NotFound(new ApiResponse(404, "Clinic not found"));
 
 
-
+            var regSpec = new RegionWithGovDataSpecification(model.RegionId);
+            var reg = await _unitOfWork.Repository<Region>().GetWithSpecsAsync(regSpec);
+            model.GovernorateId = reg.governorateId;
+                
 
             _mapper.Map(model , clinicFromDB);
 
 
+            var newClinicPicture = new ClinicPictures();
 
+            var clinicPicCount = new ClinicPictureCountSpecification();
+            var numberOfClinicPicture =  await _unitOfWork.Repository<ClinicPictures>().GetCountAsync(clinicPicCount);
 
-
-
-            // Generate Google Maps link
-            if (model.Latitude != 0 && model.Longitude != 0)
+            if(numberOfClinicPicture == 3 && model.ImageFile is not null)
             {
-                string mapsLink = $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
-                clinicFromDB.LocationLink = mapsLink;
+                return BadRequest(new ApiResponse(400, "you reach max number of images {3}"));
+            }
+
+            if (model.ImageFile is not null)
+            {
+
+                (bool Success, string Message, string? FilePath) =  await _fileUploadService.UploadFileAsync(model.ImageFile, "Doctor/ClinicPicture", User);
+               
+                if(!Success)
+                {
+                    return BadRequest(new ApiResponse(400, Message));
+                }
+
+
+                newClinicPicture.ImageUrl = FilePath;
+                newClinicPicture.ClinicId = clinicFromDB.Id;
+              
+
+                if (clinicFromDB.ClinicPictures == null)
+                    clinicFromDB.ClinicPictures = new List<ClinicPictures>();
+
+                clinicFromDB.ClinicPictures.Add(newClinicPicture);
+
+                await _unitOfWork.Repository<ClinicPictures>().AddAsync(newClinicPicture);
+            }
+            // Generate Google Maps link
+            //if (model.Latitude != 0 && model.Longitude != 0)
+            //{
+            //    string mapsLink = $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
+            //    clinicFromDB.LocationLink = mapsLink;
+            //}
+
+            // Update LocationLink if provided
+            if (!string.IsNullOrWhiteSpace(model.LocationLink))
+            {
+                clinicFromDB.LocationLink = model.LocationLink;
             }
          
 
-
-            var isTypeExist =   Enum.IsDefined<ClinicType>(model.Type!.Value);
-
-            if (!isTypeExist)
+            // Validate ClinicType
+            if (model.Type is not null && !Enum.IsDefined(typeof(ClinicType), model.Type.Value))
+            {
                 return BadRequest(new ApiResponse(404, "Clinic Type Not Found"));
+            }
 
 
             try
             {
+
+                
                 _unitOfWork.Repository<Clinic>().Update(clinicFromDB);
-                //_clinicRepo.Update(clinicFromDB);
+              
                var result =  await _unitOfWork.CompleteAsync();
+
+                var returnDTO = _mapper.Map<ClinicInfoToReturnDTO>(clinicFromDB);
+                returnDTO.GovernorateId = reg.governorateId;
+                returnDTO.GovernorateName = reg.governorate.Name_en;
+
+                return Ok(new
+                {
+                    message = "Clinic updated successfully",
+                    Data = returnDTO
+                });
             }
             catch (Exception ex)
             {
                 return BadRequest(new ApiResponse(400, ex.Message));
             }
 
-            return Ok(new
-            {
-                message = $"clinic updated Successfully",
-                Data = model
-            });
 
         }
 

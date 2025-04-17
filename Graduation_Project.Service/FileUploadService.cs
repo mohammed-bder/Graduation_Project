@@ -19,45 +19,70 @@ namespace Graduation_Project.Service
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, string folderName , ClaimsPrincipal? user, string? customFileName = null)
+        public async Task<(bool Success ,string Message , string? FilePath)> UploadFileAsync(IFormFile file, string folderName , ClaimsPrincipal? user, string? customFileName = null)
         {
-            if (file == null || file.Length == 0)
-                throw new ArgumentException("File is required.");
+         
 
             // Validate file type
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
             var extension = Path.GetExtension(file.FileName).ToLower();
 
             if (!allowedExtensions.Contains(extension))
-                throw new ArgumentException("Invalid file format. Allowed formats: .jpg, .jpeg, .png, .gif, .bmp, .webp");
+                return (false, "Invalid file format. Allowed formats: .jpg, .jpeg, .png, .gif, .bmp, .webp", null);
 
             // Validate file size (Max 5MB)
             const long maxFileSize = 5 * 1024 * 1024;
             if (file.Length > maxFileSize)
-                throw new ArgumentException("File size must be less than 5MB.");
+                return (false, "File size must be less than 5MB.", null);
 
             // Validate folder name
             if (string.IsNullOrWhiteSpace(folderName))
-                throw new ArgumentException("Folder name is required.");
+                return (false, "Folder name is required.", null);
 
-            string uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+
+
+            string uniqueFileName;
+            if ( folderName.Contains("ClinicPicture"))
+            {
+                
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+               ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{Guid.NewGuid()}{extension}"
+               : $"{customFileName}{extension}";
+            }
+            else
+            {
+
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                 ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
                 : $"{customFileName}{extension}";
-                
-
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
-
-            // Ensure the directory exists
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
             }
 
-            return $"/uploads/{folderName}/{uniqueFileName}"; // Return relative path
+
+
+            try
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folderName);
+
+                // Ensure the directory exists
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+
+                string relativePath = $"/uploads/{folderName}/{uniqueFileName}";
+                return (true , "File uploaded successfully.", relativePath); // Return relative path
+            }
+            catch (Exception ex)
+            {
+
+                return (false, "An error occurred while uploading the file.", null);
+            }
+
         }
     }
 }

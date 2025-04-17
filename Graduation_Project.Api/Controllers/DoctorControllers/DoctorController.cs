@@ -86,11 +86,16 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             
             // upload Doctor Picture and save its relative path in database
-            if (doctorDtoFromRequest.PictureFile != null)
+            if (doctorDtoFromRequest.PictureFile != null )
             {
-                var uploadedPicUrl = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
 
-                doctorDtoFromRequest.PictureUrl = uploadedPicUrl;
+                var (uploadSuccess, uploadMessage, uploadedPicUrlFilePath) = await _fileUploadService.UploadFileAsync(doctorDtoFromRequest.PictureFile, "Doctor/ProfilePic", User);
+                if(!uploadSuccess)
+                {
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+                }
+
+                doctorDtoFromRequest.PictureUrl = uploadedPicUrlFilePath;
             }
 
             // mapping 
@@ -229,7 +234,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             doctorAboutDto.Name = doctorFromDb.Clinic.Name;
             doctorAboutDto.Location = doctorFromDb.Clinic.Address;
             doctorAboutDto.LocationLink = doctorFromDb.Clinic.LocationLink;
-            doctorAboutDto.PictureUrl = doctorFromDb.Clinic.PictureUrl;
+
+            doctorAboutDto.PictureUrls = doctorFromDb.Clinic.ClinicPictures is not null ?
+                doctorFromDb.Clinic.ClinicPictures.Select(p => p.ImageUrl).ToList() :
+                new List<string>();
+                
 
             return Ok(doctorAboutDto);
         }

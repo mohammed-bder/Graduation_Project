@@ -75,10 +75,18 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
             // upload Paitent Profile Picture
 
-            var uploadedPictureUrl = await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture", User);
+            if(patientProfileFromRequest.PictureFile is not null)
+            {
 
-            patient.PictureUrl = uploadedPictureUrl;
-            
+                var (uploadSuccess, uploadMessage, uploadedPictureUrlFilePath) = await _fileUploadService.UploadFileAsync(patientProfileFromRequest.PictureFile, "Patient/ProfilePicture", User);
+
+                if (!uploadSuccess)
+                    return BadRequest(new ApiResponse(400, uploadMessage));
+
+                patient.PictureUrl = uploadedPictureUrlFilePath;
+            }
+
+
             // Update Patient 
             _unitOfWork.Repository<Patient>().Update(patient);
             await _unitOfWork.Repository<Patient>().SaveAsync();

@@ -15,25 +15,23 @@ namespace Graduation_Project.Api.Helpers
 
         public string Resolve(TSource source, TDestination destination, string destMember, ResolutionContext context)
         {
-            // Get the PictureUrl property dynamically
-            var pictureUrlProperty = typeof(TSource).GetProperty("PictureUrl");
-            var MedicalLicensePictureUrlProperty = typeof(TSource).GetProperty("MedicalLicensePictureUrl");
+            var propertyNames = new[] { "PictureUrl", "MedicalImage" };
+            var pictureUrl = GetFirstValidImageUrl(source, propertyNames);
+            return pictureUrl;
 
-            if (pictureUrlProperty != null)
+        }
+
+        private string GetFirstValidImageUrl(TSource source, string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
             {
-                var pictureUrl = pictureUrlProperty.GetValue(source) as string;
-                if (!string.IsNullOrEmpty(pictureUrl))
-                    return pictureUrl[0] == '/' ? $"{_configuration["ServerUrl"]}{pictureUrl}" : $"{_configuration["ServerUrl"]}/{pictureUrl}";
-            }
+                var property = typeof(TSource).GetProperty(propertyName);
+                var value = property?.GetValue(source) as string;
 
-            if (MedicalLicensePictureUrlProperty != null)
-            {
-                var medicalLicensePictureUrl = MedicalLicensePictureUrlProperty.GetValue(source) as string;
-                if (!string.IsNullOrEmpty(medicalLicensePictureUrl))
-                    return medicalLicensePictureUrl[0] == '/' ? $"{_configuration["ServerUrl"]}{medicalLicensePictureUrl}" : $"{_configuration["ServerUrl"]}/{medicalLicensePictureUrl}";
+                if (!string.IsNullOrEmpty(value))
+                    return value.StartsWith("/") ? $"{_configuration["ServerUrl"]}{value}" : $"{_configuration["ServerUrl"]}/{value}";
             }
-
-            return string.Empty;
+            return null;
         }
     }
 }

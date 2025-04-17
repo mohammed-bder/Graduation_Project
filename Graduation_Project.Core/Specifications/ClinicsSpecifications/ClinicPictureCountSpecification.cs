@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.ClinicsSpecifications
 {
-    public class RegionWithGovDataSpecification : BaseSpecifications<Region>
+    public class ClinicPictureCountSpecification : BaseSpecifications<ClinicPictures>
     {
-
-        public RegionWithGovDataSpecification(int id) :base(r => r.Id == id)
+        public ClinicPictureCountSpecification() : base()
         {
-
-            Includes.Add(r => r.governorate);
+            
         }
     }
 }
