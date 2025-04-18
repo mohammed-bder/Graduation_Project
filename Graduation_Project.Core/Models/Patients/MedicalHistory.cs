@@ -13,7 +13,6 @@
         [Required(ErrorMessage = "Date is required.")]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
-        public string? MedicalImage { get; set; }
 
         [ForeignKey("Patient")]
         public int PatientId { get; set; }
@@ -22,5 +21,7 @@
         [ForeignKey("MedicalCategory")]
         public int MedicalCategoryId { get; set; }
         public MedicalCategory? MedicalCategory { get; set; }
+
+        public MedicalHistoryImage? medicalHistoryImage { get; set; } // Navigation property: a medical history can have single image [1 to 1] relationship.
     }
 }

@@ -15,6 +15,8 @@ namespace Graduation_Project.Api.DTO.Patients
         [Required(ErrorMessage = "Date is required.")]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? MedicalImage { get; set; }
 
         [JsonIgnore]

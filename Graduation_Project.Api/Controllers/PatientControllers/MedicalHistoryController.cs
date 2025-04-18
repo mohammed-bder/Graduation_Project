@@ -6,10 +6,12 @@ using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
+using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System.Security.Claims;
@@ -33,20 +35,6 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             _fileUploadService = fileUploadService;
         }
 
-        /****************************************** Get Medicl History By Id ******************************************/
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("{Id:int}")]
-        public async Task<ActionResult<MedicalHistoryInfoDto>> GetMedicalHistory(int Id)
-        {
-            var spec = new MedicalHistoryWithPatientAndCategory(Id);
-            var medicalHistory = await _unitOfWork.Repository<MedicalHistory>().GetWithSpecsAsync(spec);
-            if (medicalHistory is null)
-            {
-                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical History Not Found"));
-            }
-            return Ok(_mapper.Map<MedicalHistory, MedicalHistoryInfoDto>(medicalHistory));
-        }
-
         /****************************************** Get All Medical History and Categories for Current User ******************************************/
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetUserHistoryByCategory/{medicalCategoryId:int}")]
@@ -59,9 +47,10 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
             if (patient is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "This Patient Not Found"));
 
-            var medicalHistories = await _unitOfWork.Repository<MedicalHistory>().GetManyByConditionAsync(m => m.PatientId == patient.Id && m.MedicalCategoryId == medicalCategoryId);
+            var spec = new MedicalHistoryWithMedicalImage(patientId, medicalCategoryId);
+            var medicalHistories = await _unitOfWork.Repository<MedicalHistory>().GetAllWithSpecAsync(spec);
 
-            if (medicalHistories is null)
+            if (medicalHistories is null || !medicalHistories.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Histories Not Found"));
 
             var medicalHistoriesDto = _mapper.Map<IReadOnlyList<MedicalHistory>, IReadOnlyList<MedicalHistoryDto>>(medicalHistories);
@@ -76,8 +65,6 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
 
-            //var spec = new PatientForProfileSpecs(patientId);
-            //var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(spec);
             var patient = await _unitOfWork.Repository<Patient>().GetByConditionAsync(p => p.Id == patientId);
 
             if (patient is null)
@@ -92,14 +79,23 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
 
                 if (!uploadSuccess)
                     return BadRequest(new ApiResponse(400, uploadMessage));
-
-                medicalHistory.MedicalImage = uploadedPictureUrlFilePath;
+                
+                medicalHistory.medicalHistoryImage = new MedicalHistoryImage
+                {
+                    ImageUrl = uploadedPictureUrlFilePath,
+                    MedicalHistoryId = medicalHistory.Id
+                };
             }
 
             try
             {
                 await _unitOfWork.Repository<MedicalHistory>().AddAsync(medicalHistory);
-                await _unitOfWork.CompleteAsync();
+
+                var result = await _unitOfWork.CompleteAsync();
+                if (result <= 0)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to add Medical History"));
+                }
                 return Ok(_mapper.Map<MedicalHistory, MedicalHistoryFormDto>(medicalHistory));
             }
             catch (Exception ex)
@@ -111,7 +107,7 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         /****************************************** Edit Medicl History ******************************************/
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPut("MedicalHistory/{Id:int}")]
-        public async Task<ActionResult<MedicalHistoryInfoDto>> EditMedicalHistory(MedicalHistoryFormDto model,int Id)
+        public async Task<ActionResult<MedicalHistoryDto>> EditMedicalHistory(MedicalHistoryFormDto model,int Id)
         {
             var medicalHistory = await _unitOfWork.Repository<MedicalHistory>().GetAsync(Id);
             if (medicalHistory == null)
@@ -126,7 +122,21 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 if (!uploadSuccess)
                     return BadRequest(new ApiResponse(400, uploadMessage));
 
-                medicalHistory.MedicalImage = uploadedPictureUrlFilePath;
+                var medicalHistoryImage = await _unitOfWork.Repository<MedicalHistoryImage>().GetByConditionAsync(m => m.MedicalHistoryId == medicalHistory.Id);
+                if (medicalHistoryImage != null)
+                {
+                    medicalHistoryImage.ImageUrl = uploadedPictureUrlFilePath;
+                    _unitOfWork.Repository<MedicalHistoryImage>().Update(medicalHistoryImage);
+                }
+                else
+                {
+                    var newImage = new MedicalHistoryImage
+                    {
+                        ImageUrl = uploadedPictureUrlFilePath,
+                        MedicalHistoryId = medicalHistory.Id
+                    };
+                    await _unitOfWork.Repository<MedicalHistoryImage>().AddAsync(newImage);
+                }
             }
 
             try
