@@ -134,9 +134,9 @@ namespace Graduation_Project.Api.Controllers.Shared
             var currentDoctor = await _unitOfWork.Repository<Doctor>().GetAsync(DoctorId);
             var currentPatient = await _unitOfWork.Repository<Patient>().GetAsync(prescriptionFromDB.PatientId);
 
-            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
+            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalMinutes > 15)
             {
-                return BadRequest(new ApiResponse(400, "You cannot edit this prescription after 24 hour of creation."));
+                return BadRequest(new ApiResponse(400, "You cannot edit this prescription after 15 minutes of creation."));
             }
 
             //prescriptionFromUser.PatientId = prescriptionFromDB.Id;
@@ -209,9 +209,9 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return (Unauthorized(new ApiResponse(401, "This Doctor is not Authorized to Delete this")));
             }
 
-            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalHours > 24)
+            if ((DateTime.UtcNow - prescriptionFromDB.IssuedDate).TotalMinutes > 15)
             {
-                return BadRequest(new ApiResponse(400, "You cannot delete this prescription after 24 hour of creation."));
+                return BadRequest(new ApiResponse(400, "You cannot delete this prescription after 15 minutes of creation."));
             }
 
             if (prescriptionFromDB.MedicinePrescriptions.Any())
