@@ -45,27 +45,6 @@ namespace Graduation_Project.Api.Controllers.Shared
                     return NotFound(new ApiResponse(404, "Doctor not found"));
                 }
 
-                // Step 2: Retrieve doctor’s latest policy (if SlotDuration is part of policy)
-                // All of the upcoming code should be a common service
-                var dpSpec = new DoctorPolicySpecifications(doctorId);
-                var doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpSpec);
-
-                // If no custom policies exist, return the default policy
-                if (!doctorPolicies.Any())
-                {
-                    var dpfSpec = new DefaultDoctorPolicySpecifications();
-                    doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpfSpec);
-
-                    if (doctorPolicies == null || !doctorPolicies.Any())
-                    {
-                        // Handle missing policy gracefully
-                        return NotFound(new ApiResponse(404, "Default Doctor's policy not found"));
-                    }
-                }
-                // This is either the default or the latest custom
-                var latestPolicy = doctorPolicies.OrderByDescending(p => p.CreatedAt).First();
-                // End of service
-
                 // Step 4: Get booked appointments for the selected week
                 var result = await _appointmentService.GetAvailableSlotsAsync(doctor);
 
