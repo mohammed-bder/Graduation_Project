@@ -14,5 +14,9 @@ namespace Graduation_Project.Core.IServices
 
 
         Task<(bool Success, string Message)> DeleteFile(string relativePath);
+
+        string CombinePath(string relativePath);
+
+        string getRelativePath(string absolutePath);
     }
 }

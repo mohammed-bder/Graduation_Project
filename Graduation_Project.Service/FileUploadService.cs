@@ -1,6 +1,7 @@
 ﻿using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,12 @@ namespace Graduation_Project.Service
     public class FileUploadService : IFileUploadService
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public FileUploadService(IWebHostEnvironment webHostEnvironment)
+        public FileUploadService(IWebHostEnvironment webHostEnvironment , IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
+            this._configuration = configuration;
         }
 
 
@@ -106,7 +109,7 @@ namespace Graduation_Project.Service
             try
             {
                 // Build the absolute path
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                string filePath = CombinePath(relativePath);
 
                 if (!File.Exists(filePath))
                     return (false, "File does not exist.");
@@ -118,6 +121,21 @@ namespace Graduation_Project.Service
             {
                 return (false, $"An error occurred while deleting the file. {ex.Message}");
             }
+        }
+
+        public string CombinePath(string relativePath)
+        {
+            string filePath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+            return filePath;
+        }
+
+        public string getRelativePath(string absolutePath)
+        {
+            string baseUrl = _configuration["ServerUrl"]!;
+            absolutePath = absolutePath.Replace(baseUrl, "");
+
+            return absolutePath;
         }
     }
 }

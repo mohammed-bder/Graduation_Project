@@ -172,6 +172,7 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             var clinicPictureRepo = _unitOfWork.Repository<ClinicPictures>();
 
 
+            imageFilePath = _fileUploadService.getRelativePath(imageFilePath);
             var spec = new getClinicPicWithNameSpecification(imageFilePath);
             var clinicPicture = await clinicPictureRepo.GetWithSpecsAsync(spec);
 
@@ -187,7 +188,6 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
             {
                 return BadRequest(new ApiResponse(400, message));
             }
-
 
             // Delete from database
             clinicPictureRepo.Delete(clinicPicture);    
