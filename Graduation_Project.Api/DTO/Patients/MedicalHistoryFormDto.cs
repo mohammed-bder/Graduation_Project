@@ -16,7 +16,7 @@ namespace Graduation_Project.Api.DTO.Patients
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? MedicalImage { get; set; }
 
         [JsonIgnore]
