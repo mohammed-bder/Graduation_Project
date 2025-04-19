@@ -1,6 +1,7 @@
 ﻿using Graduation_Project.Core.IServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,15 @@ namespace Graduation_Project.Service
     public class FileUploadService : IFileUploadService
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public FileUploadService(IWebHostEnvironment webHostEnvironment)
+        public FileUploadService(IWebHostEnvironment webHostEnvironment , IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
+            this._configuration = configuration;
         }
+
+
 
         public async Task<(bool Success ,string Message , string? FilePath)> UploadFileAsync(IFormFile file, string folderName , ClaimsPrincipal? user, string? customFileName = null)
         {
@@ -39,10 +44,24 @@ namespace Graduation_Project.Service
             if (string.IsNullOrWhiteSpace(folderName))
                 return (false, "Folder name is required.", null);
 
-            string uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+
+
+            string uniqueFileName;
+
+            if ( folderName.Contains("ClinicPicture") || folderName.Contains("MedicalHistory"))
+            {
+                
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
+               ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{Guid.NewGuid()}{extension}"
+               : $"{customFileName}{extension}";
+            }
+            else
+            {
+
+                uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                 ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
                 : $"{customFileName}{extension}";
-
+            }
 
             try
             {
@@ -52,7 +71,18 @@ namespace Graduation_Project.Service
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
+               
+
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+
+                // check if file exist delete it
+                if(File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                // saving the new file
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
@@ -68,6 +98,44 @@ namespace Graduation_Project.Service
                 return (false, "An error occurred while uploading the file.", null);
             }
 
+        }
+
+
+        public async Task<(bool Success, string Message)> DeleteFile(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return (false, "Invalid file path.");
+
+            try
+            {
+                // Build the absolute path
+                string filePath = CombinePath(relativePath);
+
+                if (!File.Exists(filePath))
+                    return (false, "File does not exist.");
+
+                File.Delete(filePath);
+                return (true, "File deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"An error occurred while deleting the file. {ex.Message}");
+            }
+        }
+
+        public string CombinePath(string relativePath)
+        {
+            string filePath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+            return filePath;
+        }
+
+        public string getRelativePath(string absolutePath)
+        {
+            string baseUrl = _configuration["ServerUrl"]!;
+            absolutePath = absolutePath.Replace(baseUrl, "");
+
+            return absolutePath;
         }
     }
 }

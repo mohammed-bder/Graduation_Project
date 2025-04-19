@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416142731_add clinic picture")]
+    partial class addclinicpicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -739,6 +742,9 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<int>("MedicalCategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("MedicalImage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -754,29 +760,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("MedicalHistories");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Patients.MedicalHistoryImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MedicalHistoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MedicalHistoryId")
-                        .IsUnique();
-
-                    b.ToTable("MedicalHistoryImage");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.Patient", b =>
@@ -1485,17 +1468,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Patients.MedicalHistoryImage", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Patients.MedicalHistory", "MedicalHistory")
-                        .WithOne("medicalHistoryImage")
-                        .HasForeignKey("Graduation_Project.Core.Models.Patients.MedicalHistoryImage", "MedicalHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MedicalHistory");
-                });
-
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.RadiologyReport", b =>
                 {
                     b.HasOne("Graduation_Project.Core.Models.Patients.Patient", "Patient")
@@ -1750,11 +1722,6 @@ namespace Graduation_Project.Repository.Data.Migrations
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.MedicalCategory", b =>
                 {
                     b.Navigation("MedicalHistories");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Core.Models.Patients.MedicalHistory", b =>
-                {
-                    b.Navigation("medicalHistoryImage");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Patients.Patient", b =>

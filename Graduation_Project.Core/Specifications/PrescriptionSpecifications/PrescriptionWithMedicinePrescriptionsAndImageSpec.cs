@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ namespace Graduation_Project.Core.Specifications.PrescriptionSpecifications
     {
         public PrescriptionWithMedicinePrescriptionsAndImageSpec(int prescriptionId) : base(p => p.Id == prescriptionId)
         {
-            Includes.Add(p => p.MedicinePrescriptions);
+            ThenIncludes.Add(query => query.Include(p => p.MedicinePrescriptions)
+                                       .ThenInclude(mp => mp.Medicine));
             Includes.Add(p => p.PrescriptionImages);
             Includes.Add(p => p.Doctor);
             Includes.Add(p => p.Patient);
