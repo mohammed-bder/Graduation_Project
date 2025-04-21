@@ -213,6 +213,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<MedicinePrescription, MedicinePrescriptionResponseDTO>()
              .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
+             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Medicine.Id))
              .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
 
             // ========================================== WorkSchedule ==========================================
