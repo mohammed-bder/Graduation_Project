@@ -2,7 +2,9 @@
 using Graduation_Project.APIs.Helpers;
 using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 
 namespace Graduation_Project.Api.Extensions
 {
@@ -24,6 +26,10 @@ namespace Graduation_Project.Api.Extensions
 
             //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            /****************************** notification Services ********************************/
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IFileUploadService, FileUploadService>();
 
             /****************************** add services for AutoMapper ********************************/
             services.AddAutoMapper(typeof(MappingProfiles)); 
