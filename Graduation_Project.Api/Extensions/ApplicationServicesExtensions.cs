@@ -31,6 +31,9 @@ namespace Graduation_Project.Api.Extensions
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
 
+            /****************************** add services for Fcm ********************************/
+            services.AddScoped<IFcmService,FcmNotificationService>();
+
             /****************************** add services for AutoMapper ********************************/
             services.AddAutoMapper(typeof(MappingProfiles)); 
             //Can Use That: services.AddAutoMapper(M => M.AddProfile(MappingProfiles));
