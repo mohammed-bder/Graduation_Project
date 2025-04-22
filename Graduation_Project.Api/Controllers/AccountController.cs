@@ -345,6 +345,19 @@ namespace Graduation_Project.Api.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPost("Save-User-DeviceToken")]
+        public async Task<ActionResult> SaveDeviceToken([FromBody] string deviceToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            user.DeviceToken = deviceToken;
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
+        } 
+
         [HttpGet("EmailExists")] // GET: api/Account/EmailExists
         public async Task<ActionResult<bool>> CheckEmailExists(string email)
         {
