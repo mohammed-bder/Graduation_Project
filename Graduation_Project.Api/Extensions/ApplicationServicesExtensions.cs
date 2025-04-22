@@ -27,6 +27,10 @@ namespace Graduation_Project.Api.Extensions
             //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            /****************************** notification Services ********************************/
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IFileUploadService, FileUploadService>();
+
             /****************************** add services for Fcm ********************************/
             services.AddScoped<IFcmService,FcmNotificationService>();
 

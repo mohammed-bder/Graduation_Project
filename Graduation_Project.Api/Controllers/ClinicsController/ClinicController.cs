@@ -160,6 +160,48 @@ namespace Graduation_Project.Api.Controllers.ClinicsController
 
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpDelete("deleteClinicPic")]
+        public async Task<ActionResult> DeleteClinicPic(string imageFilePath)
+        {
+            if (string.IsNullOrWhiteSpace(imageFilePath))
+            {
+                return BadRequest(new ApiResponse(400, "Image file path is required."));
+            }
+
+
+            var clinicPictureRepo = _unitOfWork.Repository<ClinicPictures>();
+
+
+            imageFilePath = _fileUploadService.getRelativePath(imageFilePath);
+            var spec = new getClinicPicWithNameSpecification(imageFilePath);
+            var clinicPicture = await clinicPictureRepo.GetWithSpecsAsync(spec);
+
+
+            if (clinicPicture == null)
+            {
+                return NotFound(new ApiResponse(404, "Clinic picture not found."));
+            }
+
+            // try to delete file from server
+            var (success, message) = await _fileUploadService.DeleteFile(imageFilePath);
+            if (!success)
+            {
+                return BadRequest(new ApiResponse(400, message));
+            }
+
+            // Delete from database
+            clinicPictureRepo.Delete(clinicPicture);    
+            var result =  await _unitOfWork.CompleteAsync();
+            if (result == 0)
+            {
+                return StatusCode(500, new ApiResponse(500, "File deleted but failed to update the database."));
+            }
+
+            return Ok(new ApiResponse(200, "Clinic picture deleted successfully."));
+        }
+
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpPost("addContactInfo")]
         public async Task<ActionResult> AddContactInfo(string phoneNumber)
         {

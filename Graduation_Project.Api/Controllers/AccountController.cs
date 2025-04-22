@@ -196,9 +196,6 @@ namespace Graduation_Project.Api.Controllers
                 MedicalLicensePictureUrl = medicalLicensePictureUrlFilePath
             };
 
-         
-
-
 
             try
             {
