@@ -43,7 +43,7 @@ namespace Graduation_Project.Api
 
             #region MyRegion
 
-            ///****************************** Connection String ********************************/
+            /****************************** Connection String ********************************/
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
