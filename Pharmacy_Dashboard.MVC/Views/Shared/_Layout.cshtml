@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Pharmacy Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @* Optional: Link to component-specific CSS if needed *@
+    @* <link rel="stylesheet" href="~/YourProjectName.styles.css" asp-append-version="true" /> *@
+
+</head>
+<body>
+    <div class="page-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <span class="logo-icon-wrapper"><i class="fas fa-prescription-bottle"></i></span>
+                    @* <span class="logo-text">Pharmacy</span> You can add text if needed *@
+                </a>
+                <button class="sidebar-toggle-btn" id="sidebarToggle">
+                    @* Add JS for this later *@
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        @* Add 'active' class dynamically based on current page *@
+                        <a class="nav-link active" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                            <i class="fas fa-th-large fa-fw me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Purchase" asp-action="Index">
+                            <i class="fas fa-shopping-cart fa-fw me-2"></i> Purchase
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Dispenser" asp-action="Index">
+                            <i class="fas fa-syringe fa-fw me-2"></i> Dispenser <i class="fas fa-chevron-down fa-xs ms-auto"></i>
+                        </a>
+                        @* Add sub-menu logic if needed *@
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">
+                            <i class="fas fa-box fa-fw me-2"></i> Product
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index">
+                            <i class="fas fa-chart-pie fa-fw me-2"></i> Reports <i class="fas fa-chevron-down fa-xs ms-auto"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Stock" asp-action="Index">
+                            <i class="fas fa-boxes fa-fw me-2"></i> Stock <i class="fas fa-chevron-down fa-xs ms-auto"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Customer" asp-action="Index">
+                            <i class="fas fa-user-friends fa-fw me-2"></i> Customer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">
+                            <i class="fas fa-industry fa-fw me-2"></i> Manufacturer <i class="fas fa-chevron-down fa-xs ms-auto"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Index">
+                            <i class="fas fa-users fa-fw me-2"></i> Employee
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Index">
+                            <i class="fas fa-cog fa-fw me-2"></i> Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-content-wrapper">
+            <header class="header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn-header" id="sidebarToggleHeader">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-bar">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="header-right ms-auto">
+                    <div class="nav-item dropdown me-3">
+                        <a class="nav-link text-secondary" href="#" id="navbarDropdownNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge bg-danger badge-notification">3</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownNotifications">
+                            <li><a class="dropdown-item" href="#">Notification 1</a></li>
+                            <li><a class="dropdown-item" href="#">Notification 2</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">View All</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-profile" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="~/assets/images/avatar-placeholder.jpg" alt="User Avatar" class="avatar me-2"> <span class="user-name">Mohamed Belal <i class="fas fa-chevron-down fa-xs ms-1"></i></span>
+                            <span class="user-role d-block">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user fa-fw me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog fa-fw me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area p-4">
+                @RenderBody()
+            </main>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
