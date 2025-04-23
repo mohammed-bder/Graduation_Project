@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="FireBaseMessaging\balto-95152-firebase-adminsdk-fbsvc-0f7a82df3a.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
@@ -29,6 +33,10 @@
     <Folder Include="wwwroot\Images\" />
     <Folder Include="wwwroot\uploads\Doctor\License\" />
     <Folder Include="wwwroot\uploads\Doctor\ProfilePic\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="FireBaseMessaging\balto-95152-firebase-adminsdk-fbsvc-0f7a82df3a.json" />
   </ItemGroup>
 
 </Project>
