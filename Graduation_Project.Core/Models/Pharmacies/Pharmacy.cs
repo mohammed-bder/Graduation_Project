@@ -29,10 +29,17 @@
         // M-M relationship (Medicine <=> Pharmacies)
         public ICollection<MedicinePharmacy> MedicinePharmacies { get; set; }
 
+
+
+
+
+
         // 1-M relationship (Pharmacist <=> Pharmacy)
         [Required(ErrorMessage = "Pharmacist ID is required.")]
         public int PharmacistId { get; set; }
         public Pharmacist Pharmacist { get; set; }
+
+
 
         // 1-M relationship (Pharmacy <=> PharmacyOrders)
         public ICollection<PharmacyOrder> PharmacyOrders { get; set; }

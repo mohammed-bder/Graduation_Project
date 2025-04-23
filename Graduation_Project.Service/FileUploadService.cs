@@ -50,14 +50,12 @@ namespace Graduation_Project.Service
 
             if ( folderName.Contains("ClinicPicture") || folderName.Contains("MedicalHistory"))
             {
-                
                 uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{Guid.NewGuid()}{extension}"
                : $"{customFileName}{extension}";
             }
             else
             {
-
                 uniqueFileName = string.IsNullOrWhiteSpace(customFileName)
                 ? $"{user.FindFirstValue(ClaimTypes.GivenName)!}-{user.FindFirstValue(ClaimTypes.NameIdentifier)!}{extension}"
                 : $"{customFileName}{extension}";
