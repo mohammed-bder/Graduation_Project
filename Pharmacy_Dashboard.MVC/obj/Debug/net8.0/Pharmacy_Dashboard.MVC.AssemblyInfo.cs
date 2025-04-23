@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pharmacy_Dashboard.MVC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac67ee59eada11deb2eb089132904e6c26073a60")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fcf19762f5b50e8ff1da99057ef9bbacc14f406")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pharmacy_Dashboard.MVC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pharmacy_Dashboard.MVC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
