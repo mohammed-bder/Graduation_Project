@@ -138,15 +138,13 @@ namespace Graduation_Project.APIs.Helpers
 
             /****************************************** Mapping for Medicl History ******************************************/
             CreateMap<MedicalHistory, MedicalHistoryDto>()
-                .ForMember(dest => dest.MedicalImage,  O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryDto>>())
-                .ForMember(dest => dest.Date, O => O.MapFrom(src => src.Date.ToString("yyyy-MM-dd"))); 
+                .ForMember(dest => dest.MedicalImage, opt => opt.MapFrom<MedicalHistoryDTOImageUrlResolver>())
+                .ForMember(dest => dest.Date, O => O.MapFrom(src => src.Date.ToString("yyyy-MM-dd")));
 
             CreateMap<MedicalHistoryFormDto, MedicalHistory>();
 
             CreateMap<MedicalHistory, MedicalHistoryFormDto>()
-                .ForMember(dest => dest.MedicalImage, O => O.MapFrom<PictureUrlResolver<MedicalHistory, MedicalHistoryFormDto>>());
-
-            CreateMap<MedicalHistory, MedicalHistoryInfoDto>();
+                 .ForMember(dest => dest.MedicalImage, opt => opt.MapFrom<MedicalHistoryImageUrlResolver>());
 
             /****************************************** Mapping for Feedback ******************************************/
             CreateMap<FeedbackDto, Feedback>();
@@ -215,6 +213,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<MedicinePrescription, MedicinePrescriptionResponseDTO>()
              .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
+             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Medicine.Id))
              .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
 
             // ========================================== WorkSchedule ==========================================

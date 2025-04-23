@@ -67,8 +67,9 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             // get favourite record where patientid == patient.id includes doctor
             var specs = new FavouriteSpecs(patientId, favrouiteDoctorSpecParams);
             var favorites = await unitOfWork.Repository<Favorite>().GetAllWithSpecAsync(specs); // part of all records according to pagination 
-            if (favorites.Count == 0)
-                return Empty;
+
+            if (favorites is null || !favorites.Any())
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No Favourite Doctors Found"));
 
             // get doctors from the previous query
             IReadOnlyList<Doctor> favouriteDoctors = favorites.Select(f => f.Doctor).ToList();
@@ -104,8 +105,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 DoctorId = id,
                 PatientId = patientId,
             };
-            await unitOfWork.Repository<Favorite>().AddAsync(favourite);
-            await unitOfWork.Repository<Favorite>().SaveAsync();
+
+            await unitOfWork.Repository<Favorite>().AddWithSaveAsync(favourite);
 
             // Push New Notification for the doctor
             var doctor = await unitOfWork.Repository<Doctor>().GetAsync(id);
