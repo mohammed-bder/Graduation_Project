@@ -119,6 +119,17 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return NotFound(new ApiResponse(404, "No available slots for the doctor To Book."));
             }
 
+            // get appointments for the same doctor and patient today
+            var appointmentSpec = new AppointmentByPatientDoctorDateSpec(PatientId, request.DoctorId, request.AppointmentDate);
+            var existingAppointmentForPatient = await _unitOfWork.Repository<Appointment>().GetWithSpecsAsync(appointmentSpec);
+            // ignore if cancelled
+
+            if (existingAppointmentForPatient is not null &&
+                (existingAppointmentForPatient.Status == AppointmentStatus.Confirmed || existingAppointmentForPatient.Status == AppointmentStatus.Pending))
+            {
+                return BadRequest(new ApiResponse(400, "You already have an appointment with this doctor on the same day."));
+            }
+
             // Step 2: Check if the selected time is available
             var availableSlots = availableSlotsResult.Data.TryGetValue(request.AppointmentDate, out var daySlots)
                      && daySlots.Any(slot => slot == request.AppointmentTime);
