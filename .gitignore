@@ -1,5 +1,5 @@
 # Ignore build directories
-Graduation_Project.Api/Graduation_Project.Api.csproj.user
+*csproj.user
 Graduation_Project.Api/bin/
 Graduation_Project.Api/obj/
 Pharmacy_Dashboard.MVC/bin/
