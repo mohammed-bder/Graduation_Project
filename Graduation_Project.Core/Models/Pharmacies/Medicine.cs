@@ -26,7 +26,7 @@
 
 
         // M-M relationship (Medicine <=> Pharmacies)
-        public ICollection<MedicinePharmacy>? MedicinePharmacies { get; set; }
+        public ICollection<PharmacyMedicineStock>? pharmacyMedicineStocks { get; set; }
 
         // M-M relationship (Medicine <=> Prescriptions)
         public ICollection<MedicinePrescription>? MedicinePrescriptions { get; set; }

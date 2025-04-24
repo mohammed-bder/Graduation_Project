@@ -27,9 +27,9 @@
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<Pharmacy> Pharmacies { get; set; }
         public DbSet<PharmacyOrder> PharmacyOrders { get; set; }
-        public DbSet<Pharmacist> Pharmacists { get; set; }
+        public DbSet<PharmacyContact> PharmacyContacts { get; set; }
         // table created from M-M relationship
-        public DbSet<MedicinePharmacy> MedicinePharmacies { get; set; }
+        public DbSet<PharmacyMedicineStock> MedicinePharmacies { get; set; }
         public DbSet<MedicinePharmacyOrder> MedicinePharmacyOrders { get; set; }
 
         /* --------------------- Clinics Models -----------------  */
@@ -72,8 +72,7 @@
             modelBuilder.Entity<DoctorSubspeciality>()
                 .HasKey(ds => new { ds.DoctorId, ds.SubSpecialitiesId });
 
-            modelBuilder.Entity<MedicinePharmacy>()
-                .HasKey(ds => new { ds.MedicineId, ds.PharmacyId });
+            
 
 
             modelBuilder.Entity<Doctor>(entity =>
@@ -196,6 +195,34 @@
                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                }
             );
+
+
+            /* --------------------------------------------- pharmacy ------------------------------*/
+            //modelBuilder.Entity<PharmacyMedicineStock>()
+            //    .HasKey(pm => new {pm.PharmacyId , pm.MedicineId});
+
+            modelBuilder.Entity<PharmacyMedicineStock>()
+                .HasOne(pm => pm.Pharmacy)
+                .WithMany(p => p.pharmacyMedicineStocks)
+                .HasForeignKey(pm => pm.PharmacyId);
+
+            modelBuilder.Entity<PharmacyMedicineStock>()
+                .HasOne(pm => pm.Medicine)
+                .WithMany(m => m.pharmacyMedicineStocks)
+                .HasForeignKey(pm => pm.MedicineId);
+
+            modelBuilder.Entity<MedicinePharmacyOrder>()
+                .HasOne(mpo => mpo.Medicine)
+                .WithMany(m => m.MedicinePharmacyOrders)
+                .HasForeignKey(mpo => mpo.MedicineId);
+
+            modelBuilder.Entity<MedicinePharmacyOrder>()
+               .HasOne(mpo => mpo.PharmacyOrder)
+               .WithMany(m => m.MedicinePharmacyOrders)
+               .HasForeignKey(mpo => mpo.PharmacyOrderId);
+
+
+
 
             base.OnModelCreating(modelBuilder);
         }
