@@ -2,13 +2,13 @@
 {
     // M-M relationship (Medicine <=> Pharmacies)
 
-    public class MedicinePharmacy
+    public class PharmacyMedicineStock : BaseEntity
     {
         public int PharmacyId { get; set; }
-        public ICollection<Pharmacy> Pharmacies { get; set; }
+        public Pharmacy Pharmacy { get; set; }
 
         public int MedicineId { get; set; }
-        public ICollection<Medicine> Medicines { get; set; }
+        public Medicine Medicine { get; set; }
 
         public int Quantity { get; set; }
 

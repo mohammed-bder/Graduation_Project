@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using System;
 
 namespace Graduation_Project.Api
@@ -20,7 +21,16 @@ namespace Graduation_Project.Api
     {
         public async static Task Main(string[] args)
         {
+            #region Logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "Logs", "app.log"), rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            #endregion
+
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog();
 
             #region Configure Service
 
@@ -41,31 +51,31 @@ namespace Graduation_Project.Api
             /****************************** Add Swagger Services********************************/
             builder.Services.AddSwaggerServices();
 
-            #region MyRegion
+            #region Connection String (local | global)
 
             ///****************************** Connection String ********************************/
 
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            //});
-
-            //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            //});
-
-
-            /****************************** Global Connection String ********************************/
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
+
+
+            /****************************** Global Connection String ********************************/
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            //});
+
+            //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            //});
             #endregion
 
             builder.Services.AddScoped(typeof(ExistingIdFilter<>));
