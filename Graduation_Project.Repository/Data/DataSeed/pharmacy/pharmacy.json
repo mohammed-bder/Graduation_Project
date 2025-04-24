@@ -1,0 +1,10 @@
+{
+  
+    "ApplicationUserID": "user123",
+    "Name": "Balto Central Pharmacy",
+    "Latitude": 30.0444,
+    "Longitude": 31.2357,
+    "Address": "123 Tahrir Street, Cairo",
+    "LicenseImageUrl": "licenses/balto-license.png",
+    "ProfilePictureUrl": "images/balto-profile.jpg"
+}

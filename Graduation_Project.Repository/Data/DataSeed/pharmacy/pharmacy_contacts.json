@@ -1,0 +1,10 @@
+[
+    {
+        "PhoneNumber": "+201234567890",
+        "PharmacyId": 1
+    },
+    {
+        "PhoneNumber": "+201112223334",
+        "PharmacyId": 1
+    }
+]
