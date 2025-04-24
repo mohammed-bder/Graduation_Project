@@ -4,6 +4,7 @@ using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
 using Graduation_Project.Api.DTO.Patients;
+using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
 using Microsoft.Extensions.Configuration;

@@ -21,7 +21,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         {
             // check on name
             if (string.IsNullOrEmpty(name))
-                return NotFound(new ApiResponse(404));
+                return BadRequest(new ApiResponse(400, "Please enter a medicine name"));
 
             // Get Matched medicines
             var spec = new MedicineSpec(name, count);
@@ -29,7 +29,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
                         await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec,m => new MedicinesForSearchResultDto {Id = m.Id, Name =m.Name_en });
 
             if (matchedMedicines.IsNullOrEmpty())
-                return NotFound(new ApiResponse(404));
+                return NotFound(new ApiResponse(404, "No medicines found with this name"));
 
             // mapping
             return Ok(matchedMedicines);
