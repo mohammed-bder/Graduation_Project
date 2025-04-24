@@ -4,6 +4,7 @@ using Graduation_Project.Core;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Service.HelperModels;
+using Graduation_Project.Api.DTO.Pharmacies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,5 +46,6 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             var result = _pharmacyService.GetNearestPharmacies(patientLocationWithMedicinesDto.Longtude, patientLocationWithMedicinesDto.Latitude, pharmacies) as List<PharmacyWithDistances>;
             return Ok();
         }
+
     }
 }
