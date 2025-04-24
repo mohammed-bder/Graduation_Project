@@ -1,0 +1,344 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid px-0">
+    @* No horizontal padding on container *@
+
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-icon bg-primary-blue">
+                        <i class="fas fa-cart-plus"></i>
+                    </div>
+                    <div class="stat-info ms-3">
+                        <div class="stat-label">Today Orders</div>
+                        <div class="stat-value">120</div> @* Replace with @Model.TotalCustomers *@
+                        <a href="#" class="stat-details">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-icon bg-success-green">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info ms-3">
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-value">234</div> @* Replace with @Model.TotalSalesCount *@
+                        <a href="#" class="stat-details">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-icon bg-accent-yellow">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info ms-3">
+                        <div class="stat-label">Total Profit</div>
+                        <div class="stat-value">$456</div>@* Replace with @Model.TotalProfit.ToString("C0") *@
+                        <a href="#" class="stat-details">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-icon bg-danger-red">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info ms-3">
+                        <div class="stat-label">Out of Stock</div>
+                        <div class="stat-value">56</div> @* Replace with @Model.OutOfStockCount *@
+                        <a href="#" class="stat-details">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    Out Of Stock List
+                    <div class="card-header-action">
+                        <a href="#">See All <i class="fas fa-chevron-right fa-xs ms-1"></i></a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @* Remove padding for table to fit edge-to-edge *@
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Medicine name</th>
+                                    <th>Expire Date</th>
+                                    <th>Quantity</th>
+                                    <th>Chart</th> @* Unclear what this column represents in the image, maybe placeholder? *@
+                                    <th>Return</th> @* Unclear what this column represents *@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @* Use @foreach loop here with Model.ExpiringItems *@
+                                <tr>
+                                    <td>Doxycycline</td>
+                                    <td>24 Dec 2021</td>
+                                    <td>40</td>
+                                    <td><i class="fas fa-chart-line text-success"></i></td> @* Example Icon *@
+                                    <td><i class="fas fa-redo text-primary"></i></td> @* Example Icon *@
+                                </tr>
+                                <tr>
+                                    <td>Abetis</td>
+                                    <td>24 Dec 2021</td>
+                                    <td>40</td>
+                                    <td><i class="fas fa-chart-line text-success"></i></td>
+                                    <td><i class="fas fa-redo text-primary"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Diasulin 10ml</td>
+                                    <td>24 Dec 2021</td>
+                                    <td>40</td>
+                                    <td><i class="fas fa-chart-line text-success"></i></td>
+                                    <td><i class="fas fa-redo text-primary"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    @* Recent Order's *@
+                    Today Orders
+                    <div class="card-header-action">
+                        <a href="#">See All <i class="fas fa-chevron-right fa-xs ms-1"></i></a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Medicine name</th>
+                                    <th>Batch No</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @* Use @foreach loop here with Model.RecentOrders *@
+                                <tr>
+                                    <td>Paricel 15mg</td>
+                                    <td>783627834</td>
+                                    <td>40</td>
+                                    <td><span class="badge status-delivered">Delivered</span></td>
+                                    <td>$23.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Abetis 20mg</td>
+                                    <td>88832433</td>
+                                    <td>40</td>
+                                    <td><span class="badge status-cancelled">Cancelled</span></td>
+                                    <td>$23.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Cerox CV</td>
+                                    <td>767676344</td>
+                                    <td>40</td>
+                                    <td><span class="badge status-pending">Pending</span></td> @* Added pending for example *@
+                                    <td>$23.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Abetis 20mg</td>
+                                    <td>45578866</td>
+                                    <td>40</td>
+                                    <td><span class="badge status-delivered">Delivered</span></td>
+                                    <td>$23.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    Monthly Progress
+                    <div class="dropdown ms-auto">
+                        @* Example Dropdown *@
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="progressPeriod" data-bs-toggle="dropdown" aria-expanded="false">
+                            Monthly
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="progressPeriod">
+                            <li><a class="dropdown-item" href="#">Monthly</a></li>
+                            <li><a class="dropdown-item" href="#">Weekly</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyProgressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    Today's Report
+                </div>
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="chart-container mb-3" style="height: 200px;">
+                        @* Smaller height for donut *@
+                        <canvas id="todaysReportChart"></canvas>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="stat-label">Total Earning</div>
+                        <div class="stat-value">$5098.00</div> @* Replace with Model.TodaysEarnings *@
+                    </div>
+                    <ul class="today-report-legend w-100">
+                        <li>
+                            <span class="legend-dot" style="background-color: #3B71CA;"></span> @* Match Chart colors *@
+                            <span class="legend-label">Total Purchase</span>
+                            <span class="legend-value">$2500</span> @* Replace with Model.TodaysPurchase *@
+                        </li>
+                        <li>
+                            <span class="legend-dot" style="background-color: #FFC107;"></span>
+                            <span class="legend-label">Cash Received</span>
+                            <span class="legend-value">$1500</span> @* Replace with Model.TodaysCash *@
+                        </li>
+                        <li>
+                            <span class="legend-dot" style="background-color: #198754;"></span>
+                            <span class="legend-label">Bank Receive</span>
+                            <span class="legend-value">$1000</span> @* Replace with Model.TodaysBank *@
+                        </li>
+                        <li>
+                            <span class="legend-dot" style="background-color: #6f42c1;"></span> @* Example color *@
+                            <span class="legend-label">Total Service</span>
+                            <span class="legend-value">$98</span> @* Replace with Model.TodaysService *@
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // --- Monthly Progress Chart (Bar) ---
+            const progressCtx = document.getElementById('monthlyProgressChart').getContext('2d');
+            const monthlyProgressChart = new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    // Replace with data fetched via AJAX from Controller
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [65, 59, 80, 81, 56, 55, 40, 60, 90, 70, 75, 68], // Example Data
+                        backgroundColor: 'rgba(25, 135, 84, 0.6)', // Success Green semi-transparent
+                        borderColor: 'rgba(25, 135, 84, 1)', // Success Green solid
+                        borderWidth: 1,
+                        borderRadius: 4, // Slightly rounded bars
+                        barThickness: 20 // Adjust bar thickness
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Hide legend like in image
+                        },
+                        tooltip: {
+                            // Customize tooltip if needed
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false, // Hide Y axis line
+                            },
+                            ticks: {
+                               // Customize ticks if needed
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false // Hide X axis grid lines
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- Today's Report Chart (Doughnut) ---
+            const reportCtx = document.getElementById('todaysReportChart').getContext('2d');
+            const todaysReportChart = new Chart(reportCtx, {
+                type: 'doughnut',
+                data: {
+                     // Replace with data fetched via AJAX from Controller
+                    labels: ['Total Purchase', 'Cash Received', 'Bank Receive', 'Total Service'],
+                    datasets: [{
+                        label: 'Today\'s Report',
+                        data: [2500, 1500, 1000, 98], // Example data matching legend
+                        backgroundColor: [ // Match colors used in legend CSS
+                            '#3B71CA', // Primary Blue
+                            '#FFC107', // Accent Yellow
+                            '#198754', // Success Green
+                            '#6f42c1'  // Example Purple
+                        ],
+                        borderColor: '#fff', // White border between segments
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%', // Adjust cutout percentage for thickness
+                    plugins: {
+                        legend: {
+                            display: false // Hide default chart legend, use custom HTML one
+                        },
+                        tooltip: {
+                            // callbacks: { label: function(context) { ... } } // Customize tooltips
+                        }
+                    }
+                }
+            });
+
+
+             // --- Sidebar Toggle Logic --- (Optional - Basic Example)
+            function toggleSidebar() {
+                 $('.sidebar').toggleClass('toggled');
+                 // Optionally toggle main content margin if needed
+                 // $('.main-content-wrapper').toggleClass('toggled');
+            }
+
+            $('#sidebarToggleHeader').on('click', toggleSidebar);
+            // Add logic for screen resize if needed to control initial state
+
+        });
+    </script>
+}

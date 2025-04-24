@@ -891,22 +891,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.ToTable("Medicines");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.MedicinePharmacy", b =>
-                {
-                    b.Property<int>("MedicineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PharmacyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("MedicineId", "PharmacyId");
-
-                    b.ToTable("MedicinePharmacies");
-                });
-
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.MedicinePharmacyOrder", b =>
                 {
                     b.Property<int>("Id")
@@ -933,50 +917,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.ToTable("MedicinePharmacyOrders");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("DateOfBirth")
-                        .HasColumnType("date");
-
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LastName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NationalID")
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)");
-
-                    b.Property<string>("PharmacistLicensePictureUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PictureUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Pharmacists");
-                });
-
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacy", b =>
                 {
                     b.Property<int>("Id")
@@ -985,15 +925,21 @@ namespace Graduation_Project.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ContactNumber")
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApplicationUserID")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
 
-                    b.Property<double>("Longtude")
+                    b.Property<string>("LicenseImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Longitude")
                         .HasColumnType("float");
 
                     b.Property<string>("Name")
@@ -1001,18 +947,60 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("PharmacistId")
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pharmacies");
+                });
+
+            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyContact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("PharmacyLicensePictureUrl")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PharmacyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PharmacistId");
+                    b.HasIndex("PharmacyId");
 
-                    b.ToTable("Pharmacies");
+                    b.ToTable("PharmacyContacts");
+                });
+
+            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyMedicineStock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MedicineId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PharmacyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineId");
+
+                    b.HasIndex("PharmacyId");
+
+                    b.ToTable("MedicinePharmacies");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyOrder", b =>
@@ -1022,6 +1010,12 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DeliverDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -1040,6 +1034,9 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -1184,42 +1181,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasIndex("PrescriptionId");
 
                     b.ToTable("PrescriptionImage");
-                });
-
-            modelBuilder.Entity("MedicineMedicinePharmacy", b =>
-                {
-                    b.Property<int>("MedicinesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MedicinePharmaciesMedicineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MedicinePharmaciesPharmacyId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MedicinesId", "MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId");
-
-                    b.HasIndex("MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId");
-
-                    b.ToTable("MedicineMedicinePharmacy");
-                });
-
-            modelBuilder.Entity("MedicinePharmacyPharmacy", b =>
-                {
-                    b.Property<int>("PharmaciesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MedicinePharmaciesMedicineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MedicinePharmaciesPharmacyId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PharmaciesId", "MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId");
-
-                    b.HasIndex("MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId");
-
-                    b.ToTable("MedicinePharmacyPharmacy");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.ClincSecretary", b =>
@@ -1526,15 +1487,34 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("PharmacyOrder");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacy", b =>
+            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyContact", b =>
                 {
-                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacist", "Pharmacist")
-                        .WithMany("Pharmacies")
-                        .HasForeignKey("PharmacistId")
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacy", "Pharmacy")
+                        .WithMany("pharmacyContacts")
+                        .HasForeignKey("PharmacyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pharmacist");
+                    b.Navigation("Pharmacy");
+                });
+
+            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyMedicineStock", b =>
+                {
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Medicine", "Medicine")
+                        .WithMany("pharmacyMedicineStocks")
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacy", "Pharmacy")
+                        .WithMany("pharmacyMedicineStocks")
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+
+                    b.Navigation("Pharmacy");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyOrder", b =>
@@ -1641,36 +1621,6 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Prescription");
-                });
-
-            modelBuilder.Entity("MedicineMedicinePharmacy", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Medicine", null)
-                        .WithMany()
-                        .HasForeignKey("MedicinesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.MedicinePharmacy", null)
-                        .WithMany()
-                        .HasForeignKey("MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MedicinePharmacyPharmacy", b =>
-                {
-                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.Pharmacy", null)
-                        .WithMany()
-                        .HasForeignKey("PharmaciesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Graduation_Project.Core.Models.Pharmacies.MedicinePharmacy", null)
-                        .WithMany()
-                        .HasForeignKey("MedicinePharmaciesMedicineId", "MedicinePharmaciesPharmacyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Clinic", b =>
@@ -1783,16 +1733,17 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Navigation("MedicinePharmacyOrders");
 
                     b.Navigation("MedicinePrescriptions");
-                });
 
-            modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacist", b =>
-                {
-                    b.Navigation("Pharmacies");
+                    b.Navigation("pharmacyMedicineStocks");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.Pharmacy", b =>
                 {
                     b.Navigation("PharmacyOrders");
+
+                    b.Navigation("pharmacyContacts");
+
+                    b.Navigation("pharmacyMedicineStocks");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Pharmacies.PharmacyOrder", b =>
