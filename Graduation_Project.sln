@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graduation_Project.Api", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pharmacy_Dashboard.MVC", "Pharmacy_Dashboard.MVC\Pharmacy_Dashboard.MVC.csproj", "{BA5065F7-D331-4A38-B86D-1DEE870FD626}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Secretary_Dashboard.MVC", "Secretary_Dashboard.MVC\Secretary_Dashboard.MVC.csproj", "{319E14EB-7979-4D17-95BA-BA27D77B69F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin_Dashboard.MVC", "Admin_Dashboard.MVC\Admin_Dashboard.MVC.csproj", "{3D387890-3BC1-4ECF-A985-908016192DBE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{BA5065F7-D331-4A38-B86D-1DEE870FD626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA5065F7-D331-4A38-B86D-1DEE870FD626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA5065F7-D331-4A38-B86D-1DEE870FD626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D387890-3BC1-4ECF-A985-908016192DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D387890-3BC1-4ECF-A985-908016192DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D387890-3BC1-4ECF-A985-908016192DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D387890-3BC1-4ECF-A985-908016192DBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
