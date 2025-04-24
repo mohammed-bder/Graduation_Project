@@ -17,7 +17,7 @@ namespace Graduation_Project.Service
         {
             if (FirebaseApp.DefaultInstance == null)
             {
-                var credentialsPath = Path.Combine(Directory.GetCurrentDirectory(), "FireBaseMessaging", "balto-95152-firebase-adminsdk-fbsvc-0f7a82df3a.json");
+                var credentialsPath = Path.Combine(AppContext.BaseDirectory, "FireBaseMessaging", "balto-95152-firebase-adminsdk-fbsvc-0f7a82df3a.json");
 
                 FirebaseApp.Create(new AppOptions
                 {
