@@ -29,7 +29,7 @@
         public DbSet<PharmacyOrder> PharmacyOrders { get; set; }
         public DbSet<PharmacyContact> PharmacyContacts { get; set; }
         // table created from M-M relationship
-        public DbSet<PharmacyMedicineStock> MedicinePharmacies { get; set; }
+        public DbSet<PharmacyMedicineStock> PharmacyMedicineStocks { get; set; }
         public DbSet<MedicinePharmacyOrder> MedicinePharmacyOrders { get; set; }
 
         /* --------------------- Clinics Models -----------------  */

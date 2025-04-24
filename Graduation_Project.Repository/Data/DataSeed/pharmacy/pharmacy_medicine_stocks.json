@@ -1,0 +1,502 @@
+[
+    {
+        "PharmacyId": 1,
+        "MedicineId": 26,
+        "Quantity": 385
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 35,
+        "Quantity": 29
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 13,
+        "Quantity": 258
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 17,
+        "Quantity": 132
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 282
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 9,
+        "Quantity": 405
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 48,
+        "Quantity": 376
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 7,
+        "Quantity": 396
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 36,
+        "Quantity": 289
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 48,
+        "Quantity": 411
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 26,
+        "Quantity": 451
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 4,
+        "Quantity": 317
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 46,
+        "Quantity": 253
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 77
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 9,
+        "Quantity": 469
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 31,
+        "Quantity": 199
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 44,
+        "Quantity": 23
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 25,
+        "Quantity": 274
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 10,
+        "Quantity": 239
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 34,
+        "Quantity": 420
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 22,
+        "Quantity": 149
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 10,
+        "Quantity": 103
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 1,
+        "Quantity": 172
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 412
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 34,
+        "Quantity": 308
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 20,
+        "Quantity": 124
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 1,
+        "Quantity": 263
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 6,
+        "Quantity": 221
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 2,
+        "Quantity": 182
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 26,
+        "Quantity": 279
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 102
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 2,
+        "Quantity": 71
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 6,
+        "Quantity": 219
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 6,
+        "Quantity": 385
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 30,
+        "Quantity": 400
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 31,
+        "Quantity": 441
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 44,
+        "Quantity": 89
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 37,
+        "Quantity": 84
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 46,
+        "Quantity": 497
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 15,
+        "Quantity": 444
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 7,
+        "Quantity": 384
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 17,
+        "Quantity": 328
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 15,
+        "Quantity": 10
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 16,
+        "Quantity": 20
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 26,
+        "Quantity": 70
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 37,
+        "Quantity": 444
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 27,
+        "Quantity": 331
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 39,
+        "Quantity": 154
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 9,
+        "Quantity": 403
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 15,
+        "Quantity": 451
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 19,
+        "Quantity": 358
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 45,
+        "Quantity": 493
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 36,
+        "Quantity": 30
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 9,
+        "Quantity": 161
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 21,
+        "Quantity": 439
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 50,
+        "Quantity": 376
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 13,
+        "Quantity": 368
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 25,
+        "Quantity": 365
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 21,
+        "Quantity": 176
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 11,
+        "Quantity": 291
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 25,
+        "Quantity": 264
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 48,
+        "Quantity": 55
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 40,
+        "Quantity": 492
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 16,
+        "Quantity": 64
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 187
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 43,
+        "Quantity": 42
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 28,
+        "Quantity": 449
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 18,
+        "Quantity": 196
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 15,
+        "Quantity": 419
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 27,
+        "Quantity": 466
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 22,
+        "Quantity": 125
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 14,
+        "Quantity": 351
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 32,
+        "Quantity": 363
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 6,
+        "Quantity": 62
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 19,
+        "Quantity": 182
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 26,
+        "Quantity": 37
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 31,
+        "Quantity": 83
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 47,
+        "Quantity": 69
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 37,
+        "Quantity": 72
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 36,
+        "Quantity": 42
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 29,
+        "Quantity": 274
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 5,
+        "Quantity": 167
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 1,
+        "Quantity": 245
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 37,
+        "Quantity": 183
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 46,
+        "Quantity": 64
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 11,
+        "Quantity": 232
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 38,
+        "Quantity": 42
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 12,
+        "Quantity": 244
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 46,
+        "Quantity": 153
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 30,
+        "Quantity": 156
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 14,
+        "Quantity": 181
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 27,
+        "Quantity": 373
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 6,
+        "Quantity": 172
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 3,
+        "Quantity": 362
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 34,
+        "Quantity": 139
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 7,
+        "Quantity": 220
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 16,
+        "Quantity": 368
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 13,
+        "Quantity": 282
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 44,
+        "Quantity": 469
+    },
+    {
+        "PharmacyId": 1,
+        "MedicineId": 39,
+        "Quantity": 185
+    }
+]

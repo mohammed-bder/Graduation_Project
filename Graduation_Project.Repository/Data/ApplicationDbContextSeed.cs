@@ -139,6 +139,120 @@ namespace Graduation_Project.Repository.Data
                 }
             }
 
+            /* ======================= seeding pharmacy Data ======================= */
+
+            if(! await _dbContext.Pharmacies.AnyAsync())
+            {
+                var pharmacyData = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/pharmacy/pharmacy.json");
+                var pharmacy = JsonSerializer.Deserialize<Pharmacy>(pharmacyData);
+
+                if(pharmacy is not null)
+                {
+                    await _dbContext.AddAsync(pharmacy);
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Seeding completed. Inserted: {await _dbContext.Medicines.CountAsync()} records.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting records: {ex.Message}");
+                    }
+                }
+
+            }
+
+
+            if (!await _dbContext.PharmacyContacts.AnyAsync())
+            {
+                var data = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/pharmacy/pharmacy_contacts.json");
+                var contacts = JsonSerializer.Deserialize<List<PharmacyContact>>(data);
+
+                if (contacts?.Count > 0)
+                {
+                    Console.WriteLine($"Contacts in JSON: {contacts.Count}");
+                    await _dbContext.PharmacyContacts.AddRangeAsync(contacts);
+
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Contacts seeding done. Inserted: {await _dbContext.PharmacyContacts.CountAsync()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting Contacts: {ex.Message}");
+                    }
+                }
+            }
+            if (!await _dbContext.PharmacyOrders.AnyAsync())
+            {
+                var data = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/pharmacy/pharmacy_orders.json");
+                var orders = JsonSerializer.Deserialize<List<PharmacyOrder>>(data);
+
+                if (orders?.Count > 0)
+                {
+                    Console.WriteLine($"Orders in JSON: {orders.Count}");
+                    await _dbContext.PharmacyOrders.AddRangeAsync(orders);
+
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Orders seeding done. Inserted: {await _dbContext.PharmacyOrders.CountAsync()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting Orders: {ex.Message}");
+                    }
+                }
+            }
+
+            if (!await _dbContext.PharmacyMedicineStocks.AnyAsync())
+            {
+                var data = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/pharmacy/pharmacy_medicine_stocks.json");
+                var stocks = JsonSerializer.Deserialize<List<PharmacyMedicineStock>>(data);
+
+                if (stocks?.Count > 0)
+                {
+                    Console.WriteLine($"Stocks in JSON: {stocks.Count}");
+                    await _dbContext.PharmacyMedicineStocks.AddRangeAsync(stocks);
+
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Stocks seeding done. Inserted: {await _dbContext.PharmacyMedicineStocks.CountAsync()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting Stocks: {ex.Message}");
+                    }
+                }
+            }
+
+            if (!await _dbContext.MedicinePharmacyOrders.AnyAsync())
+            {
+                var data = await File.ReadAllTextAsync("../Graduation_Project.Repository/Data/DataSeed/pharmacy/medicine_pharmacy_orders.json");
+                var medicinePharmacyOrders = JsonSerializer.Deserialize<List<MedicinePharmacyOrder>>(data);
+
+                if (medicinePharmacyOrders?.Count > 0)
+                {
+                    Console.WriteLine($"Stocks in JSON: {medicinePharmacyOrders.Count}");
+                    await _dbContext.MedicinePharmacyOrders.AddRangeAsync(medicinePharmacyOrders);
+
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        Console.WriteLine($"Stocks seeding done. Inserted: {await _dbContext.PharmacyMedicineStocks.CountAsync()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error inserting Stocks: {ex.Message}");
+                    }
+                }
+            }
+
+
+
+
         }
     }
 }
