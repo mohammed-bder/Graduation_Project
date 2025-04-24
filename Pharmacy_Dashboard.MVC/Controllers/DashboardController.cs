@@ -67,6 +67,11 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     new ExpiringItemViewModel { MedicineName = "Abetis", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
                     new ExpiringItemViewModel { MedicineName = "Diasulin 10ml", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
                     new ExpiringItemViewModel { MedicineName = "Cerox CV", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
+                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
+                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
+                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
+                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
+                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
                     new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 }
                 },
                 RecentOrders = new List<RecentOrderViewModel> // _dataService.GetRecentOrders(5)
@@ -74,6 +79,17 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     new RecentOrderViewModel { MedicineName = "Paricel 15mg", BatchNo = "783627834", Quantity = 40, Status = "Delivered", Price = 23.00m },
                     new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "88832433", Quantity = 40, Status = "Cancelled", Price = 23.00m },
                     new RecentOrderViewModel { MedicineName = "Cerox CV", BatchNo = "767676344", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
+                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
                     new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
                     new RecentOrderViewModel { MedicineName = "Cerox CV", BatchNo = "767676344", Quantity = 40, Status = "Delivered", Price = 23.00m }
                 }
