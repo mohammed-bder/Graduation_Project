@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Pharmacy_Dashboard.MVC.props" />
-</Project>
