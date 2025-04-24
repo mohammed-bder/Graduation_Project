@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj": {}
+    "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj": {}
   },
   "projects": {
-    "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
+    "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj",
+        "projectUniqueName": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj",
         "projectName": "Graduation_Project.Core",
-        "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj",
-        "packagesPath": "C:\\Users\\mohas\\.nuget\\packages\\",
-        "outputPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\obj\\",
+        "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj",
+        "packagesPath": "C:\\Users\\MG Magic\\.nuget\\packages\\",
+        "outputPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\mohas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\MG Magic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,8 +42,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
-        }
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -71,21 +75,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj": {
+    "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj",
+        "projectUniqueName": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj",
         "projectName": "Graduation_Project.Repository",
-        "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj",
-        "packagesPath": "C:\\Users\\mohas\\.nuget\\packages\\",
-        "outputPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\obj\\",
+        "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj",
+        "packagesPath": "C:\\Users\\MG Magic\\.nuget\\packages\\",
+        "outputPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\mohas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\MG Magic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -93,15 +101,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
-                "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
+              "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
+                "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
               }
             }
           }
@@ -114,8 +121,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
-        }
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -148,21 +156,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj": {
+    "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj",
+        "projectUniqueName": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj",
         "projectName": "Graduation_Project.Service",
-        "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj",
-        "packagesPath": "C:\\Users\\mohas\\.nuget\\packages\\",
-        "outputPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\obj\\",
+        "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj",
+        "packagesPath": "C:\\Users\\MG Magic\\.nuget\\packages\\",
+        "outputPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\mohas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\MG Magic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -170,15 +182,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
-                "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
+              "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
+                "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
               }
             }
           }
@@ -191,8 +202,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
-        }
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -227,21 +239,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj": {
+    "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj",
+        "projectUniqueName": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj",
         "projectName": "Pharmacy_Dashboard.MVC",
-        "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj",
-        "packagesPath": "C:\\Users\\mohas\\.nuget\\packages\\",
-        "outputPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Pharmacy_Dashboard.MVC\\obj\\",
+        "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Pharmacy_Dashboard.MVC\\Pharmacy_Dashboard.MVC.csproj",
+        "packagesPath": "C:\\Users\\MG Magic\\.nuget\\packages\\",
+        "outputPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Pharmacy_Dashboard.MVC\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\mohas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\MG Magic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -249,21 +265,20 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
-                "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
+              "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj": {
+                "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Core\\Graduation_Project.Core.csproj"
               },
-              "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj": {
-                "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj"
+              "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj": {
+                "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Repository\\Graduation_Project.Repository.csproj"
               },
-              "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj": {
-                "projectPath": "E:\\.NET Web Developer\\Graduation Project\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj"
+              "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj": {
+                "projectPath": "D:\\4th Computer\\GraduationProject\\Graduation_Project\\Graduation_Project.Service\\Graduation_Project.Service.csproj"
               }
             }
           }
@@ -276,8 +291,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
-        }
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -301,7 +317,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
