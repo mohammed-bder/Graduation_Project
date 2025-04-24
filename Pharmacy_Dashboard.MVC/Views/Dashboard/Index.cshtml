@@ -10,10 +10,10 @@
             <div class="card stat-card h-100">
                 <div class="card-body">
                     <div class="stat-icon bg-primary-blue">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-cart-plus"></i>
                     </div>
                     <div class="stat-info ms-3">
-                        <div class="stat-label">Total Customer</div>
+                        <div class="stat-label">Today Orders</div>
                         <div class="stat-value">120</div> @* Replace with @Model.TotalCustomers *@
                         <a href="#" class="stat-details">Show Details</a>
                     </div>
@@ -28,7 +28,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="stat-info ms-3">
-                        <div class="stat-label">Total Sales</div>
+                        <div class="stat-label">Total Orders</div>
                         <div class="stat-value">234</div> @* Replace with @Model.TotalSalesCount *@
                         <a href="#" class="stat-details">Show Details</a>
                     </div>
@@ -69,7 +69,7 @@
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    Expiring List
+                    Out Of Stock List
                     <div class="card-header-action">
                         <a href="#">See All <i class="fas fa-chevron-right fa-xs ms-1"></i></a>
                     </div>
@@ -120,7 +120,8 @@
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    Recent Order's
+                    @* Recent Order's *@
+                    Today Orders
                     <div class="card-header-action">
                         <a href="#">See All <i class="fas fa-chevron-right fa-xs ms-1"></i></a>
                     </div>

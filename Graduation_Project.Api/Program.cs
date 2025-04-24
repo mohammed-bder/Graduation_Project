@@ -41,7 +41,7 @@ namespace Graduation_Project.Api
             /****************************** Add Swagger Services********************************/
             builder.Services.AddSwaggerServices();
 
-            #region MyRegion
+            #region Connection String (local | global)
 
             ///****************************** Connection String ********************************/
 
