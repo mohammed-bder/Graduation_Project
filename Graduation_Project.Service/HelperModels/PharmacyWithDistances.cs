@@ -10,6 +10,6 @@ namespace Graduation_Project.Service.HelperModels
     public class PharmacyWithDistances
     {
         public Pharmacy pharmacy { get; set; }
-        public int Distance { get; set; }
+        public double Distance { get; set; }
     }
 }

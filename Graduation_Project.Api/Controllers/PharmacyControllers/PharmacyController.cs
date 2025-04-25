@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using AutoMapper;
 using System.Collections.Generic;
+using Graduation_Project.Core.Constants;
 
 namespace Graduation_Project.Api.Controllers.PharmacyControllers
 {
@@ -35,7 +36,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             _pharmacyService = pharmacyService;
         }
 
-        [HttpGet("Find-Nearest-Pharmacy")]
+        [HttpGet("Find-Nearest-Pharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies(PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
             // Find Pharmacies That Contains the medicines 
@@ -43,7 +44,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             var pharamciesStockAvaliabilitySpecs = new PharamciesStockAvaliabilitySpecs(patientLocationWithMedicinesDto.Medicines);
             var pharmacyMedicineStocks = await _unitOfWork.Repository<PharmacyMedicineStock>().GetAllWithSpecAsync(pharamciesStockAvaliabilitySpecs);
             if(pharmacyMedicineStocks is null)
-                return BadRequest(new ApiResponse(404));
+                return BadRequest(new ApiResponse(404,"Medicines Not Avaliables"));
 
             var requiredMedicineSet = patientLocationWithMedicinesDto.Medicines;
             var pharmacyIds = pharmacyMedicineStocks
@@ -69,16 +70,15 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             // Find the nearest Pharmacies
             var result = _pharmacyService.GetNearestPharmacies(patientLocationWithMedicinesDto.Longtude, patientLocationWithMedicinesDto.Latitude, pharmacies) as List<PharmacyWithDistances>;
 
+            var output1 = _mapper.Map<List<PharmacyCardDTO>>(result);
             // Map to PharmacyCardDTO
-            
-            return Ok(_mapper.Map<List<PharmacyCardDTO>>(result));
+            return Ok(output1);
         }
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
         [HttpGet("NearByPharmacies")]
         public async Task<IActionResult> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
         {
-            const double maxDistance = 10;
 
             var spec = new PharmacyWithDistanceSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
@@ -90,7 +90,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
                 phamacy = ph,
                 distance = CalculateDistance(locationDTO.Latitude, locationDTO.Longitude, ph.Latitude, ph.Longitude)
             })
-            .Where(d => d.distance <= maxDistance)
+            .Where(d => d.distance <= PharmacyConstants.MaxDistance)
             .OrderBy(d => d.distance)
             .Select(d => new PharmacyCardDTO
             {

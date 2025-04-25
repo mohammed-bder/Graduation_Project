@@ -258,12 +258,14 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.pharmacy.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.pharmacy.Name))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.pharmacy.Address))
-                .ForMember(dest => dest.Distance, opt => opt.MapFrom(src => src.Distance))
-                .ForMember(dest => dest.Contacts, opt => opt.MapFrom(src => src.pharmacy.pharmacyContacts.Select(p => new ContactNumberDTO { PhoneNumber = p.PhoneNumber })))
-                .ForMember(dest => dest.Location, opt => opt.MapFrom(src =>$"https://www.google.com/maps?q={src.pharmacy.Latitude},{src.pharmacy.Longitude}"))
-                //.ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver>());
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.pharmacy.ProfilePictureUrl));
-
+                .ForMember(dest => dest.Distance, opt => opt.MapFrom(src => (int)src.Distance + " Km"))
+                .ForMember(dest => dest.Contacts, opt => opt.MapFrom(src => src.pharmacy.pharmacyContacts.Count == 0
+                    ? null
+                    : src.pharmacy.pharmacyContacts.Select(p => new PharmacyContactReturnDTO { PhoneNumber = p.PhoneNumber })))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src =>
+                    $"https://www.google.com/maps?q={src.pharmacy.Latitude},{src.pharmacy.Longitude}"))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src =>
+                    $"{_configuration["ServerUrl"]}/{src.pharmacy.ProfilePictureUrl}"));
         }
     }
 }

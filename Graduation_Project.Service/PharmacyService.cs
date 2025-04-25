@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Service.HelperModels;
@@ -17,9 +18,10 @@ namespace Graduation_Project.Service
                     .Select(p => new PharmacyWithDistances
                     {
                         pharmacy = p,
-                        Distance = (int)GetDistance(Patient_Latitude, Patient_Longitude, p.Latitude, p.Longitude)
+                        Distance = GetDistance(Patient_Latitude, Patient_Longitude, p.Latitude, p.Longitude)
                     })
                     .OrderBy(p => p.Distance)
+                    .Take(5)
                     .ToList();
                     
         }
