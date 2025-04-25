@@ -25,7 +25,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         private readonly IConfiguration _configuration;
         private readonly IPharmacyService _pharmacyService;
 
-        public PharmacyController(IUnitOfWork unitOfWork, IMapper mapper ,IConfiguration configuration , IPharmacyService pharmacyService)
+        public PharmacyController(IUnitOfWork unitOfWork, IMapper mapper ,IConfiguration configuration,IPharmacyService pharmacyService )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +40,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             // 1: Get Pharmacies Ids from PharmacyMedicineStock (M == M) Table
             var pharamciesStockAvaliabilitySpecs = new PharamciesStockAvaliabilitySpecs(patientLocationWithMedicinesDto.Medicines);
             var pharmacyMedicineStocks = await _unitOfWork.Repository<PharmacyMedicineStock>().GetAllWithSpecAsync(pharamciesStockAvaliabilitySpecs);
-            if(pharmacyMedicineStocks is null)
+            if (pharmacyMedicineStocks is null)
                 return BadRequest(new ApiResponse(404));
 
             var distinctPharmaciesIds = pharmacyMedicineStocks
@@ -67,33 +67,27 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
 
             var spec = new PharmacyWithDistanceSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
+
             if(pharmacies is null || !pharmacies.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found."));
 
-            var NearByPharmacies = pharmacies.Select(ph => new
+            var NearByPharmacies = pharmacies.Select(ph => new PharmacyWithDistanceDTO
             {
-                phamacy = ph,
+                pharmacy = ph,
                 distance = CalculateDistance(locationDTO.Latitude, locationDTO.Longitude, ph.Latitude, ph.Longitude)
             })
             .Where(d => d.distance <= maxDistance)
-            .OrderBy(d => d.distance)
-            .Select(d => new PharmacyCardDTO
-            {
-                Id = d.phamacy.Id,
-                Name = d.phamacy.Name,
-                PictureUrl = $"{_configuration["ServerUrl"]}/{ d.phamacy.ProfilePictureUrl }",
-                Distance = (int)d.distance + " Km",
-                Address = d.phamacy.Address,
-                Location = $"https://www.google.com/maps?q={d.phamacy.Latitude},{d.phamacy.Longitude}",
-                Contacts = d.phamacy.pharmacyContacts.Select(c => new PharmacyContactReturnDTO { PhoneNumber = c.PhoneNumber }).ToList()
-            }).ToList();
+            .OrderBy(d => d.distance).ToList();
+            
+            var pharmacyCards = _mapper.Map<IReadOnlyList<PharmacyWithDistanceDTO> , IReadOnlyList<PharmacyCardDTO>>(NearByPharmacies);   
 
-            if(!NearByPharmacies.Any())
+            if (!pharmacyCards.Any() || pharmacyCards is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found within the specified distance."));
                 
-            return Ok(NearByPharmacies);
+            return Ok(pharmacyCards);
         }
 
+        #region Calculate Distance
         /********************************************* Calculate Distance *********************************************/
         private double CalculateDistance(double lat1, double long1, double lat2, double long2)
         {
@@ -113,6 +107,8 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         {
             return degrees * (Math.PI / 180);
         }
+        #endregion
+
     }
 }
 

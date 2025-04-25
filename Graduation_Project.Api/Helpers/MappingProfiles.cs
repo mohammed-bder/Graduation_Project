@@ -251,6 +251,17 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.ConsultationFees, opt => opt.MapFrom(src => src.Doctor.ConsultationFees))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Doctor.Rating))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<DoctorPictureUrlResolver>());
+
+            // ========================================== Pharmacy ==========================================
+            CreateMap<PharmacyWithDistanceDTO, PharmacyCardDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.pharmacy.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.pharmacy.Name))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PharmacyPictureUrlResolver>())
+                .ForMember(dest => dest.Distance, opt => opt.MapFrom(src => $"{(int)src.distance} Km "))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => $"https://www.google.com/maps?q={src.pharmacy.Latitude},{src.pharmacy.Longitude}"))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.pharmacy.Address))
+                .ForMember(dest => dest.Contacts, opt => opt.MapFrom(src => src.pharmacy.pharmacyContacts.Select(c => new PharmacyContactReturnDTO { PhoneNumber = c.PhoneNumber }).ToList()));
+
         }
     }
 }
