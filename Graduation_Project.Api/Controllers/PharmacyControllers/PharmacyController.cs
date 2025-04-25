@@ -28,7 +28,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         private readonly IConfiguration _configuration;
         private readonly IPharmacyService _pharmacyService;
 
-        public PharmacyController(IUnitOfWork unitOfWork, IMapper mapper ,IConfiguration configuration , IPharmacyService pharmacyService)
+        public PharmacyController(IUnitOfWork unitOfWork, IMapper mapper ,IConfiguration configuration,IPharmacyService pharmacyService )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -37,7 +37,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         }
 
         [HttpGet("Find-Nearest-Pharmacies")]
-        public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies(PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
+        public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies([FromBody] PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
             // Find Pharmacies That Contains the medicines 
             // 1: Get Pharmacies Ids from PharmacyMedicineStock (M == M) Table
@@ -77,57 +77,29 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
         [HttpGet("NearByPharmacies")]
-        public async Task<IActionResult> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
+        public async Task<ActionResult<List<PharmacyCardDTO>>> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
         {
-
+            const double maxDistance = 10;
+            // 1- Include pharmacy contact with pharmacy 
             var spec = new PharmacyWithDistanceSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
+
             if(pharmacies is null || !pharmacies.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found."));
 
-            var NearByPharmacies = pharmacies.Select(ph => new
-            {
-                phamacy = ph,
-                distance = CalculateDistance(locationDTO.Latitude, locationDTO.Longitude, ph.Latitude, ph.Longitude)
-            })
-            .Where(d => d.distance <= PharmacyConstants.MaxDistance)
-            .OrderBy(d => d.distance)
-            .Select(d => new PharmacyCardDTO
-            {
-                Id = d.phamacy.Id,
-                Name = d.phamacy.Name,
-                PictureUrl = $"{_configuration["ServerUrl"]}/{ d.phamacy.ProfilePictureUrl }",
-                Distance = (int)d.distance + " Km",
-                Address = d.phamacy.Address,
-                Location = $"https://www.google.com/maps?q={d.phamacy.Latitude},{d.phamacy.Longitude}",
-                Contacts = d.phamacy.pharmacyContacts.Select(c => new PharmacyContactReturnDTO { PhoneNumber = c.PhoneNumber }).ToList()
-            }).ToList();
+            // 2- Calculate distance between the pharmacy and the patient location then order them 
+            var NearByPharmacies = _pharmacyService.GetDefaultNearestPharmacies(locationDTO.Longitude,locationDTO.Latitude,pharmacies) as List<PharmacyWithDistances>;
+            if (NearByPharmacies is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No Nearest pharmacies found."));
 
-            if(!NearByPharmacies.Any())
+            var pharmacyCards = _mapper.Map<IReadOnlyList<PharmacyWithDistances> , IReadOnlyList<PharmacyCardDTO>>(NearByPharmacies);   
+
+            if (!pharmacyCards.Any() || pharmacyCards is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found within the specified distance."));
                 
-            return Ok(NearByPharmacies);
+            return Ok(pharmacyCards);
         }
 
-        /********************************************* Calculate Distance *********************************************/
-        private double CalculateDistance(double lat1, double long1, double lat2, double long2)
-        {
-            const double R = 6371;
-            var latDistance = DegreesToRadians(lat2 - lat1);
-            var lonDistance = DegreesToRadians(long2 - long1);
-
-            var a = Math.Sin(latDistance / 2) * Math.Sin(latDistance / 2) +
-                    Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
-                    Math.Sin(lonDistance / 2) * Math.Sin(lonDistance / 2);
-
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
-        }
-
-        private  double DegreesToRadians(double degrees)
-        {
-            return degrees * (Math.PI / 180);
-        }
     }
 }
 

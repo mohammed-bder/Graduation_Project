@@ -18,14 +18,27 @@ namespace Graduation_Project.Service
                     .Select(p => new PharmacyWithDistances
                     {
                         pharmacy = p,
-                        Distance = GetDistance(Patient_Latitude, Patient_Longitude, p.Latitude, p.Longitude)
+                        Distance = CalculateDistance(Patient_Latitude, Patient_Longitude, p.Latitude, p.Longitude)
                     })
                     .OrderBy(p => p.Distance)
-                    .Take(5)
+                    .Take(6)
                     .ToList();
                     
         }
-        private double GetDistance(double lat1, double lon1, double lat2, double lon2)
+        public object GetDefaultNearestPharmacies(double Patient_Longitude, double Patient_Latitude, IReadOnlyList<Pharmacy> pharmacies)
+        {
+            return pharmacies
+                    .Select(ph => new PharmacyWithDistances
+                    {
+                        pharmacy = ph,
+                        Distance = CalculateDistance(Patient_Latitude, Patient_Longitude, ph.Latitude, ph.Longitude)
+                    })
+                    .OrderBy(d => d.Distance)
+                    .Take(10)
+                    .ToList();
+        }
+
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
             const double R = 6371; // Earth radius in kilometers
             double dLat = ToRadians(lat2 - lat1);
