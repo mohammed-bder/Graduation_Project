@@ -7,6 +7,7 @@ using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
+using Graduation_Project.Service.HelperModels;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 namespace Graduation_Project.APIs.Helpers

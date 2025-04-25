@@ -8,7 +8,7 @@ namespace Graduation_Project.Core.Specifications.MedicineSpecifications
 {
     public class PharamciesStockAvaliabilitySpecs : BaseSpecifications<PharmacyMedicineStock>
     {
-        public PharamciesStockAvaliabilitySpecs(List<int> medicines) : base(p => p.Quantity > 0 && medicines.Contains(p.MedicineId))
+        public PharamciesStockAvaliabilitySpecs(List<int> medicines)
         {
             
         }

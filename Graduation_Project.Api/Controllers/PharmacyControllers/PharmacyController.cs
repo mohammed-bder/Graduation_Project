@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using AutoMapper;
+using System.Collections.Generic;
 
 namespace Graduation_Project.Api.Controllers.PharmacyControllers
 {
@@ -33,30 +35,43 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             _pharmacyService = pharmacyService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<Pharmacy>> FindNearestPharmacies(PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
+        [HttpGet("Find-Nearest-Pharmacy")]
+        public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies(PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
-            // Find Pharmacies that have the medicines 
+            // Find Pharmacies That Contains the medicines 
             // 1: Get Pharmacies Ids from PharmacyMedicineStock (M == M) Table
             var pharamciesStockAvaliabilitySpecs = new PharamciesStockAvaliabilitySpecs(patientLocationWithMedicinesDto.Medicines);
             var pharmacyMedicineStocks = await _unitOfWork.Repository<PharmacyMedicineStock>().GetAllWithSpecAsync(pharamciesStockAvaliabilitySpecs);
             if (pharmacyMedicineStocks is null)
                 return BadRequest(new ApiResponse(404));
 
-            var distinctPharmaciesIds = pharmacyMedicineStocks
-                .DistinctBy(p => p.PharmacyId)
-                .Select(d => d.PharmacyId)
+            var requiredMedicineSet = patientLocationWithMedicinesDto.Medicines;
+            var pharmacyIds = pharmacyMedicineStocks
+                .GroupBy(s => s.PharmacyId)
+                .Where(g =>
+                {
+                    var medicineSet = g
+                        .Select(s => s.MedicineId)
+                        .Distinct()
+                        .ToHashSet();
+
+                    return requiredMedicineSet.All(medicineSet.Contains);
+                })
+                .Select(g => g.Key)
                 .ToList();
 
             // 2: Get Pharmacies
-            var pharmaciesSpecs = new PharmaciesSpecs(distinctPharmaciesIds);
+            var pharmaciesSpecs = new PharmaciesSpecs(pharmacyIds);
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(pharmaciesSpecs);
             if (pharmacies is null)
                 return BadRequest(new ApiResponse(404));
 
             // Find the nearest Pharmacies
             var result = _pharmacyService.GetNearestPharmacies(patientLocationWithMedicinesDto.Longtude, patientLocationWithMedicinesDto.Latitude, pharmacies) as List<PharmacyWithDistances>;
-            return Ok();
+
+            // Map to PharmacyCardDTO
+            
+            return Ok(_mapper.Map<List<PharmacyCardDTO>>(result));
         }
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
@@ -64,13 +79,14 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         public async Task<IActionResult> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
         {
             const double maxDistance = 10;
-
+            // 1- Include pharmacy contact with pharmacy 
             var spec = new PharmacyWithDistanceSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
 
             if(pharmacies is null || !pharmacies.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found."));
 
+            // 2- Calculate distance between the pharmacy and the patient location then order them 
             var NearByPharmacies = pharmacies.Select(ph => new PharmacyWithDistanceDTO
             {
                 pharmacy = ph,

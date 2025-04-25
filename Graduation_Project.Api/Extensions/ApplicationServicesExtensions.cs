@@ -31,6 +31,8 @@ namespace Graduation_Project.Api.Extensions
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
 
+            /****************************** Pharmacy Services ********************************/
+            services.AddScoped<IPharmacyService, PharmacyService>();
             /****************************** add services for Fcm ********************************/
             services.AddScoped<IFcmService,FcmNotificationService>();
 

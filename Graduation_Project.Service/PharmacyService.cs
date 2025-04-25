@@ -19,7 +19,7 @@ namespace Graduation_Project.Service
                         pharmacy = p,
                         Distance = (int)GetDistance(Patient_Latitude, Patient_Longitude, p.Latitude, p.Longitude)
                     })
-                    .OrderByDescending(p => p.Distance)
+                    .OrderBy(p => p.Distance)
                     .ToList();
                     
         }
