@@ -13,6 +13,7 @@ namespace Graduation_Project.Api.DTO.Patients
         public double Longtude { get; set; }
 
         [Required(ErrorMessage = "You Must Insert Medicines")]
+        [MinLength(1, ErrorMessage = "The list must contain at least one medicine")]
         public List<int> Medicines { get; set; }
     }
 }
