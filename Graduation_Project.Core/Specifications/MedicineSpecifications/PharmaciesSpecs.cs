@@ -10,7 +10,7 @@ namespace Graduation_Project.Core.Specifications.MedicineSpecifications
     {
         public PharmaciesSpecs(List<int> Ids) : base(p => Ids.Contains(p.Id))
         {
-            
+            Includes.Add(p => p.pharmacyContacts);
         }
     }
 }

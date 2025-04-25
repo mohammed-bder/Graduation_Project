@@ -4,6 +4,7 @@ namespace Graduation_Project.Api.DTO.Pharmacies
 {
     public class PharmacyCardDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public string PictureUrl { get; set; }
