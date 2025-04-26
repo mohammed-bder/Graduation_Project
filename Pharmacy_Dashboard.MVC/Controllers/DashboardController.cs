@@ -1,128 +1,155 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Graduation_Project.Core;
+using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.Models.Pharmacies;
+using Graduation_Project.Core.Specifications.PharmacySpecifications;
+using Microsoft.AspNetCore.Mvc;
+using Pharmacy_Dashboard.MVC.ViewModels;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
-    // Define a ViewModel to hold all dashboard data
-    public class DashboardViewModel
-    {
-        public int TotalCustomers { get; set; }
-        public int TotalSalesCount { get; set; } // Or maybe total sales value? Adjust as needed
-        public decimal TotalProfit { get; set; }
-        public int OutOfStockCount { get; set; }
-        public List<ExpiringItemViewModel> ExpiringItems { get; set; }
-        public List<RecentOrderViewModel> RecentOrders { get; set; }
-        public decimal TodaysEarnings { get; set; }
-        public decimal TodaysPurchase { get; set; }
-        public decimal TodaysCash { get; set; }
-        public decimal TodaysBank { get; set; }
-        public decimal TodaysService { get; set; }
-        // Add properties for chart data if not loading via AJAX
-    }
-
-    // Example nested ViewModels for table data
-    public class ExpiringItemViewModel
-    {
-        public string MedicineName { get; set; }
-        public DateTime ExpireDate { get; set; }
-        public int Quantity { get; set; }
-        // Add properties for 'Chart' and 'Return' columns if they have data
-    }
-
-    public class RecentOrderViewModel
-    {
-        public string MedicineName { get; set; }
-        public string BatchNo { get; set; }
-        public int Quantity { get; set; }
-        public string Status { get; set; } // e.g., "Delivered", "Cancelled", "Pending"
-        public decimal Price { get; set; }
-    }
-
-
-
+ 
     public class DashboardController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
+
         // Inject your data service here (e.g., IPharmacyDataService)
         // private readonly IPharmacyDataService _dataService;
         // public DashboardController(IPharmacyDataService dataService) { _dataService = dataService; }
 
-
-        public IActionResult Index()
+        public DashboardController(
+            IUnitOfWork unitOfWork
+            )
         {
-            // --- Fetch data from your service/database ---
-            // Replace with actual data fetching logic
+            this._unitOfWork = unitOfWork;
+        }
+
+
+        // TODO: Auth this end point
+        public async Task<IActionResult> Index()
+        {
+            // TODO: get pharmacy id of registered pharmacy
+
+            var _orderRepo = _unitOfWork.Repository<PharmacyOrder>();
+
+            // 1. get total Pending orders
+            var pharmacyPendingOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: true);
+            var totalPendingOrderFromDb = await _orderRepo.GetCountAsync(pharmacyPendingOrderCountSpec);
+
+
+            // 2. get total pharmacy orders
+            var pharmacyOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: false);
+            var totalOrderFromDb =   await _orderRepo.GetCountAsync(pharmacyOrderCountSpec);
+
+
+            // 3. get total profit
+            var pharmacyTotalProfitSpec = new GetPharmacyTotalProfitSpecification(pharmacyID: 1 );
+            var totalProfitFromDB = await _orderRepo.GetSumAsync(pharmacyTotalProfitSpec, po => po.TotalPrice);
+
+
+
+            // 4. get total number of  out of stock
+            var _pharmacyMedicineStockRepo =  _unitOfWork.Repository<PharmacyMedicineStock>();
+            var pharmacyMedicineLowStockCountSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: 1);
+            var lowStockMedicineCountFromDB = await _pharmacyMedicineStockRepo.GetCountAsync(pharmacyMedicineLowStockCountSpec);
+
+
+
+            // 5. get out of stock ======> list
+            var pharmacyMedicineLowStockSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: 1);
+            var lowStockMedicineListFromDB = await _pharmacyMedicineStockRepo.GetFirstWithSpecAsync(pharmacyMedicineLowStockSpec , 8);
+
+            
+            // 6. get Pending orders ======> list
+            var pharmacyPendingOrderSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: true);
+            var pharmacyPendingOrderListFromDB =await _orderRepo.GetFirstWithSpecAsync(pharmacyPendingOrderSpec , 8);
+            
+
+
+            var lowstockListViewMode = new List<LowStockViewModel>();
+            foreach( var item in lowStockMedicineListFromDB)
+            {
+                var lowstockViewMode = new LowStockViewModel
+                {
+                    Name_en = item.Medicine.Name_en,
+                    ActiveSubstance = item.Medicine.ActiveSubstance,
+                    Price = item.Medicine.Price,
+                    Quantity = item.Quantity
+                };
+                lowstockListViewMode.Add(lowstockViewMode);
+            }
+
+
+            var pendingOrderListViewModel = new List<PendingOrdersViewModel>();
+            foreach(var item in pharmacyPendingOrderListFromDB)
+            {
+                var pendingOrdersViewModel = new PendingOrdersViewModel
+                {
+                    PatientName =   $"{item.Patient.FirstName}  {item.Patient.LastName}",
+                    DeliveryAddress = item.DeliveryAddress,
+                  TotalPrice = item.TotalPrice,
+                  Status = item.Status
+                };
+                pendingOrderListViewModel.Add(pendingOrdersViewModel);
+            }
+
+
+
+
+            // 7. get orders last 30 days
+
+            var ordersGroupedByDaySpec = new OrdersLast30DaysSpecification(pharmacyID: 1);
+
+            var ordersLast30DaysFromDB = await _orderRepo.GetAllWithSpecAsync(ordersGroupedByDaySpec);
+
+            var ordersLast30Days =  ordersLast30DaysFromDB.GroupBy(order => order.OrderDate.Date).Select(g => new OrderChartPointViewModel
+            {
+                Date = g.Key,
+                OrderCount = g.Count()
+            }).OrderBy(x => x.Date).ToList();
+
+
+
+
+
+            // 8. get top 5 medicines
+            //var top5Medicines = await _orderRepo.GetTop5MedicinesAsync(pharmacyId: 1);
+            var top5MedicineSpec = new Top5MedicineSpecification();
+
+            var medicinePharmacyOrderList = await _unitOfWork.Repository<MedicinePharmacyOrder>().GetAllWithSpecAsync(top5MedicineSpec);
+            var top5Medicines = medicinePharmacyOrderList.GroupBy(mpo => mpo.MedicineId).Select(
+                g => new TopMedicineViewModel
+                {
+                    MedicineName = g.First().Medicine.Name_en,
+                    QuantitySold = g.Sum(mpo => mpo.Quantity)
+                }
+                ).OrderByDescending(x => x.QuantitySold).Take(5)
+                .ToList();
+
+
+
+
+
             var viewModel = new DashboardViewModel
             {
-                TotalCustomers = 120, // _dataService.GetTotalCustomers(),
-                TotalSalesCount = 234, // _dataService.GetTotalSalesCount(),
-                TotalProfit = 456m, // _dataService.GetTotalProfit(),
-                OutOfStockCount = 56, // _dataService.GetOutOfStockCount(),
-                TodaysEarnings = 5098.00m,
-                TodaysPurchase = 2500m,
-                TodaysCash = 1500m,
-                TodaysBank = 1000m,
-                TodaysService = 98m,
-                ExpiringItems = new List<ExpiringItemViewModel> // _dataService.GetExpiringItems(5)
-                {
-                    new ExpiringItemViewModel { MedicineName = "Doxycycline", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Abetis", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Diasulin 10ml", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Cerox CV", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 },
-                    new ExpiringItemViewModel { MedicineName = "Fluclox", ExpireDate = new DateTime(2021, 12, 24), Quantity = 40 }
-                },
-                RecentOrders = new List<RecentOrderViewModel> // _dataService.GetRecentOrders(5)
-                {
-                    new RecentOrderViewModel { MedicineName = "Paricel 15mg", BatchNo = "783627834", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "88832433", Quantity = 40, Status = "Cancelled", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Cerox CV", BatchNo = "767676344", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Abetis 20mg", BatchNo = "45578866", Quantity = 40, Status = "Delivered", Price = 23.00m },
-                    new RecentOrderViewModel { MedicineName = "Cerox CV", BatchNo = "767676344", Quantity = 40, Status = "Delivered", Price = 23.00m }
-                }
+                TotalPendingOrders = totalPendingOrderFromDb,
+                TotalOrders = totalOrderFromDb,
+                TotalProfit = totalProfitFromDB,
+                TotalLowStock = lowStockMedicineCountFromDB,
+                lowStockList = lowstockListViewMode,
+                pendingOrdersList = pendingOrderListViewModel,
+                OrdersLast30Days = ordersLast30Days,
+                Top5Medicines = top5Medicines
+
             };
+
 
             // Pass the ViewModel to the View
             return View(viewModel);
         }
 
-        // --- Optional: Actions for AJAX Chart Data ---
 
-        [HttpGet]
-        public JsonResult GetMonthlyProgressData(/* Potential parameters like year */)
-        {
-            // Fetch data from your service/database
-            var data = new
-            {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
-                values = new[] { 65, 59, 80, 81, 56, 55, 40, 60, 90, 70, 75, 68 } // Replace with actual data
-            };
-            return Json(data);
-        }
 
-        [HttpGet]
-        public JsonResult GetTodaysReportData()
-        {
-            // Fetch data from your service/database
-            var data = new
-            {
-                labels = new[] { "Total Purchase", "Cash Received", "Bank Receive", "Total Service" },
-                values = new[] { 2500, 1500, 1000, 98 } // Replace with actual data
-            };
-            return Json(data);
-        }
+
+       
     }
 }
