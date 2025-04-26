@@ -13,4 +13,9 @@ namespace Graduation_Project.Core.Constants
         public const string SecretaryId = "SecretaryId";
         public const string PharmacistId = "PharmacistId";
     }
+
+    public static class PharmacyConstants
+    {
+        public const double MaxDistance = 10.0;
+    }
 }
