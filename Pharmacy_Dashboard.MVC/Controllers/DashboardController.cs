@@ -122,7 +122,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     MedicineName = g.First().Medicine.Name_en,
                     QuantitySold = g.Sum(mpo => mpo.Quantity)
                 }
-                ).OrderByDescending(x => x.QuantitySold).Take(5)
+                ).OrderByDescending(x => x.QuantitySold).Take(10)
                 .ToList();
 
 
