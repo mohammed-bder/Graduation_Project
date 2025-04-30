@@ -23,7 +23,7 @@
 
 
 
-        public double TotalPrice { get; set; }
+        public decimal TotalPrice { get; set; }
 
         public string? DeliveryAddress { get; set; }
 
