@@ -15,20 +15,30 @@ namespace Pharmacy_Dashboard.MVC.Controllers
 {
     public class AccountController : Controller
     {
+        #region Allow Dependancy Injection
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<AppUser> userManager , SignInManager<AppUser> signInManager , IUnitOfWork unitOfWork , IMapper mapper , IUserService userService)
+        public AccountController(
+            UserManager<AppUser> userManager ,
+            SignInManager<AppUser> signInManager ,
+            IUnitOfWork unitOfWork ,
+            IMapper mapper ,
+            IUserService userService ,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userService = userService;
+            _emailService = emailService;
         }
+        #endregion
 
         #region SignUp
         public IActionResult SignUp()
@@ -91,7 +101,17 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                         return View(model);
                     }
 
-                    return RedirectToAction(nameof(SignIn));
+                    // Send a welcome email to the user
+                    var emailBody = EmailTemplateService.GetWelcomeEmailBody(newUser.UserName, Url.Action("Login", "Account", null,  Request.Scheme));
+                    var email = new Email()
+                    {
+                        Subject = "Welcome to our Pharmacy",
+                        Recipients = model.Email,
+                        Body = emailBody
+                    };
+                     await _emailService.SendEmailAsync(email);
+
+                    return RedirectToAction(nameof(Login));
                 }
                 ModelState.AddModelError(string.Empty, "Email already exists");
             }
@@ -99,7 +119,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         }
         #endregion
 
-        #region SignIn
+        #region Login
         public IActionResult Login()
         {
             return View();
@@ -138,7 +158,6 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         }
         #endregion
 
-
         #region Forget Password
 
         public IActionResult ForgetPassword()
@@ -163,13 +182,17 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     {
                         Subject = "Reset Your Password",
                         Recipients = model.Email,
-                        Body = passwordResetLink
+                        Body = EmailTemplateService.GetResetPasswordEmailBody(passwordResetLink)
                     };
 
-                    EmailSettings.SendEmail(email);
-                    return RedirectToAction(nameof(CheckYourBox));
+                    var flag = await _emailService.SendEmailAsync(email);
+                    if(flag)
+                        return RedirectToAction(nameof(CheckYourBox));
+
+                    ModelState.AddModelError(string.Empty, "Failed to sending Email");
+                    return View(model);
                 }
-                ModelState.AddModelError(string.Empty, "Email not exist");
+                ModelState.AddModelError(string.Empty, "This Email not exist");
             }
             return View(nameof(ForgetPassword),model);
         }
@@ -210,5 +233,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         }
 
         #endregion
+
+
     }
 }

@@ -31,6 +31,8 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            services.AddScoped(typeof(IEmailService), typeof(EmailService));
+
             return services;
         }
     }
