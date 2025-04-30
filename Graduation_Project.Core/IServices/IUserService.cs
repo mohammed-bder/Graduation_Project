@@ -11,5 +11,6 @@ namespace Graduation_Project.Core.IServices
         Task<AppUser> GetCurrentUserAsync();
         Task<object> GetCurrentBusinessUserAsync(string userId,UserRoleType userRole);
         public Task<string> GetUserRoleAsync(AppUser appUser);
+        Task<AppUser> UserExistsAsync(string email);
     }
 }

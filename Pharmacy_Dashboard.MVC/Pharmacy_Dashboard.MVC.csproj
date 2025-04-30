@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Graduation_Project.Core\Graduation_Project.Core.csproj" />
     <ProjectReference Include="..\Graduation_Project.Repository\Graduation_Project.Repository.csproj" />
     <ProjectReference Include="..\Graduation_Project.Service\Graduation_Project.Service.csproj" />
