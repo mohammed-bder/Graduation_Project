@@ -3,11 +3,11 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy_Dashboard.MVC.ViewModels;
+using Pharmacy_Dashboard.MVC.ViewModel.Dashboard;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
- 
+
     public class DashboardController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

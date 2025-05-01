@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Pharmacy_Dashboard.MVC.ViewModels
+﻿namespace Pharmacy_Dashboard.MVC.ViewModel.Dashboard
 {
     public class PendingOrdersViewModel
     {
