@@ -12,12 +12,15 @@ namespace Graduation_Project.Core.IRepositories
         public void Delete(T entity);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         public Task<IReadOnlyList<T>?> GetAllWithSpecAsync(ISpecifications<T> specs);
+        public Task<IReadOnlyList<T>?> GetFirstWithSpecAsync(ISpecifications<T> specs , int number);
         public Task<T?> GetWithSpecsAsync(ISpecifications<T> specs);
         public Task<IReadOnlyList<TResult>> GetAllWithSpecAsync<TResult>(ISpecifications<T> spec, Expression<Func<T, TResult>> selector);
         Task<T?> GetAsync(int id);
         Task<T?> GetWithNameAsync(string name);
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<int> GetCountAsync(ISpecifications<T> spec);
+
+        Task<decimal> GetSumAsync(ISpecifications<T> spec, Expression<Func<T, decimal>> selector);
         public void Detach(T entity);
         public Task SaveAsync();
         public void DeleteRange(IEnumerable<T> entities);
