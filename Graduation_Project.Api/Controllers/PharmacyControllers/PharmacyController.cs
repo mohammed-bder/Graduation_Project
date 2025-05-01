@@ -40,6 +40,29 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             _pharmacyService = pharmacyService;
         }
 
+        /********************************************* Search on Medicine By Name  *********************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetMedicineInfoByName")]
+        public async Task<ActionResult<IReadOnlyList<SearchMedicinesResponseDTO>>> GetMedicinesInfoByName([FromQuery] string? name, [FromQuery] int count = 20)// count will increase with every showMore
+        {
+            // check on name
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(new ApiResponse(400, "Please enter a medicine name"));
+
+            // Get Matched medicines
+            var spec = new MedicineSpec(name, count);
+            var matchedMedicines =
+                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec, m => new SearchMedicinesResponseDTO { Id = m.Id, Name = m.Name_en , Price = $"{m.Price} EGP"  , DosageForm = m.DosageForm });
+
+            if (matchedMedicines.IsNullOrEmpty())
+                return NotFound(new ApiResponse(404, "No medicines found with this name"));
+
+            // mapping
+            return Ok(matchedMedicines);
+        }
+
+        /********************************************* Find Nearest Pharmacies which have specific medicines  *********************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("Find-Nearest-Pharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies([FromBody] PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
@@ -80,6 +103,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         }
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("NearByPharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> GetNearByPharmacis([FromQuery] LocationDTO locationDTO)
         {
