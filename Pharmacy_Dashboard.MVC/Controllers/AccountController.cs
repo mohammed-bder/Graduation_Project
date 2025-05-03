@@ -76,17 +76,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     var pharmacy = _mapper.Map<Pharmacy>(model);
                     pharmacy.ApplicationUserID = newUser.Id;
 
-                    //// check pharamcy contact if not null add it 
-                    //if(model.pharmacyContacts != null || model.pharmacyContacts.Any()  )
-                    //{
-                    //    foreach(var contact in model.pharmacyContacts)
-                    //    {
-                    //        pharmacy.pharmacyContacts.Add(new PharmacyContact
-                    //        {
-                    //            PhoneNumber = contact.PhoneNumber,
-                    //        });
-                    //    }
-                    //}
+                   
 
                     // Add the pharmacy to the database
                     await _unitOfWork.Repository<Pharmacy>().AddAsync(pharmacy);
@@ -99,6 +89,25 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                         ModelState.AddModelError(string.Empty, "Failed to create pharmacy");
 
                         return View(model);
+                    }
+
+                    // check user entered the pharmacy contact or not
+                    if (model.PharmacyContact is not null)
+                    {
+                        model.PharmacyContact.PharmacyId = pharmacy.Id;
+                        await _unitOfWork.Repository<PharmacyContact>().AddAsync(model.PharmacyContact);
+                        int resultCheck = await _unitOfWork.CompleteAsync();
+                        if (resultCheck <= 0)
+                        {
+                            // Delete the user if pharmacy contact creation fails
+                            await _userManager.DeleteAsync(newUser);
+                            _unitOfWork.Repository<Pharmacy>().Delete(pharmacy);
+                            await _unitOfWork.CompleteAsync();
+
+                            ModelState.AddModelError(string.Empty, "Failed to create pharmacy contact");
+
+                            return View(model);
+                        }
                     }
 
                     // Send a welcome email to the user
@@ -233,7 +242,6 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         }
 
         #endregion
-
 
     }
 }

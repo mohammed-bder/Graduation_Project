@@ -43,5 +43,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 		//[Phone(ErrorMessage = "Please enter a valid contact number.")]
 		//public List<PharmacyContact>? pharmacyContacts { get; set; }
 
+		public PharmacyContact? PharmacyContact { get; set; }
+
 	}
 }
