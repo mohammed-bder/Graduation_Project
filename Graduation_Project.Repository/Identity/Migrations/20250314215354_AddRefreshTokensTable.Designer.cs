@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Identity.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    partial class AppIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250314215354_AddRefreshTokensTable")]
+    partial class AddRefreshTokensTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +35,6 @@ namespace Graduation_Project.Repository.Identity.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DeviceToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -61,12 +61,6 @@ namespace Graduation_Project.Repository.Identity.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("OtpCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("OtpExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");

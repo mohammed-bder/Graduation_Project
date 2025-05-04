@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.DTOs;
 using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
@@ -7,7 +8,9 @@ using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -25,18 +28,19 @@ namespace Graduation_Project.Service
     {
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IUserService _userService;
 
-        public AuthServices(IConfiguration configuration,IUnitOfWork unitOfWork)
+        public AuthServices(IConfiguration configuration,IUnitOfWork unitOfWork , UserManager<AppUser> userManager, IUserService userService)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
         {
-            //throw new NotImplementedException();
-
-
             // 1. Private Clam (User-Defined)
             var authClams = new List<Claim>()
             {
@@ -92,6 +96,98 @@ namespace Graduation_Project.Service
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    
+        /******************************************* Refresh Token Async *********************************************************/
+        public async Task<UserDto> RefreshTokenAsync(string token)
+        {
+
+            var user = await _userManager.Users
+                .Include(u => u.RefreshTokens)
+                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                return new UserDto { IsAuthenticated = false, Message = "Invalid refresh token." };
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+                return new UserDto { IsAuthenticated = false , Message = "Inactive refresh token." };
+
+            //refreshToken.RevokedOn = DateTime.UtcNow;
+
+            //var newRefreshToken = TokenHelper.GenerateRefreshToken();
+            //user.RefreshTokens.Add(newRefreshToken);
+            //await _userManager.UpdateAsync(user);
+
+            var newRefreshToken = refreshToken;
+            user.RefreshTokens.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+
+
+            var jwtToken = await CreateTokenAsync(user, _userManager);
+
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
+            var businessUser = await _userService.GetCurrentBusinessUserAsync(user.Id, (UserRoleType)Enum.Parse(typeof(UserRoleType), role));
+
+            if (businessUser is Doctor doctor)
+            {
+                var doctorDto =  new DoctorDTO
+                {
+                    IsAuthenticated = true,
+                    Token = jwtToken,
+                    RefreshToken = newRefreshToken.Token,
+                    RefreshTokenExpiration = newRefreshToken.ExpiresOn,
+                    Role = role,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Speciality = doctor.Specialty.Name_ar,
+                    Description = doctor.Description,
+                    PictureUrl = doctor.PictureUrl
+                };
+                return doctorDto;
+            }
+            else if (businessUser is Patient patient)
+            {
+                var pateintDto =  new PatientDTO
+                {
+                    IsAuthenticated = true,
+                    Token = jwtToken,
+                    RefreshToken = newRefreshToken.Token,
+                    RefreshTokenExpiration = newRefreshToken.ExpiresOn,
+                    Role = role,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    PictureUrl = patient.PictureUrl,
+                    BloodType = patient.BloodType,
+                    Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null,
+                    Points = patient.Points
+                };
+                return pateintDto;
+            }
+
+            return new UserDto { IsAuthenticated = false };
+        }
+
+        /******************************************* Revoke Token Async *********************************************************/
+        public async Task<bool> RevokeTokenAsync(string token)
+        {
+            var user = await _userManager.Users
+                .Include(u => u.RefreshTokens)
+                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                return false;
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+                return false;
+
+            // Revoke the old refresh token and generate a new one
+            refreshToken.RevokedOn = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            return true;
+        }
     }
 }

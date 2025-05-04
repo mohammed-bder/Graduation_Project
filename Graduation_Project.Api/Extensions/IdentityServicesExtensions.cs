@@ -27,8 +27,12 @@ namespace Graduation_Project.Api.Extensions
                 //options.Password.RequireNonAlphanumeric = true;
                 //options.Password.RequireUppercase = true;
                 //options.Password.RequireLowercase = true;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
 
-            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+            }).AddEntityFrameworkStores<AppIdentityDbContext>()
+            .AddDefaultTokenProviders() 
+            .AddTokenProvider<DataProtectorTokenProvider<AppUser>>("Email");
 
             // AddAuthentication
             services.AddAuthentication(options =>
@@ -46,7 +50,8 @@ namespace Graduation_Project.Api.Extensions
                     ValidIssuer = configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"])),
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:DurationInDays"])),
+                    //ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:DurationInDays"])),
+                    ClockSkew = TimeSpan.Zero
                 };
                 options.Events = new JwtBearerEvents
                 {

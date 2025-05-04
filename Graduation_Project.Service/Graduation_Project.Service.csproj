@@ -7,9 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+=======
+    <PackageReference Include="MailKit" Version="4.11.0" />
+>>>>>>> refreshTokens
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
+    <PackageReference Include="MimeKit" Version="4.11.0" />
   </ItemGroup>
 
   <ItemGroup>
