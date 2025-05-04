@@ -1,30 +1,26 @@
 ﻿using Graduation_Project.Api.DTO.Account;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Core;
+using Graduation_Project.Core.DTOs;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Identity;
+using Graduation_Project.Core.Models.SendingEmail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
+using System.Numerics;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Talabat.API.Dtos.Account;
-using System.Security.Cryptography;
-using Graduation_Project.Core.DTOs;
-using Graduation_Project.Service;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Net.WebRequestMethods;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Data;
-using Graduation_Project.Core.Specifications.DoctorSpecifications;
-using Graduation_Project.Core;
 
 namespace Graduation_Project.Api.Controllers
 {
-  
+
     public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -32,44 +28,46 @@ namespace Graduation_Project.Api.Controllers
         private readonly IAuthService _authServices;
         private readonly IGenericRepository<Doctor> _doctorRepo;
         private readonly IGenericRepository<Clinic> _clinicRepo;
-      
+
         private readonly IGenericRepository<Patient> _patientRepo;
         private readonly IGenericRepository<Specialty> _specialtyRepo;
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
         private readonly IConfiguration _configuration;
-        private readonly IEmailService _emailService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
 
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IAuthService authServices , 
+            IAuthService authServices,
             IGenericRepository<Doctor> doctorRepo,
             IGenericRepository<Clinic> clinicRepo,
-           
+
             IGenericRepository<Patient> patientRepo,
             IGenericRepository<Specialty> specialtyRepo,
             ILogger<AccountController> logger,
             IUserService userService,
             IFileUploadService fileUploadService,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork,
+            IEmailService emailService
+
+
             )
-            IUserService userService,
-            IEmailService emailService, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authServices = authServices;
             _logger = logger;
             _userService = userService;
-            this._fileUploadService = fileUploadService;
-            this._configuration = configuration;
-            _emailService = emailService;
+            _fileUploadService = fileUploadService;
+            _configuration = configuration;
             _unitOfWork = unitOfWork;
+            _emailService = emailService;
             _doctorRepo = doctorRepo;
-            this._clinicRepo = clinicRepo;
-        
+            _clinicRepo = clinicRepo;
+
             _patientRepo = patientRepo;
             _specialtyRepo = specialtyRepo;
         }
@@ -185,10 +183,16 @@ namespace Graduation_Project.Api.Controllers
             var OTP = GenerateOtp(registeredUser); // private method to generate OTP Random Code
             await _userManager.UpdateAsync(registeredUser);
 
-            var emailsent = await _emailService.SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP code is {OTP}");
-            if(!emailsent)
-                return StatusCode(500,new ApiResponse(500, "Failed to send OTP code to your email."));
-           
+            var email = new Email()
+            {
+                Subject = "Your OTP Code",
+                Recipients = model.Email,
+                Body = $"Your OTP code is {OTP}"
+            };
+            var reuslt = await _emailService.SendEmailAsync(email);
+            if (!reuslt)
+                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
+
             // split the full name into first and last name
             var nameParts = model.FullName?.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 
@@ -306,9 +310,15 @@ namespace Graduation_Project.Api.Controllers
             var OTP = GenerateOtp(registeredPatient); // private method to generate OTP Random Code
             await _userManager.UpdateAsync(registeredPatient);
 
-            var emailsent = await _emailService.SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP code is {OTP}");
-            if (!emailsent)
-                return StatusCode(500, new ApiResponse(500, "Failed to send OTP code to your email."));
+            var email = new Email()
+            {
+                Subject = "Your OTP Code",
+                Recipients = model.Email,
+                Body = $"Your OTP code is {OTP}"
+            };
+            var reuslt = await _emailService.SendEmailAsync(email);
+            if (!reuslt)
+                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
 
             await _userManager.AddToRoleAsync(user, UserRoleType.Patient.ToString());
 
@@ -460,8 +470,15 @@ namespace Graduation_Project.Api.Controllers
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to resend OTP"));
 
-            var emailSent = await _emailService.SendEmailAsync(model.Email, "Your New OTP Code", $"Your new OTP code is {OTP}");
-            if (!emailSent)
+            // Send a welcome email to the user
+            var email = new Email()
+            {
+                Subject = "our New OTP Code",
+                Recipients = model.Email,
+                Body = $"Your new OTP code is {OTP}"
+            };
+           var reuslt =  await _emailService.SendEmailAsync(email);
+            if (!reuslt)
                 return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
 
             return Ok(new ApiResponse(StatusCodes.Status200OK, "New OTP sent successfully"));
@@ -515,9 +532,15 @@ namespace Graduation_Project.Api.Controllers
             var OTP = GenerateOtp(user);
             await _userManager.UpdateAsync(user);
 
-            var emailSent = await _emailService.SendEmailAsync(request.Email, "Reset Password OTP", $"Your OTP code is {OTP}");
-            if (!emailSent)
-                return StatusCode(500, new ApiResponse(500, "Failed to send OTP code to your email."));
+            var email = new Email()
+            {
+                Subject = "Reset Password OTP",
+                Recipients = request.Email,
+                Body = $"Your OTP code is {OTP}"
+            };
+            var reuslt = await _emailService.SendEmailAsync(email);
+            if (!reuslt)
+                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
 
             return Ok(new ApiResponse(StatusCodes.Status200OK, "OTP sent successfully"));
         }
