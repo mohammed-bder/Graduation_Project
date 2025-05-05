@@ -80,8 +80,8 @@ namespace Graduation_Project.Api.Extensions
                         httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
                         key => new FixedWindowRateLimiterOptions 
                         {
-                            PermitLimit = 3,
-                            Window = TimeSpan.FromHours(1)
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(10)
                         }));
 
 
@@ -99,7 +99,7 @@ namespace Graduation_Project.Api.Extensions
                         httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
                         key => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 3,  
+                            PermitLimit = 5,  
                             Window = TimeSpan.FromMinutes(10) 
                         }));
 

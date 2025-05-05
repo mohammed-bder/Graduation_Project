@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Api.DTO.Account;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Helpers;
 using Graduation_Project.Core;
 using Graduation_Project.Core.DTOs;
 using Graduation_Project.Core.IRepositories;
@@ -72,7 +73,6 @@ namespace Graduation_Project.Api.Controllers
             _specialtyRepo = specialtyRepo;
         }
 
-        //[EnableRateLimiting("LoginRateLimit")]
         [HttpPost("login")]
         public async Task<ActionResult<object>> Login(LoginDTO model)
         {
@@ -83,7 +83,7 @@ namespace Graduation_Project.Api.Controllers
                 return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
 
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
 
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized));
@@ -185,9 +185,9 @@ namespace Graduation_Project.Api.Controllers
 
             var email = new Email()
             {
-                Subject = "Your OTP Code",
+                Subject = "Your OTP Code for Email Verification",
                 Recipients = model.Email,
-                Body = $"Your OTP code is {OTP}"
+                Body = EmailTemplateService.GetOtpEmailBody(user.Email, OTP)
             };
             var reuslt = await _emailService.SendEmailAsync(email);
             if (!reuslt)
@@ -312,9 +312,9 @@ namespace Graduation_Project.Api.Controllers
 
             var email = new Email()
             {
-                Subject = "Your OTP Code",
+                Subject = "Your OTP Code for Email Verification",
                 Recipients = model.Email,
-                Body = $"Your OTP code is {OTP}"
+                Body = EmailTemplateService.GetOtpEmailBody(user.Email, OTP)
             };
             var reuslt = await _emailService.SendEmailAsync(email);
             if (!reuslt)
@@ -428,7 +428,7 @@ namespace Graduation_Project.Api.Controllers
 
         /******************************** Verify OTP ********************************/
         [HttpPost("VerifyOTP")]
-        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOtpRequest model)
+        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTP model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user is null)
@@ -451,7 +451,7 @@ namespace Graduation_Project.Api.Controllers
         /******************************** Resend OTP ********************************/
         [EnableRateLimiting("OtpRateLimit")]
         [HttpPost("ResendOTP")]
-        public async Task<IActionResult> ResendOTP([FromBody] VerifyOtpRequest model)
+        public async Task<IActionResult> ResendOTP([FromBody] ResendOTP model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user is null)
@@ -460,7 +460,9 @@ namespace Graduation_Project.Api.Controllers
             if (user.EmailConfirmed)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email is already verified."));
 
-            if (user.OtpCode is not null && user.OtpExpiry > DateTime.Now.AddMinutes(-2))
+            var otpCreatedAt = user.OtpExpiry.Value.AddMinutes(-5);
+
+            if (user.OtpCode is not null && otpCreatedAt.AddMinutes(2) > DateTime.Now)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "You can request a new OTP after 2 minutes."));
 
             var OTP = GenerateOtp(user); // private method to generate OTP Random Code
@@ -473,9 +475,9 @@ namespace Graduation_Project.Api.Controllers
             // Send a welcome email to the user
             var email = new Email()
             {
-                Subject = "our New OTP Code",
+                Subject = "Here’s Your New OTP Code",
                 Recipients = model.Email,
-                Body = $"Your new OTP code is {OTP}"
+                Body = EmailTemplateService.GetResendOtpEmailBody(user.Email, OTP)
             };
            var reuslt =  await _emailService.SendEmailAsync(email);
             if (!reuslt)
@@ -517,6 +519,8 @@ namespace Graduation_Project.Api.Controllers
             if (!result)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is invalid"));
 
+            await _signInManager.SignOutAsync();
+
             return Ok(new ApiResponse(StatusCodes.Status200OK, "Token revoked"));
         }
 
@@ -534,9 +538,9 @@ namespace Graduation_Project.Api.Controllers
 
             var email = new Email()
             {
-                Subject = "Reset Password OTP",
+                Subject = "Password Reset Code (OTP)",
                 Recipients = request.Email,
-                Body = $"Your OTP code is {OTP}"
+                Body = EmailTemplateService.GetForgotPasswordOtpBody(user.Email, OTP)
             };
             var reuslt = await _emailService.SendEmailAsync(email);
             if (!reuslt)
@@ -572,11 +576,17 @@ namespace Graduation_Project.Api.Controllers
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordDto request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
+            //var user = await _userManager.FindByEmailAsync(request.Email);
+            //if (user == null)
+            //    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
 
-            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, request.OldPassword, false);
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
+
+
+            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, request.OldPassword, true);
             if (!isPasswordValid.Succeeded)
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid Password"));
 

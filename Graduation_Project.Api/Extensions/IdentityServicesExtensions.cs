@@ -29,6 +29,8 @@ namespace Graduation_Project.Api.Extensions
                 //options.Password.RequireLowercase = true;
                 options.SignIn.RequireConfirmedEmail = true;
                 options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
             }).AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddDefaultTokenProviders() 

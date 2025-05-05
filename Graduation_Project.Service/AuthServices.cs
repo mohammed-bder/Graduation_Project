@@ -102,14 +102,14 @@ namespace Graduation_Project.Service
 
             var user = await _userManager.Users
                 .Include(u => u.RefreshTokens)
-                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token)); // Get user by refresh token (Any ==> it will return true if the user has any refresh token that matches the token passed in)
 
             if (user == null)
                 return new UserDto { IsAuthenticated = false, Message = "Invalid refresh token." };
 
-            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token); // Get the refresh token from the user
 
-            if (!refreshToken.IsActive)
+            if (!refreshToken.IsActive) // Check if the refresh token is active
                 return new UserDto { IsAuthenticated = false , Message = "Inactive refresh token." };
 
             //refreshToken.RevokedOn = DateTime.UtcNow;
