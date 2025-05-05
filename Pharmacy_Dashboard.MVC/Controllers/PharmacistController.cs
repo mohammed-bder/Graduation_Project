@@ -66,23 +66,6 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 pharmacy.Latitude = model.Latitude ?? pharmacy.Latitude;
                 pharmacy.Longitude = model.Longitude ?? pharmacy.Longitude;
 
-                // Handle the Pharmacy Contacts
-                //var existingContacts = await _unitOfWork.Repository<PharmacyContact>().GetByConditionAsync(p => p.PharmacyId == pharmacy.Id);
-
-                //// Loop through the submitted contacts
-                //foreach (var submittedContact in model.PharmacyContacts)
-                //{
-                //    if (submittedContact.Id == 0) // New contact
-                //    {
-                //        var newContact = new PharmacyContact
-                //        {
-                //            PhoneNumber = submittedContact.PhoneNumber,
-                //            PharmacyId = pharmacy.Id
-                //        };
-                //        await _unitOfWork.Repository<PharmacyContact>().AddAsync(newContact);
-                //    }
-
-                //}
 
                 // Save changes
                 _unitOfWork.Repository<Pharmacy>().Update(pharmacy);

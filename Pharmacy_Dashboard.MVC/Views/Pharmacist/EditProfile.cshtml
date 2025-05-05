@@ -49,7 +49,7 @@
                     @for (int i = 0; i < (Model.PharmacyContacts?.Count ?? 1); i++)
                     {
                         <div class="input-group mb-2 contact-input">
-                            <input type="hidden" asp-for="PharmacyContacts[@i].Id" />
+                            <input type="hidden" asp-for="PharmacyContacts[@i].Id" value="@Model.PharmacyContacts[i].Id" />
                             <input type="text" asp-for="PharmacyContacts[@i].PhoneNumber" class="form-control" value="@Model.PharmacyContacts[i]?.PhoneNumber" />
                             @if (i > 0)
                             {
@@ -116,7 +116,7 @@
             const div = document.createElement("div");
             div.className = "input-group mb-2 contact-input";
             div.innerHTML = `
-                        <input type="hidden" name="PharmacyContacts[${contactCount}].Id" />
+                <input type="hidden" name="PharmacyContacts[${contactCount}].Id" value="0" />
                 <input type="text" name="PharmacyContacts[${contactCount}].PhoneNumber" class="form-control" />
                 <button type="button" class="btn btn-outline-danger" onclick="removeContact(this)">
                     <i class="bi bi-x-lg"></i>
