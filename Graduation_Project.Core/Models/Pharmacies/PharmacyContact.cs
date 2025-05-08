@@ -11,6 +11,6 @@ namespace Graduation_Project.Core.Models.Pharmacies
         [Phone(ErrorMessage = "Please enter a valid contact number.")]
         public string PhoneNumber { get; set; }
         public int PharmacyId { get; set; }
-        public Pharmacy Pharmacy { get; set; }
+        public Pharmacy? Pharmacy { get; set; }
     }
 }

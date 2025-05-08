@@ -1,6 +1,6 @@
 ﻿using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models.Pharmacies;
-using Pharmacy_Dashboard.MVC.ViewModels;
+using Pharmacy_Dashboard.MVC.ViewModel.Dashboard;
 
 namespace Pharmacy_Dashboard.MVC.Repository
 {

@@ -21,12 +21,19 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             // add Identity Services configuration (UserManager , SigninManager , RoleManager)
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                //options.Password.RequiredUniqueChars = 2;
-                //options.Password.RequireNonAlphanumeric = true;
-                //options.Password.RequireUppercase = true;
-                //options.Password.RequireLowercase = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
-            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+            })
+                    .AddEntityFrameworkStores<AppIdentityDbContext>()
+                    .AddDefaultTokenProviders();
+
+            //services.ConfigureApplicationCookie(config =>
+            //{
+            //    config.LoginPath = "/Account/Login";
+            //    config.LogoutPath = "/Account/Logout";
+            //    config.ExpireTimeSpan = TimeSpan.FromDays(5);
+            //});
 
             return services;
         }
