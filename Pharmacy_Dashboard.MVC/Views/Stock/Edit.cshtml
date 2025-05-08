@@ -1,0 +1,35 @@
+﻿@model Pharmacy_Dashboard.MVC.ViewModel.PharmacyStockViewModel
+
+@{
+    ViewData["Title"] = "Edit Medicine Stock";
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg rounded-4 p-4 mx-auto" style="max-width: 600px;">
+        <h3 class="text-center text-primary mb-4">Edit Medicine Stock</h3>
+
+        <form asp-action="SaveEdit" asp-controller="Stock" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Medicine Name</label>
+                <input asp-for="MedicineName" class="form-control" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label fw-semibold"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success fw-semibold">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
