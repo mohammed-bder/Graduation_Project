@@ -4,10 +4,11 @@
     {
         public string FullName { get; set; } // Store full name for quick access
                                              //public UserType UserType { get; set; } // Enum: Doctor or Patient
-        public string? OtpCode { get; set; }
-        public DateTime? OtpExpiry { get; set; }
+        //public string? OtpCode2 { get; set; }
+        //public DateTime? OtpExpiry { get; set; }
 
         public List<RefreshToken>? RefreshTokens { get; set; }
+        //public ICollection<UserOtpVerifications>? UserOtpVerifications { get; set; } 
 
         //public UserType UserType { get; set; } // Enum: Doctor or Patient
         public string? DeviceToken { get; set; }

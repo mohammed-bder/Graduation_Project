@@ -5,8 +5,8 @@ using Graduation_Project.Core;
 using Graduation_Project.Core.DTOs;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
-using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.SendingEmail;
+using Graduation_Project.Core.Specifications.AccountSpecs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,10 +18,11 @@ using System.Numerics;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Talabat.API.Dtos.Account;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace Graduation_Project.Api.Controllers
 {
-
+    #region Using Directives
     public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -73,6 +74,11 @@ namespace Graduation_Project.Api.Controllers
             _specialtyRepo = specialtyRepo;
         }
 
+        #endregion
+
+
+        #region Login
+        /************************** Login ***************************/
         [HttpPost("login")]
         public async Task<ActionResult<object>> Login(LoginDTO model)
         {
@@ -149,7 +155,10 @@ namespace Graduation_Project.Api.Controllers
 
             return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest));
         }
+        #endregion
 
+        #region Doctor Register
+        /************************** Doctor Register ***************************/
         [HttpPost("DoctorRegister")] // post: api/account/DoctorRegister
         public async Task<ActionResult<UserDTO>> DoctorRegister( DoctorRegisterDTO model)
         {
@@ -180,8 +189,7 @@ namespace Graduation_Project.Api.Controllers
             if (registeredUser == null)
                 return BadRequest(new ApiResponse(400, "User registration failed."));
 
-            var OTP = GenerateOtp(registeredUser); // private method to generate OTP Random Code
-            await _userManager.UpdateAsync(registeredUser);
+            var OTP = await GenerateAndSaveOtp(registeredUser , OtpType.EmailVerification); 
 
             var email = new Email()
             {
@@ -281,7 +289,10 @@ namespace Graduation_Project.Api.Controllers
                 Role = UserRoleType.Doctor.ToString()
             });
         }
+        #endregion
 
+        #region Patient Register
+        /************************** Patient Register ***************************/
         [HttpPost("PatientRegister")] // post: api/account/PatientRegister
         public async Task<ActionResult<UserDTO>> PatientRegister(PatientRegisterDTO model)
         {
@@ -307,8 +318,7 @@ namespace Graduation_Project.Api.Controllers
             // Fetch registered user
             var registeredPatient = await _userManager.FindByEmailAsync(model.Email);
 
-            var OTP = GenerateOtp(registeredPatient); // private method to generate OTP Random Code
-            await _userManager.UpdateAsync(registeredPatient);
+            var OTP = await GenerateAndSaveOtp(registeredPatient ,OtpType.EmailVerification);
 
             var email = new Email()
             {
@@ -364,7 +374,9 @@ namespace Graduation_Project.Api.Controllers
                 });
         }
 
+        #endregion
 
+        #region Get Current User
         /******************************** Get Current User ********************************/
         [Authorize]
         [HttpGet] // GET: api/Account/GetCurrentUser
@@ -389,6 +401,10 @@ namespace Graduation_Project.Api.Controllers
             });
         }
 
+        #endregion
+
+        #region Save User Device Token
+        /******************************** Save Device Token ********************************/
         [Authorize]
         [HttpPost("Save-User-DeviceToken")]
         public async Task<ActionResult> SaveDeviceToken([FromBody] string deviceToken)
@@ -400,14 +416,21 @@ namespace Graduation_Project.Api.Controllers
             await _userManager.UpdateAsync(user);
 
             return Ok();
-        } 
+        }
 
+        #endregion
+
+        #region check if user is Exist
+        /******************************** Check Email Exists ********************************/
         [HttpGet("EmailExists")] // GET: api/Account/EmailExists
         public async Task<ActionResult<bool>> CheckEmailExists(string email)
         {
             return await _userManager.FindByEmailAsync(email) is not null;
         }
 
+        #endregion
+
+        #region Logout
         /******************************** Logout ********************************/
         [HttpPost("logout")] // POST: api/Account/logout
         public async Task<IActionResult> Logout()
@@ -426,178 +449,9 @@ namespace Graduation_Project.Api.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
-        /******************************** Verify OTP ********************************/
-        [HttpPost("VerifyOTP")]
-        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTP model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user is null)
-                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
+        #endregion
 
-            if (user.OtpCode != model.OtpCode || user.OtpExpiry < DateTime.Now)
-                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid OTP"));
-
-            user.EmailConfirmed = true;
-            user.OtpCode = null;
-            user.OtpExpiry = null;
-
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to verify OTP"));
-
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "Email verified successfully"));
-        }
-
-        /******************************** Resend OTP ********************************/
-        [EnableRateLimiting("OtpRateLimit")]
-        [HttpPost("ResendOTP")]
-        public async Task<IActionResult> ResendOTP([FromBody] ResendOTP model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user is null)
-                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
-
-            if (user.EmailConfirmed)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email is already verified."));
-
-            var otpCreatedAt = user.OtpExpiry.Value.AddMinutes(-5);
-
-            if (user.OtpCode is not null && otpCreatedAt.AddMinutes(2) > DateTime.Now)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "You can request a new OTP after 2 minutes."));
-
-            var OTP = GenerateOtp(user); // private method to generate OTP Random Code
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to resend OTP"));
-
-            // Send a welcome email to the user
-            var email = new Email()
-            {
-                Subject = "Here’s Your New OTP Code",
-                Recipients = model.Email,
-                Body = EmailTemplateService.GetResendOtpEmailBody(user.Email, OTP)
-            };
-           var reuslt =  await _emailService.SendEmailAsync(email);
-            if (!reuslt)
-                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
-
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "New OTP sent successfully"));
-        }
-
-        /******************************** Refresh Token ********************************/
-        [HttpGet("RefreshToken")] // GET: api/Account/refreshToken
-        public async Task<IActionResult> RefreshTokenAsync()
-        {
-            var refreshToken = Request.Cookies["refreshToken"];
-
-            if (string.IsNullOrEmpty(refreshToken))
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Refresh token is missing"));
-
-            var result = await _authServices.RefreshTokenAsync(refreshToken);
-
-            if (!result.IsAuthenticated)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, result.Message));
-
-            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
-
-            return Ok(result);
-        }
-
-        /******************************** Revoke Token ********************************/
-        [HttpPost("RevokeToken")]
-        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model)
-        {
-            var token = model.Token ?? Request.Cookies["refreshToken"];
-
-            if (string.IsNullOrEmpty(token))
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is required"));
-
-            var result = await _authServices.RevokeTokenAsync(token);
-
-            if (!result)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is invalid"));
-
-            await _signInManager.SignOutAsync();
-
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "Token revoked"));
-        }
-
-        /******************************** Forgot Password ********************************/
-        [EnableRateLimiting("PasswordLimiter")]
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
-        {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
-
-            var OTP = GenerateOtp(user);
-            await _userManager.UpdateAsync(user);
-
-            var email = new Email()
-            {
-                Subject = "Password Reset Code (OTP)",
-                Recipients = request.Email,
-                Body = EmailTemplateService.GetForgotPasswordOtpBody(user.Email, OTP)
-            };
-            var reuslt = await _emailService.SendEmailAsync(email);
-            if (!reuslt)
-                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
-
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "OTP sent successfully"));
-        }
-
-        /******************************** Reset Password ********************************/
-        [EnableRateLimiting("PasswordLimiter")]
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
-        {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
-
-            if(user.OtpCode != request.OTP || user.OtpExpiry < DateTime.Now)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid OTP"));
-
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
-            user.OtpCode = null;
-            user.OtpExpiry = null;
-
-            await _userManager.UpdateAsync(user);
-
-            return Ok(new { message = "Password reset successfully" });
-        }
-
-        /******************************** Change Password ********************************/
-        [Authorize]
-        [EnableRateLimiting("PasswordLimiter")]
-        [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordDto request)
-        {
-            //var user = await _userManager.FindByEmailAsync(request.Email);
-            //if (user == null)
-            //    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
-
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
-
-
-            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, request.OldPassword, true);
-            if (!isPasswordValid.Succeeded)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid Password"));
-
-            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
-
-            if(!result.Succeeded)
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to change password"));
-
-            return Ok(new ApiResponse(StatusCodes.Status200OK, "Password changed successfully"));
-        }
-
+        #region Delete User
         /******************************** Delete User ********************************/
         [Authorize]
         [HttpDelete("delete-user")]
@@ -647,6 +501,224 @@ namespace Graduation_Project.Api.Controllers
             return Ok(new ApiResponse(StatusCodes.Status200OK, "User deleted successfully"));
         }
 
+        #endregion
+
+        #region Get Refresh token
+        /******************************** Refresh Token ********************************/
+        [HttpGet("RefreshToken")] // GET: api/Account/refreshToken
+        public async Task<IActionResult> RefreshTokenAsync()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Refresh token is missing"));
+
+            var result = await _authServices.RefreshTokenAsync(refreshToken);
+
+            if (!result.IsAuthenticated)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, result.Message));
+
+            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
+
+            return Ok(result);
+        }
+
+        #endregion
+
+        #region Revoke Token
+        /******************************** Revoke Token ********************************/
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model)
+        {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is required"));
+
+            var result = await _authServices.RevokeTokenAsync(token);
+
+            if (!result)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Token is invalid"));
+
+            await _signInManager.SignOutAsync();
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Token revoked"));
+        }
+
+        #endregion
+
+        #region Verify OTP
+        /******************************** Verify OTP ********************************/
+        [HttpPost("VerifyOTP")]
+        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTP model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
+
+            // Retrieve the OTP record for the user
+            var otpRecord = await _unitOfWork.Repository<UserOtpVerifications>()
+                .GetByConditionAsync(o => o.ApplicationUserId == user.Id &&
+                                     o.OtpType == model.OtpType &&
+                                     o.OtpCode == model.OtpCode &&
+                                     !o.IsVerified &&
+                                     o.ExpiresOn > DateTime.UtcNow);
+
+            if (otpRecord is null)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid OTP or OTP has expired."));
+
+            otpRecord.IsVerified = true;
+            _unitOfWork.Repository<UserOtpVerifications>().Update(otpRecord);
+            await _unitOfWork.CompleteAsync();
+
+            if (model.OtpType == OtpType.EmailVerification)
+            {
+                // If OTP is for email verification, update the user's email confirmation status
+                user.EmailConfirmed = true;
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to verify OTP"));
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Email verified successfully"));
+            }
+
+            return Ok(new { Message = "OTP verified successfully." });
+
+        }
+
+        #endregion
+
+        #region Resend OTP
+        /******************************** Resend OTP ********************************/
+        [EnableRateLimiting("OtpRateLimit")]
+        [HttpPost("ResendOTP")]
+        public async Task<IActionResult> ResendOTP([FromBody] ResendOTP model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "Invalid Email"));
+
+            if (user.EmailConfirmed && model.OtpType == OtpType.EmailVerification)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email is already verified."));
+
+            var spec = new UserOtpVerificationsSpec(user.Id, model.OtpType);
+            var latestOtp = await _unitOfWork.Repository<UserOtpVerifications>().GetWithSpecsAsync(spec);
+
+            if (latestOtp != null && latestOtp.IsVerified == false && latestOtp.ExpiresOn > DateTime.Now)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "You have already requested a new OTP. Please check your email."));
+
+            var OTP = await GenerateAndSaveOtp(user, model.OtpType);
+
+            var email = new Email()
+            {
+                Subject = "Here’s Your New OTP Code",
+                Recipients = model.Email,
+                Body = EmailTemplateService.GetResendOtpEmailBody(user.Email, OTP)
+            };
+            var reuslt = await _emailService.SendEmailAsync(email);
+            if (!reuslt)
+                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "New OTP sent successfully"));
+        }
+
+        #endregion
+
+        #region Forgot Password
+        /******************************** Forgot Password ********************************/
+        [EnableRateLimiting("PasswordLimiter")]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
+
+            // check if the user already has a non-expired, non-verified OTP of type PasswordReset
+            var otpRecord = await _unitOfWork.Repository<UserOtpVerifications>()
+                .GetByConditionAsync(o => o.ApplicationUserId == user.Id &&
+                                     o.OtpType == OtpType.PasswordReset &&
+                                     !o.IsVerified &&
+                                     o.ExpiresOn > DateTime.UtcNow);
+
+            if (otpRecord != null)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "You have already requested a password reset. Please check your email for the OTP code."));
+
+            var OTP = await GenerateAndSaveOtp(user, OtpType.PasswordReset);
+
+            var email = new Email()
+            {
+                Subject = "Password Reset Code (OTP)",
+                Recipients = request.Email,
+                Body = EmailTemplateService.GetForgotPasswordOtpBody(user.Email, OTP)
+            };
+            var reuslt = await _emailService.SendEmailAsync(email);
+            if (!reuslt)
+                return StatusCode(500, new ApiResponse(500, "Failed to send new OTP code"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "OTP sent successfully"));
+        }
+
+        #endregion
+
+        #region Reset Password
+        /******************************** Reset Password ********************************/
+        [EnableRateLimiting("PasswordLimiter")]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Email not found"));
+
+            // Validate OTP
+            var spec = new UserOtpVerificationsSpec(user.Id, OtpType.PasswordReset);
+            var latestOtp = await _unitOfWork.Repository<UserOtpVerifications>().GetWithSpecsAsync(spec);
+
+            if (latestOtp is null || !latestOtp.IsVerified || latestOtp.ExpiresOn < DateTime.UtcNow)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid OTP or OTP has expired."));
+
+            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
+            await _userManager.UpdateAsync(user);
+
+            // Ensures one-time use and Avoid replay attacks
+            latestOtp.IsVerified = false;
+            _unitOfWork.Repository<UserOtpVerifications>().Update(latestOtp);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(new { message = "Password reset successfully" });
+        }
+
+        #endregion
+
+        #region Change Password
+        /******************************** Change Password ********************************/
+        [Authorize]
+        [EnableRateLimiting("PasswordLimiter")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordDto request)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Unauthorized(new ApiResponse(StatusCodes.Status401Unauthorized, "User is unauthorized"));
+
+
+            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, request.OldPassword, true);
+            if (!isPasswordValid.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid Password"));
+
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+            if(!result.Succeeded)
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to change password"));
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Password changed successfully"));
+        }
+
+        #endregion
+
+        #region Private Methods
         /******************************** Private Method ********************************/
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {
@@ -659,13 +731,22 @@ namespace Graduation_Project.Api.Controllers
             Response.Cookies.Append("refreshToken", refreshToken, cookiOption);
         }
 
-        private string GenerateOtp(AppUser user)
+        private async Task<string> GenerateAndSaveOtp(AppUser user , OtpType OtpType)
         {
             var OTP = new Random().Next(100000, 999999).ToString();
-            user.OtpCode = OTP;
-            user.OtpExpiry = DateTime.Now.AddMinutes(5);
+            var userOTP = new UserOtpVerifications()
+            {
+                OtpCode = OTP,
+                OtpType = OtpType,
+                ExpiresOn = DateTime.Now.AddMinutes(5),
+                IsVerified = false,
+                ApplicationUserId = user.Id
+            };
+            await _unitOfWork.Repository<UserOtpVerifications>().AddWithSaveAsync(userOTP);
 
             return OTP;
         }
+
+        #endregion
     }
 }
