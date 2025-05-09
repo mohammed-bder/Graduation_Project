@@ -21,12 +21,15 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             // add Identity Services configuration (UserManager , SigninManager , RoleManager)
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
             })
                     .AddEntityFrameworkStores<AppIdentityDbContext>()
-                    .AddDefaultTokenProviders();
+                    .AddDefaultTokenProviders()
+                    .AddTokenProvider<DataProtectorTokenProvider<AppUser>>("Email");
 
             //services.ConfigureApplicationCookie(config =>
             //{
