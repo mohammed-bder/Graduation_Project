@@ -6,7 +6,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
     {
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(6, ErrorMessage = "Minimum Password Length is 6")]
-        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,10}$",
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,15}$",
     ErrorMessage = "Password must be between 8 and 15 characters and contain at least one lowercase letter," +
     " one uppercase letter, one digit and one special character.")]
         [DataType(DataType.Password)]
