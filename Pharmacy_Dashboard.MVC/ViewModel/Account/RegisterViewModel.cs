@@ -11,7 +11,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 
 		[Required(ErrorMessage = "Password is required.")]
 		[MinLength(6,ErrorMessage = "Minimum Password Length is 6")]
-        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,10}$",
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,15}$",
 			ErrorMessage = "Password must be between 8 and 15 characters and contain at least one lowercase letter," +
 			" one uppercase letter, one digit and one special character.")]
         [DataType(DataType.Password)]
@@ -35,13 +35,11 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 
 		[Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180.")]
 		public double Longitude { get; set; }
-
-		[Required(ErrorMessage = "Pharmacy license Image is required.")]
-		[DataType(DataType.Upload)]
 		public string? LicenseImageUrl { get; set; }
 
-		//[Phone(ErrorMessage = "Please enter a valid contact number.")]
-		//public List<PharmacyContact>? pharmacyContacts { get; set; }
+        [Required(ErrorMessage = "Pharmacy license Image is required.")]
+        [DataType(DataType.Upload)]
+        public IFormFile? ImageFile { get; set; }
 
 		public PharmacyContact? PharmacyContact { get; set; }
 

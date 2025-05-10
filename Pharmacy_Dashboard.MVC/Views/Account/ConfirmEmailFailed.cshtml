@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Email Confirmation Failed";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<div class="form-steps">
+    <div class="sidebar">
+        <img src="~/assets/images/avatar-placeholder.jpg" alt="Error Icon" class="logo" />
+        <div class="steps">
+            <div class="step active">Failed</div>
+        </div>
+    </div>
+
+    <div class="right-panel text-center">
+        <h2>Confirmation Failed</h2>
+        <p class="text-danger">@ViewBag.Error</p>
+
+        <div style="margin-top: 30px">
+            <a asp-action="Login" class="btn-custom btn-primary">Back to Login</a>
+        </div>
+    </div>
+</div>

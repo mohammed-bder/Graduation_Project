@@ -25,13 +25,11 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             /****************************** add services for AutoMapper ********************************/
             services.AddAutoMapper(typeof(MappingProfiles));
 
-            //unitOfWork replaces GenericRepository
-            //this line is equivalent to the following line
-
-            //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
+
+            services.AddScoped(typeof(IFileUploadService), typeof(FileUploadService));
 
             return services;
         }

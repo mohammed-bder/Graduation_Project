@@ -10,5 +10,6 @@ namespace Graduation_Project.Core.IServices
     public interface IEmailService
     {
         Task<bool> SendEmailAsync(Email email);
+        //Task<bool> SendEmailAsync(string to, string subject, string body);
     }
 }

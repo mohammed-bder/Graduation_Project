@@ -11,6 +11,8 @@
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Prescription> Prescription { get; set; }
+
+        public DbSet<UserOtpVerifications> UserOtpVerifications { get; set; }
         /*********************Doctors************************/
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Education> Educations { get; set; }
