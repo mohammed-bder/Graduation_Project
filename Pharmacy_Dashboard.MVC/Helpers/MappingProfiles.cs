@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core.Models.Pharmacies;
-using Graduation_Project.Core.Models.Shared;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
 
 namespace Pharmacy_Dashboard.MVC.Helpers
@@ -20,12 +19,20 @@ namespace Pharmacy_Dashboard.MVC.Helpers
             /****************************************** Mapping for Pharmacy Edit info ******************************************/
             CreateMap<Pharmacy, EditProfileViewModel>()
                 .ForMember(dest => dest.PharmacyName, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.ProfilePictureUrl))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Pharmacy , EditProfileViewModel>>())
                 .ForMember(dest => dest.PharmacyContacts, opt => opt.MapFrom(src => src.pharmacyContacts.Select(c => new PharmacyContactViewModel
                 {
                     Id = c.Id,
                     PhoneNumber = c.PhoneNumber,
                 })));
+
+
+            CreateMap<EditProfileViewModel, Pharmacy>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.PharmacyName))
+                .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.PictureUrl))
+                .ForMember(dest => dest.pharmacyContacts, opt => opt.Ignore());
+
+
 
 
         }

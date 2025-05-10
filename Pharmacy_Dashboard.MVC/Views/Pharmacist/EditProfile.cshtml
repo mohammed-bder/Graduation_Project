@@ -14,22 +14,23 @@
         <h2 class="text-center mb-4">Edit Pharmacist Profile</h2>
 
         <!-- Profile Image -->
-        <div class="d-flex justify-content-center mb-4">
-            <div class="position-relative" style="width: 160px; height: 160px;">
-                <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? Url.Content("https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500") : Model.PictureUrl)"
-                     class="rounded-circle border border-3 shadow border-primary w-100 h-100"
-                     alt="Profile" id="profileImage" style="object-fit: cover;">
+        <form id="profileForm" asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            <!-- Profile Image -->
+            <div class="d-flex justify-content-center mb-4">
+                <div class="position-relative" style="width: 160px; height: 160px;">
+                    <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? Url.Content("https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500") : Model.PictureUrl)"
+                         class="rounded-circle border border-3 shadow border-primary w-100 h-100"
+                         alt="Profile" id="profileImage" style="object-fit: cover;">
 
-                <label for="uploadImage" class="position-absolute bottom-0 end-0 bg-primary text-white p-1 rounded-circle" style="cursor:pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-camera"></i>
-                </label>
+                    <label for="uploadImage" class="position-absolute bottom-0 end-0 bg-primary text-white p-1 rounded-circle" style="cursor:pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-camera"></i>
+                    </label>
 
-                <input type="file" id="uploadImage" name="ProfileImage" class="d-none" onchange="previewImage(this)">
+                    <input type="file" id="uploadImage" asp-for="ImageFile" class="d-none" onchange="previewImage(this)">
+                </div>
             </div>
-        </div>
 
-        <!-- Form -->
-        <form id="profileForm" asp-action="EditProfile" method="post">
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label asp-for="Email"></label>
@@ -94,7 +95,7 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Profile Image Preview
+
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -168,33 +169,6 @@
             // Prevent the default form submission
             event.preventDefault();
         };
-
-        // Contact Number Logic
-        // let contactCount = Model.PharmacyContacts?.Count ?? 1;
-
-        // function addContact() {
-        //     if (contactCount >= 3) return alert("Maximum 3 contact numbers allowed.");
-        //     const container = document.getElementById("contactContainer");
-        //     const div = document.createElement("div");
-        //     div.className = "input-group mb-2 contact-input";
-        //     div.innerHTML = `
-        //             <input type="text" name="PharmacyContacts[${contactCount}].PhoneNumber" class="form-control" />
-        //             <input type="hidden" name="PharmacyContacts[${contactCount}].Id" value="0" />
-        //             <button type="button" class="btn btn-outline-danger" onclick="removeContact(this)">
-        //                 <i class="bi bi-x-lg"></i>
-        //             </button>
-        //         `;
-        //     container.appendChild(div);
-        //     contactCount++;
-        // }
-
-        // function removeContact(btn) {
-        //     const inputGroup = btn.closest(".contact-input");
-        //     if (document.querySelectorAll(".contact-input").length > 1) {
-        //         inputGroup.remove();
-        //         contactCount--;
-        //     }
-        // }
 
         // Leaflet Map Logic
         const initialLat = @Model.Latitude ?? 30.0444;

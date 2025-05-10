@@ -5,11 +5,13 @@ using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Models.SendingEmail;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.Helpers;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -22,6 +24,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
+        private readonly IFileUploadService _fileUploadService;
 
         public AccountController(
             UserManager<AppUser> userManager ,
@@ -29,7 +32,8 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             IUnitOfWork unitOfWork ,
             IMapper mapper ,
             IUserService userService ,
-            IEmailService emailService)
+            IEmailService emailService ,
+            IFileUploadService fileUploadService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -37,6 +41,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             _mapper = mapper;
             _userService = userService;
             _emailService = emailService;
+            _fileUploadService = fileUploadService;
         }
         #endregion
 
@@ -72,11 +77,39 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     // Add the user to the "Pharmacy" role
                     await _userManager.AddToRoleAsync(newUser, UserRoleType.Pharmacist.ToString());
 
+
+
+                    // Validate and upload the LicenseImage
+                    if(model.ImageFile is not null && model.ImageFile.Length > 0)
+                    {
+                        var sanitizedFileName = Regex.Replace(newUser.FullName, @"[^a-zA-Z0-9_-]", ""); // Remove special chars
+                        var finalFileName = $"{sanitizedFileName}-{newUser.Id}";
+                        var (uploadSuccess, uploadMessage, licenseImageFilePath) = await _fileUploadService.UploadFileAsync(
+                            model.ImageFile,
+                            "Pharmacy/License/",
+                            User,
+                            customFileName: finalFileName
+                        );
+
+                        if (!uploadSuccess)
+                        {
+                            await _userManager.DeleteAsync(newUser);
+                            ModelState.AddModelError(string.Empty, uploadMessage);
+                            return View(model);
+                        }
+
+                        model.LicenseImageUrl = licenseImageFilePath;
+                    }
+                    else
+                    {
+                        await _userManager.DeleteAsync(newUser);
+                        ModelState.AddModelError(string.Empty, "Please upload a valid license image file.");
+                        return View(model);
+                    }
+
                     // Create the pharmacy
                     var pharmacy = _mapper.Map<Pharmacy>(model);
                     pharmacy.ApplicationUserID = newUser.Id;
-
-                   
 
                     // Add the pharmacy to the database
                     await _unitOfWork.Repository<Pharmacy>().AddAsync(pharmacy);
@@ -99,10 +132,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                         int resultCheck = await _unitOfWork.CompleteAsync();
                         if (resultCheck <= 0)
                         {
-                            // Delete the user if pharmacy contact creation fails
-                            await _userManager.DeleteAsync(newUser);
-                            _unitOfWork.Repository<Pharmacy>().Delete(pharmacy);
-                            await _unitOfWork.CompleteAsync();
+                            await DeleteUserAndPharmacyAsync(newUser, pharmacy); // private Method
 
                             ModelState.AddModelError(string.Empty, "Failed to create pharmacy contact");
 
@@ -110,21 +140,61 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                         }
                     }
 
-                    // Send a welcome email to the user
-                    var emailBody = EmailTemplateService.GetWelcomeEmailBody(newUser.UserName, Url.Action("Login", "Account", null,  Request.Scheme));
+                    // confirm the email
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                    var confirmEmailLink = Url.Action(nameof(ConfirmEmail), "Account", new { email = newUser.Email, token = token }, Request.Scheme);
+
                     var email = new Email()
                     {
-                        Subject = "Welcome to our Pharmacy",
-                        Recipients = model.Email,
-                        Body = emailBody
+                        Subject = "Confirm Your Email",
+                        Recipients = newUser.Email,
+                        Body = EmailTemplateService.GetEmailConfirmationBody(newUser.UserName,confirmEmailLink)
                     };
-                     await _emailService.SendEmailAsync(email);
 
-                    return RedirectToAction(nameof(Login));
+                    var flag = await _emailService.SendEmailAsync(email);
+                    if(flag)
+                    {
+                        TempData["Message"] = "We've sent a confirmation link to your email address. Please check your inbox and follow the instructions to activate your account.";
+                        TempData["ResendAction"] = "SignUp";
+                        return RedirectToAction(nameof(CheckYourBox));
+                    }
+                    else
+                    {
+                       // Delete the user if email sending fails
+                        await DeleteUserAndPharmacyAsync(newUser, pharmacy); // private Method
+                        ModelState.AddModelError(string.Empty, "Failed to send confirmation email");
+                        return View(model);
+                    }
                 }
                 ModelState.AddModelError(string.Empty, "Email already exists");
             }
             return View(model);
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            {
+                ViewBag.Error = "Invalid confirmation link.";
+                return View("ConfirmEmailFailed");
+            }
+
+            var user = await _userService.UserExistsAsync(email);
+            if(user is null)
+            {
+                ViewBag.Error = "User not found.";
+                return View("ConfirmEmailFailed");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if(result.Succeeded)
+            {
+                TempData["Success"] = "Your email has been confirmed. You can now log in.";
+                return RedirectToAction(nameof(Login));
+            }
+            
+            ViewBag.Error = "Email confirmation failed. The token may be invalid or expired.";
+            return View("ConfirmEmailFailed");
         }
         #endregion
 
@@ -143,6 +213,11 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 var user = await _userService.UserExistsAsync(model.Email);
                 if(user is not null)
                 {
+                    if(user.EmailConfirmed is false)
+                    {
+                        ModelState.AddModelError(string.Empty, "You need to confirm your email to log in.");
+                        return View(model);
+                    }
                     // check password
                     var flag = await _userManager.CheckPasswordAsync(user, model.Password);
                     if(flag)
@@ -153,7 +228,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     }
                 }
 
-                ModelState.AddModelError(string.Empty, "Invalid login");
+                ModelState.AddModelError(string.Empty , "Invalid Username or Password");
             }
             return View(model);
         }
@@ -196,7 +271,11 @@ namespace Pharmacy_Dashboard.MVC.Controllers
 
                     var flag = await _emailService.SendEmailAsync(email);
                     if(flag)
+                    {
+                        TempData["Message"] = "We've sent a reset password link to your email address. Please check your inbox and follow the instructions.";
+                        TempData["ResendAction"] = "ForgetPassword";
                         return RedirectToAction(nameof(CheckYourBox));
+                    }
 
                     ModelState.AddModelError(string.Empty, "Failed to sending Email");
                     return View(model);
@@ -234,13 +313,26 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 {
                     var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
                     if(result.Succeeded)
+                    {
+                        TempData["Success"] = "Your password has been reset successfully. You can now log in.";
                         return RedirectToAction(nameof(Login));
+                    }
                 }
                 ModelState.AddModelError(string.Empty, "Invalid reset password");
             }
             return View(model);
         }
 
+        #endregion
+
+        /************************** Private Method **************************/
+        #region private methods
+        public async Task DeleteUserAndPharmacyAsync(AppUser user, Pharmacy pharmacy)
+        {
+            await _userManager.DeleteAsync(user);
+            _unitOfWork.Repository<Pharmacy>().Delete(pharmacy);
+            await _unitOfWork.CompleteAsync();
+        }
         #endregion
 
     }

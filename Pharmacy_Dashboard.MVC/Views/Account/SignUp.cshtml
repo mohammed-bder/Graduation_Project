@@ -1,9 +1,10 @@
 ﻿@model RegisterViewModel
 @{
+    ViewData["Title"] = "Sign Up";
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 
-<form asp-action="SignUp"> 
+<form asp-action="SignUp" enctype="multipart/form-data">
 
     <div class="form-steps">
         <!-- Left side (Stepper) -->
@@ -58,12 +59,11 @@
                 <div class="input-group">
                     <label>Contact Number</label>
                     <input asp-for="PharmacyContact.PhoneNumber" class="form-control" />
-                    <span asp-validation-for="PharmacyContact.PhoneNumber" class="text-danger"></span>
                 </div>
                 <div class="input-group">
                     <label>Upload Pharmacy License</label>
-                    <input asp-for="LicenseImageUrl" type="file" class="form-control" />
-                    <span asp-validation-for="LicenseImageUrl" class="text-danger"></span>
+                    <input asp-for="ImageFile" type="file" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>
 
                 <div class="input-group">
@@ -73,6 +73,9 @@
                     <input type="hidden" asp-for="Longitude" />
                     <span asp-validation-for="Latitude" class="text-danger"></span>
                     <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <button type="button" id="get-current-location" class="btn-custom btn-primary next-step-btn">Use Current Location</button>
                 </div>
 
                 <input type="button" class="btn-custom btn-secondary back-step-btn" value="Back to Personal Info" />
@@ -92,6 +95,11 @@
             document.getElementById('step2').style.display = 'block';
             document.querySelector('#step-1-indicator').classList.remove('active');
             document.querySelector('#step-2-indicator').classList.add('active');
+
+            // Fix map size when switching to step 2
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 100);
         });
 
         document.querySelector('.back-step-btn').addEventListener('click', function () {
@@ -125,6 +133,31 @@
                 marker.setLatLng([lat, lng]);
             } else {
                 marker = L.marker([lat, lng]).addTo(map);
+            }
+        });
+
+        // Get current location using Geolocation API
+        document.getElementById('get-current-location').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+
+                    document.querySelector('input[name="Latitude"]').value = lat;
+                    document.querySelector('input[name="Longitude"]').value = lng;
+
+                    // Update the map and marker
+                    map.setView([lat, lng], 15);
+                    if (marker) {
+                        marker.setLatLng([lat, lng]);
+                    } else {
+                        marker = L.marker([lat, lng]).addTo(map);
+                    }
+                }, function (error) {
+                    alert('Unable to retrieve your location. Please try again.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
             }
         });
     </script>

@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Core.Models.Pharmacies;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 {
@@ -11,6 +12,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public string? PictureUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
     }
 }

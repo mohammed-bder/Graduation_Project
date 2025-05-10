@@ -35,12 +35,12 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 
 		[Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180.")]
 		public double Longitude { get; set; }
-
-		[Required(ErrorMessage = "Pharmacy license Image is required.")]
-		[DataType(DataType.Upload)]
 		public string? LicenseImageUrl { get; set; }
 
-		[Phone(ErrorMessage = "Please enter a valid contact number.")]
+        [Required(ErrorMessage = "Pharmacy license Image is required.")]
+        [DataType(DataType.Upload)]
+        public IFormFile? ImageFile { get; set; }
+
 		public PharmacyContact? PharmacyContact { get; set; }
 
 	}
