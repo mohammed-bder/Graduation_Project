@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
+using Graduation_Project.Repository.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Pharmacy_Dashboard.MVC.ViewModel;
+using Pharmacy_Dashboard.MVC.ViewModel.Stock;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -21,29 +24,41 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             _mapper = mapper;
         }
 
+        // http://localhost:5152/Stock/Index
+        //[Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string Search, int pageIndex = 1, int pageSize = 10, string sort = "")
         {
-            var pharmacyId = 1;
+            ViewData["CurrentFilter"] = Search;
+            ViewData["CurrentPageSize"] = pageSize;
+            ViewData["SortField"] = sort;
+            var specParams = new StockSpecParams
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Search = Search,
+                Sort = sort,
+                pharmacyId = 1 // Replace with actual logic if dynamic
+            };
+
             // Get all PharmacyMedicine records for a specific Pharmacy
             var stockList = await _unitOfWork.Repository<PharmacyMedicineStock>()
-                .GetAllWithSpecAsync(new StockForPharmacyWithMedicineSpecification(pharmacyId));
-
-            // Prepare a simple view model for the view
+                .GetAllWithSpecAsync(new StockForPharmacyWithMedicineSpecification(specParams));
+            // Count total for pagination
+            var totalItems = await _unitOfWork.Repository<PharmacyMedicineStock>()
+                .GetCountAsync(new StockCountForPharmacySpecification(specParams));
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.HasPreviousPage = pageIndex > 1;
+            ViewBag.HasNextPage = pageIndex < totalPages;
+            ViewBag.TotalPages = totalPages;
             var viewModel = _mapper.Map<IReadOnlyList<PharmacyStockViewModel>>(stockList);
-            var viewModel = stockList.Select(pm => new PharmacyStockViewModel
-            {
-                Id = pm.Id,
-                MedicineName = pm.Medicine.Name_en,
-                Quantity = pm.Quantity,
-                Price = pm.Medicine.Price
-            }).ToList();
 
             return View(viewModel);
 
         }
 
-        // http://localhost:5152/Stock/AddPharmacyStock
+        // http://localhost:5152/Stock/Add
         [HttpGet]
         public async Task<IActionResult> Add()
         {
@@ -117,8 +132,9 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             var editedRecord = await _unitOfWork.Repository<PharmacyMedicineStock>()
                 .GetWithSpecsAsync(new StockWithMedicineSpecification(id));
 
-            var viewModel =  new PharmacyStockViewModel
+            var viewModel =  new PharmacyStockEditViewModel
             {
+                Id = id,
                 MedicineName = editedRecord.Medicine.Name_en,
                 Quantity = editedRecord.Quantity,
             };
@@ -128,12 +144,12 @@ namespace Pharmacy_Dashboard.MVC.Controllers
 
         // POST: /PharmacyMedicineStock/Edit/5
         [HttpPost]
-        public async Task<IActionResult> SaveEdit(PharmacyStockViewModel model)
+        public async Task<IActionResult> SaveEdit(PharmacyStockEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError(string.Empty, "The Quantity field is required");
-                return View(model);
+                return View("Edit", model);
             }
             var stock = await _unitOfWork.Repository<PharmacyMedicineStock>().GetByConditionAsync(pm => pm.Id == model.Id);
             if (stock == null)

@@ -2,6 +2,7 @@
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Models.Shared;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
+using Pharmacy_Dashboard.MVC.ViewModel.Stock;
 
 namespace Pharmacy_Dashboard.MVC.Helpers
 {
@@ -17,6 +18,10 @@ namespace Pharmacy_Dashboard.MVC.Helpers
                 .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Longitude))
                 .ForMember(dest => dest.LicenseImageUrl, opt => opt.MapFrom(src => src.LicenseImageUrl));
 
+            /****************************************** Mapping for Stock ******************************************/
+            CreateMap<PharmacyMedicineStock, PharmacyStockViewModel>()
+                .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Medicine.Price));
         }
     }
 }

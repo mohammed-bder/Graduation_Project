@@ -1,4 +1,4 @@
-﻿namespace Pharmacy_Dashboard.MVC.ViewModel
+﻿namespace Pharmacy_Dashboard.MVC.ViewModel.Stock
 {
     public class PharmacyStockViewModel
     {

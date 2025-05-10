@@ -1,4 +1,4 @@
-﻿@model Pharmacy_Dashboard.MVC.ViewModel.PharmacyStockViewModel
+﻿@model Pharmacy_Dashboard.MVC.ViewModel.Stock.PharmacyStockEditViewModel
 
 @{
     ViewData["Title"] = "Edit Medicine Stock";
@@ -10,7 +10,7 @@
 
         <form asp-action="SaveEdit" asp-controller="Stock" method="post">
             <input type="hidden" asp-for="Id" />
-
+            <input type="hidden" asp-for="MedicineName" />
             <div class="mb-3">
                 <label class="form-label fw-semibold">Medicine Name</label>
                 <input asp-for="MedicineName" class="form-control" disabled />

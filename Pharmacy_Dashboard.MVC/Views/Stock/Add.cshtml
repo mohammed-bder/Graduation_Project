@@ -1,4 +1,5 @@
-﻿@model Pharmacy_Dashboard.MVC.ViewModel.AddPharmacyMedicineViewModel
+﻿@using Pharmacy_Dashboard.MVC.ViewModel.Stock
+@model AddPharmacyMedicineViewModel
 
 
 <!DOCTYPE html>
@@ -110,7 +111,7 @@
         <div class="form-box">
             <button type="button" class="cancel-btn" onclick="window.location.href='/Stock/Index'">&times;</button>
             <h3>Add Stock</h3>
-            <form asp-action="SaveAddedPharmacyStock" asp-controller="Stock" method="post">
+            <form asp-action="Add" asp-controller="Stock" method="post">
                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                 <!-- Medicine Dropdown (Searchable with Select2) -->
