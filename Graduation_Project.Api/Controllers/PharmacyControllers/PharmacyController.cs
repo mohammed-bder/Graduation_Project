@@ -109,7 +109,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         {
             const double maxDistance = 10;
             // 1- Include pharmacy contact with pharmacy 
-            var spec = new PharmacyWithDistanceSpecification();
+            var spec = new PharmacyWithItsContactsSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
 
             if(pharmacies is null || !pharmacies.Any())

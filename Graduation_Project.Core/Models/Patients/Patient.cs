@@ -3,6 +3,7 @@
     public class Patient: Person
     {
         public int? Points { get; set; }
+        public string? Address { get; set; }
         public BloodType? BloodType { get; set; }
 
         public ICollection<Appointment>? Appointments { get; set; }

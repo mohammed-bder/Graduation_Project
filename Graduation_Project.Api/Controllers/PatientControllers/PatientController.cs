@@ -124,18 +124,6 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         }
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
-        [HttpGet("{Id:int}")]
-        public async Task<ActionResult<MedicalCategoryDto>> GetMediclCategory(int Id)
-        {
-            var MedicalCategory = await _unitOfWork.Repository<MedicalCategory>().GetAsync(Id);
-            if(MedicalCategory is null)
-            {
-                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical Category Not Found"));
-            }
-            return Ok(_mapper.Map<MedicalCategory, MedicalCategoryDto>(MedicalCategory));
-        }
-
-        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("Points")]
         public async Task<ActionResult<int>> GetPatientPoints()
         {
