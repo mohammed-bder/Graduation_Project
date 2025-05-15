@@ -67,7 +67,6 @@ namespace Graduation_Project.Api
 
 
             /****************************** Global Connection String ********************************/
-
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //{
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));

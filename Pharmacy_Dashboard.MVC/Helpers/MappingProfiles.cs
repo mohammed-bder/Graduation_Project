@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core.Models.Pharmacies;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
+using Pharmacy_Dashboard.MVC.ViewModel.Stock;
 
 namespace Pharmacy_Dashboard.MVC.Helpers
 {
@@ -35,6 +36,10 @@ namespace Pharmacy_Dashboard.MVC.Helpers
 
 
 
+            /****************************************** Mapping for Stock ******************************************/
+            CreateMap<PharmacyMedicineStock, PharmacyStockViewModel>()
+                .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Medicine.Price));
         }
     }
 }

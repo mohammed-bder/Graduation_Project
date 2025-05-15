@@ -11,7 +11,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
         public DoctorWithFilterCountSpecification(DoctorSpecParams specParams)
             : base(d =>
 
-                                (string.IsNullOrEmpty(specParams.Search) ||
+                (string.IsNullOrEmpty(specParams.Search) ||
                     (
                         !string.IsNullOrEmpty(specParams.FirstNameSearch) &&
                         (

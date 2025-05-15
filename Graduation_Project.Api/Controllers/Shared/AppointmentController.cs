@@ -51,7 +51,11 @@ namespace Graduation_Project.Api.Controllers.Shared
                 if (!result.IsSuccess)
                     return NotFound(new ApiResponse(404, result.ErrorMessage));
 
-                return Ok(result.Data);
+                var formattedResult = result.Data.ToDictionary(
+                    kvp => kvp.Key.ToString("yyyy-MM-dd"),
+                    kvp => kvp.Value.Select(t => t.ToString("hh:mm tt")).ToList()
+                );
+                return Ok(formattedResult);
             }
 
             catch (Exception ex)
