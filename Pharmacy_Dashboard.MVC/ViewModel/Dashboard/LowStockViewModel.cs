@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Pharmacy_Dashboard.MVC.ViewModels
+﻿namespace Pharmacy_Dashboard.MVC.ViewModel.Dashboard
 {
-  
+
 
 
     // Example nested ViewModels for table data
@@ -10,7 +8,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModels
     {
         public string Name_en { get; set; }
 
-   
+
         public string? ActiveSubstance { get; set; }
 
         public int Quantity { get; set; }

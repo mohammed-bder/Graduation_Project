@@ -5,6 +5,8 @@ using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;
 using Graduation_Project.Service;
+using System.Threading.RateLimiting;
+
 
 namespace Graduation_Project.Api.Extensions
 {
@@ -56,6 +58,51 @@ namespace Graduation_Project.Api.Extensions
 
                     return new BadRequestObjectResult(ValidationErrorResponse);
                 };
+            });
+
+            /****************************** Email Service ********************************/
+            services.AddTransient<IEmailService, EmailService>();
+
+            /****************************** Rate Limiting Middleware ********************************/
+            services.AddRateLimiter(options =>
+            {
+                options.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.Response.ContentType = "application/json";
+
+                    var response = new { Message = "Too many requests, please try again later."  };
+                    await context.HttpContext.Response.WriteAsJsonAsync(response, token);
+                };
+
+                options.AddPolicy("OtpRateLimit", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        key => new FixedWindowRateLimiterOptions 
+                        {
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(10)
+                        }));
+
+
+                options.AddPolicy("LoginRateLimit", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        key => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,  
+                            Window = TimeSpan.FromMinutes(15) 
+                        }));
+
+                options.AddPolicy("PasswordLimiter", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        key => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,  
+                            Window = TimeSpan.FromMinutes(10) 
+                        }));
+
             });
 
             return services;

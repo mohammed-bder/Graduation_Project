@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Graduation_Project.Core\Graduation_Project.Core.csproj" />
+    <PackageReference Include="MailKit" Version="4.12.0" />
+    <PackageReference Include="MimeKit" Version="4.12.0" />
   </ItemGroup>
 
 </Project>

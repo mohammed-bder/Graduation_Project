@@ -18,6 +18,10 @@ using System.Runtime.CompilerServices;
 using AutoMapper;
 using System.Collections.Generic;
 using Graduation_Project.Core.Constants;
+using Graduation_Project.Api.Attributes;
+using Graduation_Project.Api.DTO.Shared;
+using Graduation_Project.Api.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +45,29 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             _pharmacyService = pharmacyService;
         }
 
+        /********************************************* Search on Medicine By Name  *********************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetMedicineInfoByName")]
+        public async Task<ActionResult<IReadOnlyList<SearchMedicinesResponseDTO>>> GetMedicinesInfoByName([FromQuery] string? name, [FromQuery] int count = 20)// count will increase with every showMore
+        {
+            // check on name
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(new ApiResponse(400, "Please enter a medicine name"));
+
+            // Get Matched medicines
+            var spec = new MedicineSpec(name, count);
+            var matchedMedicines =
+                        await _unitOfWork.Repository<Medicine>().GetAllWithSpecAsync(spec, m => new SearchMedicinesResponseDTO { Id = m.Id, Name = m.Name_en , Price = $"{m.Price} EGP"  , DosageForm = m.DosageForm });
+
+            if (matchedMedicines.IsNullOrEmpty())
+                return NotFound(new ApiResponse(404, "No medicines found with this name"));
+
+            // mapping
+            return Ok(matchedMedicines);
+        }
+
+        /********************************************* Find Nearest Pharmacies which have specific medicines  *********************************************/
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("Find-Nearest-Pharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies([FromBody] PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
@@ -73,7 +100,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
                 return BadRequest(new ApiResponse(404));
 
             // Find the nearest Pharmacies
-            var result = _pharmacyService.GetNearestPharmacies(patientLocationWithMedicinesDto.Longtude, patientLocationWithMedicinesDto.Latitude, pharmacies) as List<PharmacyWithDistances>;
+            var result = _pharmacyService.GetNearestPharmacies((double)patientLocationWithMedicinesDto.Longtude,(double) patientLocationWithMedicinesDto.Latitude, pharmacies) as List<PharmacyWithDistances>;
 
             var output1 = _mapper.Map<List<PharmacyCardDTO>>(result);
             // Map to PharmacyCardDTO
@@ -81,19 +108,20 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         }
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
-        [HttpPost("NearByPharmacies")]
-        public async Task<ActionResult<List<PharmacyCardDTO>>> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("NearByPharmacies")]
+        public async Task<ActionResult<List<PharmacyCardDTO>>> GetNearByPharmacis([FromQuery] LocationDTO locationDTO)
         {
             const double maxDistance = 10;
             // 1- Include pharmacy contact with pharmacy 
-            var spec = new PharmacyWithDistanceSpecification();
+            var spec = new PharmacyWithItsContactsSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
 
             if(pharmacies is null || !pharmacies.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No pharmacies found."));
 
             // 2- Calculate distance between the pharmacy and the patient location then order them 
-            var NearByPharmacies = _pharmacyService.GetDefaultNearestPharmacies(locationDTO.Longitude,locationDTO.Latitude,pharmacies) as List<PharmacyWithDistances>;
+            var NearByPharmacies = _pharmacyService.GetDefaultNearestPharmacies((double)locationDTO.Longitude,(double)locationDTO.Latitude,pharmacies) as List<PharmacyWithDistances>;
             if (NearByPharmacies is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No Nearest pharmacies found."));
 
@@ -104,6 +132,29 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
                 
             return Ok(pharmacyCards);
         }
+
+        /********************************************* Get Medicine From Prescription by Id  *********************************************/
+
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpGet("GetMedicineFromPrescription/{prescriptionId:int}")]
+        public async Task<ActionResult<List<MedicineDTO>>> GetMedicineFromPrescription(int prescriptionId)
+        {
+            // get prescription info includeing medicinePrescription then include medicine
+            var prescriptionSpecs = new PrescriptionWithMedicinesSpecification(prescriptionId);
+            var prescription = await _unitOfWork.Repository<Prescription>().GetWithSpecsAsync(prescriptionSpecs);
+            if (prescription is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No prescription found."));
+
+            // map to medicineDTO
+            var medicines = _mapper.Map<List<MedicineDTO>>(prescription.MedicinePrescriptions);
+
+            if (medicines is null || !medicines.Any())
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No medicines found."));
+
+            return Ok(medicines);
+        }
+
+        /********************************************* Add New Order *********************************************/
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("Add-Order")]

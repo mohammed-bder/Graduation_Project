@@ -1,6 +1,4 @@
-﻿using Pharmacy_Dashboard.MVC.Controllers;
-
-namespace Pharmacy_Dashboard.MVC.ViewModels
+﻿namespace Pharmacy_Dashboard.MVC.ViewModel.Dashboard
 {
     // ViewModel to hold all dashboard data
     public class DashboardViewModel

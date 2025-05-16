@@ -1,0 +1,166 @@
+﻿body {
+margin: 0;
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+overflow: hidden;
+}
+
+/* Abstract Shapes */
+body::before {
+content: '';
+position: absolute;
+width: 300px;
+height: 300px;
+background: rgba(255, 255, 255, 0.2);
+top: -50px;
+left: -50px;
+border-radius: 50%;
+z-index: 0;
+}
+
+body::after {
+content: '';
+position: absolute;
+width: 400px;
+height: 400px;
+background: rgba(255, 255, 255, 0.1);
+bottom: -100px;
+right: -100px;
+border-radius: 50%;
+z-index: 0;
+}
+
+.auth-container{
+width: 50%;
+}
+.form-steps {
+display: flex;
+min-height: 600px;
+border-radius: 15px;
+overflow: hidden;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Sidebar */
+.sidebar {
+background: #1e2a5a;
+color: white;
+padding: 30px;
+width: 30%;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.sidebar .logo {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+.sidebar .steps {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.sidebar .step {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+    .sidebar .step:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .sidebar .step.active {
+        background: #0073ff;
+        font-weight: bold;
+    }
+
+.right-panel {
+background: white;
+padding: 40px;
+width: 70%;
+}
+
+.input-group {
+margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+
+/* Base Button Style */
+.btn-custom {
+padding: 10px 25px;
+border-radius: 8px;
+border: none;
+font-size: 16px;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Primary Buttons (Next, Submit) */
+.btn-primary {
+background-color: #1e90ff;
+color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1c86ee;
+    transform: scale(1.02);
+}
+
+/* Secondary Buttons (Back to List) */
+.btn-secondary {
+background-color: #e0e0e0;
+color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #d5d5d5;
+    transform: scale(1.02);
+}
+
+
+.next-step-btn, .submit-btn .back-btn{
+background-color: #007bff;
+color: white;
+padding: 12px 24px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+}
+
+.next-step-btn:hover, .submit-btn:hover .back-btn:hover{
+    background-color: #0056b3;
+}
+
+
+#map {
+height: 300px;
+width: 100%;
+border: 2px solid #e0e0e0;
+border-radius: 12px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+margin-top: 10px;
+}

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Graduation_Project.Core.Enums;
 
-namespace Pharmacy_Dashboard.MVC.ViewModels
+namespace Pharmacy_Dashboard.MVC.ViewModel.Dashboard
 {
     public class PendingOrdersViewModel
     {

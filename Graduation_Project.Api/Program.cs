@@ -67,7 +67,6 @@ namespace Graduation_Project.Api
 
 
             /****************************** Global Connection String ********************************/
-
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //{
             //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
@@ -153,7 +152,7 @@ namespace Graduation_Project.Api
             app.MapHub<NotificationHub>("/Hubs/NotificationHub"); // Correct SignalR mapping
 
             app.UseCors("CorsPolicy");
-
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
             #endregion

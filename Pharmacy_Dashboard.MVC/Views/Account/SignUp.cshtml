@@ -1,0 +1,165 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<form asp-action="SignUp" enctype="multipart/form-data">
+
+    <div class="form-steps">
+        <!-- Left side (Stepper) -->
+        <div class="sidebar">
+            <img src="~/assets/images/avatar-placeholder.jpg" alt="Logo" class="logo" />
+            <div class="steps">
+                <div class="step active" id="step-1-indicator">1. Personal Information</div>
+                <div class="step" id="step-2-indicator">2. Pharmacy Information</div>
+            </div>
+        </div>
+
+        <!-- Right side (Form) -->
+        <div class="right-panel">
+            <div asp-validation-summary="All"></div>
+            <div id="step1">
+                <h2>Your Personal Information</h2>
+                <div class="input-group">
+                    <label>Username</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+                <input type="button" value="Next Step" class="btn-custom btn-primary next-step-btn" />
+                @* this if he have and account go to log in page  *@
+                <div class="text-center">
+					<p>Already have an account? <a asp-action="Login">Log in</a></p>
+                </div>
+
+            </div>
+
+            <div id="step2" style="display:none;">
+                <h2>Pharmacy Information</h2>
+                <div class="input-group">
+                    <label>Pharmacy Name</label>
+                    <input asp-for="PharmacyName" class="form-control" />
+                    <span asp-validation-for="PharmacyName" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <label>Pharmacy Address</label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <input asp-for="PharmacyContact.PhoneNumber" class="form-control" />
+                </div>
+                <div class="input-group">
+                    <label>Upload Pharmacy License</label>
+                    <input asp-for="ImageFile" type="file" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Select Location on Map</label>
+                    <div id="map" style="height: 300px;"></div>
+                    <input type="hidden" asp-for="Latitude" />
+                    <input type="hidden" asp-for="Longitude" />
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+                <div class="input-group">
+                    <button type="button" id="get-current-location" class="btn-custom btn-primary next-step-btn">Use Current Location</button>
+                </div>
+
+                <input type="button" class="btn-custom btn-secondary back-step-btn" value="Back to Personal Info" />
+                <input type="submit" class="btn-custom btn-primary" value="Submit"/>
+
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelector('.next-step-btn').addEventListener('click', function () {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.querySelector('#step-1-indicator').classList.remove('active');
+            document.querySelector('#step-2-indicator').classList.add('active');
+
+            // Fix map size when switching to step 2
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 100);
+        });
+
+        document.querySelector('.back-step-btn').addEventListener('click', function () {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            document.querySelector('#step-2-indicator').classList.remove('active');
+            document.querySelector('#step-1-indicator').classList.add('active');
+        });
+
+        var map = L.map('map').setView([26.8206, 30.8025], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fix map size after it is shown
+        setTimeout(function () {
+            map.invalidateSize();
+        }, 100);
+
+        var marker;
+
+        map.on('click', function (e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            document.querySelector('input[name="Latitude"]').value = lat;
+            document.querySelector('input[name="Longitude"]').value = lng;
+
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng]).addTo(map);
+            }
+        });
+
+        // Get current location using Geolocation API
+        document.getElementById('get-current-location').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+
+                    document.querySelector('input[name="Latitude"]').value = lat;
+                    document.querySelector('input[name="Longitude"]').value = lng;
+
+                    // Update the map and marker
+                    map.setView([lat, lng], 15);
+                    if (marker) {
+                        marker.setLatLng([lat, lng]);
+                    } else {
+                        marker = L.marker([lat, lng]).addTo(map);
+                    }
+                }, function (error) {
+                    alert('Unable to retrieve your location. Please try again.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        });
+    </script>
+}
+

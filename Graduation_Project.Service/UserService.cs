@@ -78,5 +78,11 @@ namespace Graduation_Project.Service
             return roles.FirstOrDefault(); // Assuming a user has only one role
         }
 
+        public async Task<AppUser?> UserExistsAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user;
+        }
+
     }
 }

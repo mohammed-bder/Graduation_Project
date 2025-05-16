@@ -3,6 +3,7 @@ using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
+using Graduation_Project.Api.DTO.Orders;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
@@ -37,9 +38,6 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 )).ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, DoctorForProfileToReturnDto>>());
-
-
-           
 
 
             CreateMap<DoctorForProfileDto, Doctor>()
@@ -125,7 +123,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<Education, DoctorAboutDto>();
 
-            // ========================================== Clinic ==========================================
+            /****************************************** Clinic ******************************************/
             CreateMap<Clinic, ClinicInfoToReturnDTO>()
                 .ForMember(dest => dest.RegionName, opt => opt.MapFrom(src => src.Region.Name_en))
                 .ForMember(dest => dest.GovernorateName, opt => opt.MapFrom(src => src.Governorate.Name_en))
@@ -166,15 +164,15 @@ namespace Graduation_Project.APIs.Helpers
                             : (int?)null
                     ));
 
-            // ========================================== Governorate ==========================================
+            /****************************************** Governorate ******************************************/
 
             CreateMap<Governorate, GovernorateDTO>();
 
-            // ========================================== Region ==========================================
+            /****************************************** Region ******************************************/
 
             CreateMap<Region, RegionDTO>();
 
-            // ========================================== Prescription ==========================================
+            /****************************************** Prescription ******************************************/
             CreateMap<Prescription, PrescriptionEditFormDto>()
                 .ForMember(dest => dest.MedicinePrescriptions, opt => opt.MapFrom(src => src.MedicinePrescriptions));
 
@@ -194,7 +192,7 @@ namespace Graduation_Project.APIs.Helpers
 
             CreateMap<PrescriptionImageDTO, PrescriptionImage>();
 
-            // ========================================== Medicine ==========================================
+            /****************************************** Medicine ******************************************/
             CreateMap<MedicinePrescriptionDto, MedicinePrescription>()
             .ForMember(dest => dest.PrescriptionId, opt => opt.Ignore()) // Ignore PrescriptionId
             .ForMember(dest => dest.Prescription, opt => opt.Ignore())   // Ignore Prescription
@@ -218,14 +216,15 @@ namespace Graduation_Project.APIs.Helpers
              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Medicine.Id))
              .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
 
-            // ========================================== WorkSchedule ==========================================
+            /****************************************** WorkSchedule ******************************************/
             CreateMap<WorkScheduleFromUserDto, WorkSchedule>();
             CreateMap<WorkSchedule, WorkScheduleFromDatabaseDto>();
-            // ========================================== ScheduleException ==========================================
+
+            /****************************************** ScheduleException ******************************************/
             CreateMap<ScheduleExceptionFromUserDto, ScheduleException>();
             CreateMap<ScheduleException, ScheduleExceptionFromDatabaseDto>();
 
-            // ========================================== Appointment ==========================================
+            /****************************************** Appointment ******************************************/
             CreateMap<BookAppointmentDto, Appointment>();
 
             CreateMap<Appointment, AppointmentDto>()
@@ -253,7 +252,7 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Doctor.Rating))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<DoctorPictureUrlResolver>());
 
-            // ========================================== Pharmacy ==========================================
+            /****************************************** Pharmacy ******************************************/
             CreateMap<PharmacyWithDistances, PharmacyCardDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.pharmacy.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.pharmacy.Name))
@@ -264,6 +263,19 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.Contacts, opt => opt.MapFrom(src => src.pharmacy.pharmacyContacts.Count == 0
                     ? null
                     : src.pharmacy.pharmacyContacts.Select(p => new PharmacyContactReturnDTO { PhoneNumber = p.PhoneNumber })));
+
+            CreateMap<MedicinePrescription, MedicineDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Medicine.Name_en));
+
+            /****************************************** Order ******************************************/
+            CreateMap<Pharmacy, OrderViewDTO>()
+                .ForMember(dest => dest.PharmacyName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.PharmacyAddress, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PharmacyPhoneNumber, opt => opt.MapFrom(src => src.pharmacyContacts.Select(p => p.PhoneNumber).ToList()))
+                .ForMember(dest => dest.PharamcyPictureUrl, opt => opt.MapFrom<PictureUrlResolver<Pharmacy, OrderViewDTO>>());
+
+
         }
     }
 }

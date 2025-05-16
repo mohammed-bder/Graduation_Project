@@ -26,6 +26,7 @@ namespace Graduation_Project.Core.IRepositories
         public Task SaveAsync();
         public void DeleteRange(IEnumerable<T> entities);
         public Task AddRangeAsync(IEnumerable<T> entities);
+
         public void attaching(T entity);
         public Task<T?> GetByConditionAsync(Expression<Func<T, bool>> expression);
         public Task<IReadOnlyList<T>?> GetManyByConditionAsync(Expression<Func<T, bool>> expression);
