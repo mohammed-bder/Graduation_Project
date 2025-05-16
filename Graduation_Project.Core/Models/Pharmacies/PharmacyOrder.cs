@@ -2,29 +2,11 @@
 {
     public class PharmacyOrder : BaseEntity
     {
-
-        [Required(ErrorMessage = "Status is required.")]
-        [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
-        public string Status { get; set; }
-
-
-        [Required(ErrorMessage = "Prescription image is required.")]
-        [DataType(DataType.Upload, ErrorMessage = "Please upload a valid prescription image.")]
+        public OrderStatus Status { get; set; }
         public string? PrescriptionPictureUrl { get; set; }
-
-
-        [Required(ErrorMessage = "Order date is required.")]
-        [DataType(DataType.DateTime, ErrorMessage = "Please provide a valid date and time.")]
         public DateTime OrderDate { get; set; }
-
-        
-        [DataType(DataType.DateTime, ErrorMessage = "Please provide a valid date and time.")]
         public DateTime? DeliverDate { get; set; }
-
-
-
         public decimal TotalPrice { get; set; }
-
         public string? DeliveryAddress { get; set; }
 
 

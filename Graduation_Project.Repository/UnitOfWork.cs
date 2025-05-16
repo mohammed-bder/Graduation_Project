@@ -2,6 +2,7 @@
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,5 +48,9 @@ namespace Graduation_Project.Repository
         public async ValueTask DisposeAsync()
             => await dbcontext.DisposeAsync();
 
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await dbcontext.Database.BeginTransactionAsync();
+        }
     }
 }

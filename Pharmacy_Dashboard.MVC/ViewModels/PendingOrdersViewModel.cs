@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Graduation_Project.Core.Enums;
 
 namespace Pharmacy_Dashboard.MVC.ViewModels
 {
@@ -8,7 +9,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModels
         public string? DeliveryAddress { get; set; }
 
         public decimal TotalPrice { get; set; }
-        public string Status { get; set; } // e.g., "Delivered", "Cancelled", "Pending"
+        public OrderStatus Status { get; set; } // e.g., "Delivered", "Cancelled", "Pending"
 
 
     }

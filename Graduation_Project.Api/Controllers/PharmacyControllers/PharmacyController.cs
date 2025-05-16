@@ -18,6 +18,11 @@ using System.Runtime.CompilerServices;
 using AutoMapper;
 using System.Collections.Generic;
 using Graduation_Project.Core.Constants;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Graduation_Project.Repository.Identity;
+using System.Collections.ObjectModel;
 
 namespace Graduation_Project.Api.Controllers.PharmacyControllers
 {
@@ -36,7 +41,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             _pharmacyService = pharmacyService;
         }
 
-        [HttpGet("Find-Nearest-Pharmacies")]
+        [HttpPost("Find-Nearest-Pharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> FindNearestPharmacies([FromBody] PatientLocationWithMedicinesDto patientLocationWithMedicinesDto)
         {
             // Find Pharmacies That Contains the medicines 
@@ -76,7 +81,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         }
 
         /********************************************* Get Near By Pharmacis by patient long ,lat  *********************************************/
-        [HttpGet("NearByPharmacies")]
+        [HttpPost("NearByPharmacies")]
         public async Task<ActionResult<List<PharmacyCardDTO>>> GetNearByPharmacis([FromBody] LocationDTO locationDTO)
         {
             const double maxDistance = 10;
@@ -100,6 +105,54 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             return Ok(pharmacyCards);
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpPost("Add-Order")]
+        public async Task<ActionResult> AddOrder([FromBody] OrderDto orderDto)
+        {
+            if (orderDto.MedicinesDictionary == null || !orderDto.MedicinesDictionary.Any())
+            {
+                return BadRequest("At least one medicine must be provided.");
+            }
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var order = new PharmacyOrder()
+                {
+                    PharmacyId = orderDto.PharmacyId,
+                    PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId)),
+                    Status = OrderStatus.Pending,
+                    OrderDate = DateTime.Now,
+                    //MedicinePharmacyOrders = medicinePharmacyOrder
+                };
+
+                var newOrder = await _unitOfWork.Repository<PharmacyOrder>().AddWithSaveAsync(order);
+
+                var medicinePharmacyOrders = new Collection<MedicinePharmacyOrder>();
+                foreach (var item in orderDto.MedicinesDictionary)
+                {
+                    medicinePharmacyOrders.Add(new MedicinePharmacyOrder()
+                    {
+                        MedicineId = item.Key,
+                        PharmacyOrderId = newOrder.Id,
+                        Quantity = item.Value,
+                    });
+                }
+
+                await _unitOfWork.Repository<MedicinePharmacyOrder>().AddRangeAsync(medicinePharmacyOrders);
+                await _unitOfWork.Repository<MedicinePharmacyOrder>().SaveAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status201Created, "Created Successfully"));
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "An error occurred while creating the order.");
+            }
+
+        }
     }
 }
 

@@ -1,9 +1,11 @@
-﻿using Graduation_Project.Core;
+﻿using AutoMapper;
+using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;
 using Graduation_Project.Service;
 using Microsoft.AspNetCore.Mvc;
+using Pharmacy_Dashboard.MVC.helper;
 
 namespace Pharmacy_Dashboard.MVC.Extensions
 {
@@ -22,7 +24,8 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             //unitOfWork replaces GenericRepository
             //this line is equivalent to the following line
-
+            /****************************** AutoMapper Service ********************************/
+            services.AddAutoMapper(typeof(MappingProfiles));
             //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

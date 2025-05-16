@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,8 @@ namespace Graduation_Project.Core
 
         bool HasChanges();
         Task<int> CompleteAsync();
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
+
     }
 }
