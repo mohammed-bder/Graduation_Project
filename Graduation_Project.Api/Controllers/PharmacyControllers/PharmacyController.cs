@@ -200,7 +200,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             catch (Exception)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, "An error occurred while creating the order.");
+                return BadRequest(new ApiResponse(500, "An error occurred while creating the order."));
             }
 
         }

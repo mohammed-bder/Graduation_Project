@@ -3,7 +3,6 @@
     public class PharmacyOrder : BaseEntity
     {
         public OrderStatus Status { get; set; }
-        public string? PrescriptionPictureUrl { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliverDate { get; set; }
         public decimal TotalPrice { get; set; }
