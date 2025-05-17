@@ -264,9 +264,11 @@ namespace Graduation_Project.APIs.Helpers
                     ? null
                     : src.pharmacy.pharmacyContacts.Select(p => new PharmacyContactReturnDTO { PhoneNumber = p.PhoneNumber })));
 
-            CreateMap<MedicinePrescription, MedicineDTO>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Medicine.Name_en));
+            CreateMap<MedicinePrescription, SearchMedicinesResponseDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.MedicineId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Medicine.Name_en))
+                .ForMember(dest => dest.DosageForm, opt => opt.MapFrom(src => src.Medicine.DosageForm))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Medicine.Price));
 
             /****************************************** Order ******************************************/
             CreateMap<Pharmacy, OrderViewDTO>()
