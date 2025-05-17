@@ -1,4 +1,5 @@
-﻿using Graduation_Project.Core;
+﻿using AutoMapper;
+using Graduation_Project.Core;
 using Graduation_Project.Core.IRepositories;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Repository;

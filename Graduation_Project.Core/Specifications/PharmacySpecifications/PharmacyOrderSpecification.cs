@@ -10,7 +10,7 @@ namespace Graduation_Project.Core.Specifications.PharmacySpecifications
     {
 
         public PharmacyOrderSpecification(int pharmacyID , bool isOnlyPending = false) 
-            : base( po => po.PharmacyId == pharmacyID && (!isOnlyPending || po.Status == "Pending"))
+            : base( po => po.PharmacyId == pharmacyID && (!isOnlyPending || po.Status == OrderStatus.Pending))
         {
             Includes.Add(po => po.Patient);
         }
