@@ -6,6 +6,7 @@ using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Models.SendingEmail;
 using Graduation_Project.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.Helpers;
@@ -20,6 +21,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         #region Allow Dependancy Injection
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IAuthService _authServices;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
@@ -29,6 +31,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         public AccountController(
             UserManager<AppUser> userManager ,
             SignInManager<AppUser> signInManager ,
+            IAuthService authServices,
             IUnitOfWork unitOfWork ,
             IMapper mapper ,
             IUserService userService ,
@@ -37,6 +40,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this._authServices = authServices;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userService = userService;
@@ -224,7 +228,13 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     {
                         var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);
                         if(result.Succeeded)
+                        {
+
+                            var token =  await _authServices.CreateTokenAsync(user, _userManager);
+                            HttpContext.Session.SetString("JWTToken", token);
+
                             return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
 
