@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using System.Numerics;
 using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.PatientControllers
@@ -25,14 +26,20 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPatientService _patientService;
+        private readonly INotificationService _notificationService;
 
-        public MedicalHistoryController(IUnitOfWork unitOfWork , IMapper mapper , UserManager<AppUser> userManager , IUserService userService ,IFileUploadService fileUploadService)
+        public MedicalHistoryController(IUnitOfWork unitOfWork , IMapper mapper , UserManager<AppUser> userManager 
+                                        , IUserService userService ,IFileUploadService fileUploadService,IPatientService patientService
+                                        , INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _userService = userService;
             _fileUploadService = fileUploadService;
+            _patientService = patientService;
+            _notificationService = notificationService;
         }
 
         /****************************************** Get All Medical History and Categories for Current User ******************************************/
@@ -96,6 +103,10 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 {
                     return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to add Medical History"));
                 }
+                // Update Points
+                await _patientService.UpdatePoints(patientId, Points.MedicalHistoryAdded);
+                // push notifications
+                await _notificationService.SendNotificationAsync(patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
                 return Ok(_mapper.Map<MedicalHistory, MedicalHistoryFormDto>(medicalHistory));
             }
             catch (Exception ex)
@@ -161,7 +172,8 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
         [HttpDelete("MedicalHistory/{Id:int}")]
         public async Task<ActionResult> DeleteMedicalHistory(int Id)
         {
-            var medicalHistory = await _unitOfWork.Repository<MedicalHistory>().GetAsync(Id);
+            var specs = new MedicalHistorySpecification(Id);
+            var medicalHistory = await _unitOfWork.Repository<MedicalHistory>().GetWithSpecsAsync(specs);
             if (medicalHistory is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Medical History Not Found"));
 
@@ -173,6 +185,11 @@ namespace Graduation_Project.Api.Controllers.PatientControllers
                 {
                     return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Failed to delete Medical History"));
                 }
+                // Update Points
+                await _patientService.UpdatePoints(medicalHistory.PatientId, Points.MedicalHistoryAdded);
+                // push notifications
+                await _notificationService.SendNotificationAsync(medicalHistory.Patient.ApplicationUserId, $"{Points.CompletedAppointment} Points Removed", "Removed Points");
+
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Medical History Deleted Successfully"));
             }
             catch (Exception ex)
