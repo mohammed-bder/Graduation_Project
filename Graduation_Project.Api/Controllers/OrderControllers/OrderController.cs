@@ -26,7 +26,7 @@ namespace Graduation_Project.Api.Controllers.OrderControllers
         /************************** Get Order View (Pharmacy info && Patient Info) **************************/
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("OrderView/{pharmacyId:int}")]
-        public async Task<ActionResult<OrderViewDTO>> GetOrderView([FromQuery]int pharmacyId)
+        public async Task<ActionResult<OrderViewDTO>> GetOrderView(int pharmacyId)
         {
             // Get Patient id 
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));

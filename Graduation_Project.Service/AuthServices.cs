@@ -6,6 +6,7 @@ using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Patients;
+using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -70,7 +71,7 @@ namespace Graduation_Project.Service
                     var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
                     authClams.Add(new Claim(Identifiers.PatientId, patient.Id.ToString()));
                     break;
-
+                
                 default:
                     break;
             }
