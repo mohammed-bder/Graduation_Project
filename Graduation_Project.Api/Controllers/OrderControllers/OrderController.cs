@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Graduation_Project.Api.DTO.Orders;
+using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
@@ -8,6 +9,7 @@ using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.ObjectModel;
 using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.OrderControllers
@@ -52,6 +54,58 @@ namespace Graduation_Project.Api.Controllers.OrderControllers
             orderViewResponse.PatientAddress = patient.Address;
 
             return Ok(orderViewResponse);
+        }
+
+
+        /********************************************* Add New Order *********************************************/
+
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
+        [HttpPost("Add-Order")]
+        public async Task<ActionResult> AddOrder([FromBody] OrderDto orderDto)
+        {
+            if (orderDto.MedicinesDictionary == null || !orderDto.MedicinesDictionary.Any())
+            {
+                return BadRequest("At least one medicine must be provided.");
+            }
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var order = new PharmacyOrder()
+                {
+                    PharmacyId = orderDto.PharmacyId,
+                    PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId)),
+                    Status = OrderStatus.Pending,
+                    OrderDate = DateTime.Now,
+                    //MedicinePharmacyOrders = medicinePharmacyOrder
+                };
+
+                var newOrder = await _unitOfWork.Repository<PharmacyOrder>().AddWithSaveAsync(order);
+
+                var medicinePharmacyOrders = new Collection<MedicinePharmacyOrder>();
+                foreach (var item in orderDto.MedicinesDictionary)
+                {
+                    medicinePharmacyOrders.Add(new MedicinePharmacyOrder()
+                    {
+                        MedicineId = item.Key,
+                        PharmacyOrderId = newOrder.Id,
+                        Quantity = item.Value,
+                    });
+                }
+
+                await _unitOfWork.Repository<MedicinePharmacyOrder>().AddRangeAsync(medicinePharmacyOrders);
+                await _unitOfWork.Repository<MedicinePharmacyOrder>().SaveAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status201Created, "Created Successfully"));
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(new ApiResponse(500, "An error occurred while creating the order."));
+            }
+
         }
     }
 }
