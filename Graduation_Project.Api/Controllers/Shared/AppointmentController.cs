@@ -15,6 +15,7 @@ using Graduation_Project.Core.Specifications.WorkScheduleSpecs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace Graduation_Project.Api.Controllers.Shared
@@ -31,6 +32,38 @@ namespace Graduation_Project.Api.Controllers.Shared
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
+        //[HttpGet("available-slots/{doctorId:int}")]
+        //public async Task<ActionResult<Dictionary<DateOnly, List<TimeOnly>>>> GetAvailableSlots(int doctorId)
+        //{
+        //    try
+        //    {
+        //        // Step 1: Retrieve doctor and check existence
+        //        var doctor = await _unitOfWork.Repository<Doctor>()
+        //            .GetWithSpecsAsync(new DoctorWithWorkScheduleSpecifications(doctorId));
+        //        if (doctor == null)
+        //        {
+        //            return NotFound(new ApiResponse(404, "Doctor not found"));
+        //        }
+
+        //        // Step 4: Get booked appointments for the selected week
+        //        var result = await _appointmentService.GetAvailableSlotsAsync(doctor);
+
+        //        if (!result.IsSuccess)
+        //            return NotFound(new ApiResponse(404, result.ErrorMessage));
+
+        //        var formattedResult = result.Data.ToDictionary(
+        //            kvp => kvp.Key.ToString("yyyy-MM-dd"),
+        //            kvp => kvp.Value.Select(t => t.ToString("hh:mm tt")).ToList()
+        //        );
+        //        return Ok(formattedResult);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ApiResponse(400, $"Error: {ex.Message}"));
+        //    }
+        //}
 
         [HttpGet("available-slots/{doctorId:int}")]
         public async Task<ActionResult<Dictionary<DateOnly, List<TimeOnly>>>> GetAvailableSlots(int doctorId)
@@ -53,7 +86,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
                 var formattedResult = result.Data.ToDictionary(
                     kvp => kvp.Key.ToString("yyyy-MM-dd"),
-                    kvp => kvp.Value.Select(t => t.ToString("hh:mm tt")).ToList()
+                    kvp => kvp.Value.Select(t => new { time = t.Time.ToString("hh:mm tt"), t.IsAvailable }).ToList()
                 );
                 return Ok(formattedResult);
             }
@@ -64,10 +97,135 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
         }
 
+        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        //[HttpPost("book")]
+        //public async Task<ActionResult> BookAppointment([FromBody] BookAppointmentDto request)
+        //{
+        //    // 1️⃣ Validate Doctor Exists
+        //    var doctor = await _unitOfWork.Repository<Doctor>()
+        //        .GetWithSpecsAsync(new DoctorWithWorkScheduleSpecifications(request.DoctorId));
+        //    if (doctor == null)
+        //        return NotFound(new ApiResponse(404, "Doctor not found"));
+
+        //    // 2️⃣ Patient Exists
+        //    var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
+        //    var patient = await _unitOfWork.Repository<Patient>().GetAsync(PatientId);
+
+        //    // All of the upcoming code should be a common service
+        //    var dpSpec = new DoctorPolicySpecifications(request.DoctorId);
+        //    var doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpSpec);
+
+        //    // If no custom policies exist, return the default policy
+        //    if (!doctorPolicies.Any())
+        //    {
+        //        var dpfSpec = new DefaultDoctorPolicySpecifications();
+        //        doctorPolicies = await _unitOfWork.Repository<DoctorPolicy>().GetAllWithSpecAsync(dpfSpec);
+
+        //        if (doctorPolicies == null || !doctorPolicies.Any())
+        //        {
+        //            // Handle missing policy gracefully
+        //            return NotFound(new ApiResponse(404, "Default Doctor's policy not found"));
+        //        }
+        //    }
+        //    // This is either the default or the latest custom
+        //    var latestPolicy = doctorPolicies.OrderByDescending(p => p.CreatedAt).First();
+        //    // End of service
+
+        //    // 3️⃣ Check if the doctor is available on the given day
+        //    var workSchedules = doctor.WorkSchedules.Where(ws => ws.Day == request.AppointmentDate.DayOfWeek);
+        //    if (!workSchedules.Any())
+        //        return NotFound(new ApiResponse(404, "Doctor doesn't work that day")); // Doctor doesn't work that day
+
+        //    // 4️⃣ Check if the selected time falls within any shift
+        //    bool isTimeValid = workSchedules.Any(ws => request.AppointmentTime >= ws.StartTime && request.AppointmentTime < ws.EndTime);
+        //    if (!isTimeValid)
+        //        return NotFound(new ApiResponse(404, "Time is outside of work schedule")); // Time is outside of work schedule
+
+        //    // Step 5: Check if the appointment is in the generated slots
+        //    var availableSlotsResult = await _appointmentService.GetAvailableSlotsAsync(doctor);
+
+        //    // Check if the result was successful.
+        //    if (!availableSlotsResult.IsSuccess)
+        //    {
+        //        return NotFound(new ApiResponse(404, availableSlotsResult.ErrorMessage));
+        //    }
+
+        //    // Check if the doctor has work schedules (to ensure slots are generated).
+        //    if (!availableSlotsResult.Data.Any())
+        //    {
+        //        return NotFound(new ApiResponse(404, "No available slots for the doctor To Book."));
+        //    }
+
+        //    // get appointments for the same doctor and patient today
+        //    var appointmentSpec = new AppointmentByPatientDoctorDateSpec(PatientId, request.DoctorId, request.AppointmentDate);
+        //    var existingAppointmentForPatient = await _unitOfWork.Repository<Appointment>().GetWithSpecsAsync(appointmentSpec);
+        //    // ignore if cancelled
+
+        //    if (existingAppointmentForPatient is not null &&
+        //        (existingAppointmentForPatient.Status == AppointmentStatus.Confirmed || existingAppointmentForPatient.Status == AppointmentStatus.Pending))
+        //    {
+        //        return BadRequest(new ApiResponse(400, "You already have an appointment with this doctor on the same day."));
+        //    }
+
+        //    // Step 2: Check if the selected time is available
+        //    var availableSlots = availableSlotsResult.Data.TryGetValue(request.AppointmentDate, out var daySlots)
+        //             && daySlots.Any(slot => slot == request.AppointmentTime);
+
+        //    if (!availableSlots)
+        //    {
+        //        return BadRequest(new ApiResponse(400, "The appointment time is not available."));
+        //    }
+
+        //    // Apply policy checks such as prepayment, cancellation window, etc.
+
+        //    // Step 7: Create and Save Appointment
+
+        //    var appointment = _mapper.Map<BookAppointmentDto, Appointment>(request);
+        //    appointment.RescheduleCount = 0;
+        //    appointment.PolicyId = latestPolicy.Id;
+        //    appointment.PatientId = PatientId;
+
+        //    // Check if payment Service is done
+        //    var payed = true;
+        //    if (_appointmentService.CheckIfPatientPayedVisita(patient, payed))
+        //    {
+        //        // Assume that patient payed so the Confirmation is Done
+        //        appointment.Status = AppointmentStatus.Confirmed;
+        //    }
+        //    else
+        //    {
+        //        // Check if not paying is allowed
+        //        if (latestPolicy.RequirePrePayment)
+        //        {
+        //            return NotFound(new ApiResponse(404, "Patient Need to Pay"));
+        //        }
+        //        else
+        //        {
+        //            appointment.Status = AppointmentStatus.Pending; // Assuming the doctor approves first
+        //        }
+        //    }
+
+        //    await _unitOfWork.Repository<Appointment>().AddAsync(appointment);
+        //    var result = await _unitOfWork.CompleteAsync();
+        //    if (result == 0)
+        //    {
+        //        return BadRequest(new ApiResponse(400));
+        //    }
+
+        //    return Ok(new ApiResponse(200, "Appointment booked successfully!"));
+        //}
+
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpPost("book")]
         public async Task<ActionResult> BookAppointment([FromBody] BookAppointmentDto request)
         {
+            if (!DateTime.TryParseExact(request.AppointmentTime, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime))
+            {
+                return BadRequest(new ApiResponse(400, "Invalid time format. Expected format: hh:mm AM/PM"));
+            }
+
+            var parsedTime = TimeOnly.FromDateTime(parsedDateTime);
+
             // 1️⃣ Validate Doctor Exists
             var doctor = await _unitOfWork.Repository<Doctor>()
                 .GetWithSpecsAsync(new DoctorWithWorkScheduleSpecifications(request.DoctorId));
@@ -104,7 +262,7 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return NotFound(new ApiResponse(404, "Doctor doesn't work that day")); // Doctor doesn't work that day
 
             // 4️⃣ Check if the selected time falls within any shift
-            bool isTimeValid = workSchedules.Any(ws => request.AppointmentTime >= ws.StartTime && request.AppointmentTime < ws.EndTime);
+            bool isTimeValid = workSchedules.Any(ws => parsedTime >= ws.StartTime && parsedTime < ws.EndTime);
             if (!isTimeValid)
                 return NotFound(new ApiResponse(404, "Time is outside of work schedule")); // Time is outside of work schedule
 
@@ -117,10 +275,13 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return NotFound(new ApiResponse(404, availableSlotsResult.ErrorMessage));
             }
 
-            // Check if the doctor has work schedules (to ensure slots are generated).
-            if (!availableSlotsResult.Data.Any())
+            // Step 2: Check if the selected time is available
+            var isSlotAvailable = availableSlotsResult.Data.TryGetValue(request.AppointmentDate, out var daySlots)
+                && daySlots.Any(slot => slot.Time == parsedTime && slot.IsAvailable);
+
+            if (!isSlotAvailable)
             {
-                return NotFound(new ApiResponse(404, "No available slots for the doctor To Book."));
+                return BadRequest(new ApiResponse(400, "The appointment time is not available."));
             }
 
             // get appointments for the same doctor and patient today
@@ -134,20 +295,12 @@ namespace Graduation_Project.Api.Controllers.Shared
                 return BadRequest(new ApiResponse(400, "You already have an appointment with this doctor on the same day."));
             }
 
-            // Step 2: Check if the selected time is available
-            var availableSlots = availableSlotsResult.Data.TryGetValue(request.AppointmentDate, out var daySlots)
-                     && daySlots.Any(slot => slot == request.AppointmentTime);
-
-            if (!availableSlots)
-            {
-                return BadRequest(new ApiResponse(400, "The appointment time is not available."));
-            }
-
             // Apply policy checks such as prepayment, cancellation window, etc.
 
             // Step 7: Create and Save Appointment
 
             var appointment = _mapper.Map<BookAppointmentDto, Appointment>(request);
+            appointment.AppointmentTime = parsedTime;
             appointment.RescheduleCount = 0;
             appointment.PolicyId = latestPolicy.Id;
             appointment.PatientId = PatientId;
