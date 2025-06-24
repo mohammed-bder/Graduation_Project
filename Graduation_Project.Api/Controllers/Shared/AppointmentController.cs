@@ -235,6 +235,8 @@ namespace Graduation_Project.Api.Controllers.Shared
             // 2️⃣ Patient Exists
             var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
             var patient = await _unitOfWork.Repository<Patient>().GetAsync(PatientId);
+            if (patient == null)
+                return NotFound(new ApiResponse(404, "Patient not found"));
 
             // All of the upcoming code should be a common service
             var dpSpec = new DoctorPolicySpecifications(request.DoctorId);

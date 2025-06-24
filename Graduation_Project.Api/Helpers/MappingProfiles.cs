@@ -224,7 +224,7 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<ScheduleExceptionFromUserDto, ScheduleException>();
             CreateMap<ScheduleException, ScheduleExceptionFromDatabaseDto>();
 
-            /****************************************** Appointment ******************************************
+            /****************************************** Appointment ******************************************/
             CreateMap<BookAppointmentDto, Appointment>()
                 .ForMember(dest => dest.AppointmentTime, opt => opt.Ignore()); ;
 
