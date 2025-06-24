@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
-    var message = TempData["Success"] as string ?? null;
 }
 
 <form asp-action="Login">
@@ -22,12 +21,15 @@
 
             <div asp-validation-summary="All"></div>
 
-            @if (message != null)
+            @if (TempData["Success"] != null)
             {
-                <div class="alert alert-success text-center">
+                <div class="alert alert-success alert-dismissible fade show text-center shadow-sm py-3 px-4 rounded-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
                     @TempData["Success"]
+                    <button type="button" class="btn-close position-absolute end-0 me-3 mt-1" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
+
             <div class="input-group">
                 <label>Email</label>
                 <input asp-for="Email" class="form-control" />

@@ -15,7 +15,7 @@ namespace Graduation_Project.Api.Helpers
 
         public string Resolve(TSource source, TDestination destination, string destMember, ResolutionContext context)
         {
-            var propertyNames = new[] { "PictureUrl", "MedicalImage" };
+            var propertyNames = new[] { "PictureUrl", "MedicalImage" , "ProfilePictureUrl" };
             var pictureUrl = GetFirstValidImageUrl(source, propertyNames);
             return pictureUrl;
 

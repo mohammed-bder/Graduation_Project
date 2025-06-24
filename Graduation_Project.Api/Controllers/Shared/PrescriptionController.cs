@@ -13,13 +13,16 @@ using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
 using Graduation_Project.Core.Specifications.PrescriptionSpecifications;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using System.Security.Claims;
 using Talabat.API.Dtos.Account;
+
 
 namespace Graduation_Project.Api.Controllers.Shared
 {
@@ -29,13 +32,17 @@ namespace Graduation_Project.Api.Controllers.Shared
         private readonly IMapper _mapper;
         private readonly INotificationService _notificationService;
         private readonly IUserService _userService;
+        private readonly IPatientService _patientService;
 
-        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper,INotificationService notificationService, IUserService userService)
+        public PrescriptionController(IUnitOfWork unitOfWork, IMapper mapper
+                                      ,INotificationService notificationService, IUserService userService
+                                      ,IPatientService patientService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _notificationService = notificationService;
             _userService = userService;
+            _patientService = patientService;
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
@@ -103,8 +110,12 @@ namespace Graduation_Project.Api.Controllers.Shared
                 }
 
                 var electornicPrescriptionResponse = _mapper.Map<Prescription, PrescriptionResponseDTO>(createdPrescription);
-                // push notification
+                // Update Points
+                await _patientService.UpdatePoints(prescriptionFromUser.PatientId, Points.CompletedAppointment);
+                // push notifications
                 await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New Prescription From Doctor {doctor.FirstName}", "New Prescription");
+                await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
+
                 return Ok(electornicPrescriptionResponse);
             }
             catch(Exception ex)
