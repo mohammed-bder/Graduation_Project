@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core.Models.Pharmacies;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
+using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels;
 using Pharmacy_Dashboard.MVC.ViewModel.Stock;
-using Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels;
 
 namespace Pharmacy_Dashboard.MVC.Helpers
 {

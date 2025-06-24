@@ -3,6 +3,7 @@ using Graduation_Project.Api.DTO;
 using Graduation_Project.Api.DTO.Clinics;
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.FeedBacks;
+using Graduation_Project.Api.DTO.Notification;
 using Graduation_Project.Api.DTO.Orders;
 using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.DTO.Pharmacies;
@@ -277,6 +278,13 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.PharmacyPhoneNumber, opt => opt.MapFrom(src => src.pharmacyContacts.Select(p => p.PhoneNumber).ToList()))
                 .ForMember(dest => dest.PharamcyPictureUrl, opt => opt.MapFrom<PictureUrlResolver<Pharmacy, OrderViewDTO>>());
 
+
+            /****************************************** Notification ******************************************/
+            CreateMap<NotificationRecipient, NotificationDto>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Notification.Title))
+                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Notification.Message))
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.Notification.CreatedDate))
+                .ForMember(dest => dest.IsRead, opt => opt.MapFrom(src => src.IsRead));
 
         }
     }

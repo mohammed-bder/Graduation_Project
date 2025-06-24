@@ -1,6 +1,6 @@
 ﻿using Graduation_Project.Core.Enums;
 
-namespace Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels
+namespace Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels
 {
     public class OrderFilter
     {
