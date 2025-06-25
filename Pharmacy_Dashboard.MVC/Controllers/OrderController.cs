@@ -8,8 +8,10 @@ using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Graduation_Project.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels;
+using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -18,20 +20,23 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPatientService _patientService;
-        private readonly INotificationService _notificationService;
+        //private readonly INotificationService _notificationService;
 
-        public OrderController(IUnitOfWork unitOfWork, IMapper mapper, IPatientService patientService,INotificationService notificationService)
+        public OrderController(IUnitOfWork unitOfWork, IMapper mapper, IPatientService patientService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _patientService = patientService;
-            _notificationService = notificationService;
+            //_notificationService = notificationService;
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         public async Task<IActionResult> Index(OrderPageParams orderPageParams)/*(int pageNumber = 1, int pharmacyId = 1, OrderStatus? orderStatusFilter = null, DateTime? dateFilter = null)*/
         {
             // TODO : get registerd pharmacy Id
+            var pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId));
+
             if (!ModelState.IsValid)
             {
                 return View(new OrdersListViewModel
@@ -44,7 +49,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             }
 
             int pageSize = 20;
-            var ordersSpecs = new OrdersSpecifications(orderPageParams.pharmacyId, orderPageParams.pageNumber, pageSize, orderPageParams.orderStatusFilter, orderPageParams.dateFilter);
+            var ordersSpecs = new OrdersSpecifications(pharmacyId, orderPageParams.pageNumber, pageSize, orderPageParams.orderStatusFilter, orderPageParams.dateFilter);
             var orders = await _unitOfWork.Repository<PharmacyOrder>().GetAllWithSpecAsync(ordersSpecs);
             var count = await _unitOfWork.Repository<PharmacyOrder>().GetCountAsync(new OrdersSpecifications(1, orderPageParams.orderStatusFilter, orderPageParams.dateFilter));
 
@@ -117,7 +122,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 // Increase Patient Points
                 await _patientService.UpdatePoints(order.PatientId, Points.CompletedOrder);
                 // push notifications
-                await _notificationService.SendNotificationAsync(order.Patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
+                //await _notificationService.SendNotificationAsync(order.Patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
 
             }
 

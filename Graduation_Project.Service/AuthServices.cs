@@ -82,7 +82,7 @@ namespace Graduation_Project.Service
                     //Get Pharmacist From Pharmacist Table in business DB
                     var pharmacistSpecs = new PharmacistByAppUserIdSpecs(user.Id);
                     var pharmacist = await _unitOfWork.Repository<Pharmacy>().GetWithSpecsAsync(pharmacistSpecs);
-                    authClams.Add(new Claim(Identifiers.PharmacistId, pharmacist.Id.ToString()));
+                    authClams.Add(new Claim(Identifiers.PharmacyId, pharmacist.Id.ToString()));
                     break;
 
 

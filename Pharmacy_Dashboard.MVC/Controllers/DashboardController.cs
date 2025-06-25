@@ -40,7 +40,8 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         {
             // TODO: get pharmacy id of registered pharmacy
 
-            var pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacistId));
+            var pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId));
+
             //var pharmacyId = 1;
 
             var _orderRepo = _unitOfWork.Repository<PharmacyOrder>();

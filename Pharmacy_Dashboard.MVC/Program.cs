@@ -25,27 +25,27 @@ namespace Pharmacy_Dashboard.MVC
 
             /****************************** Connection String ********************************/
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-
-
-            /****************************** Global Connection String ********************************/
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             //});
 
             //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             //});
+
+
+            /****************************** Global Connection String ********************************/
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            });
+
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            });
 
             #endregion
 
@@ -164,7 +164,7 @@ namespace Pharmacy_Dashboard.MVC
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}");
 
             #endregion
 

@@ -233,7 +233,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                             var token =  await _authServices.CreateTokenAsync(user, _userManager);
                             HttpContext.Session.SetString("JWTToken", token);
 
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Index", "Dashboard");
                         }
                     }
                 }
