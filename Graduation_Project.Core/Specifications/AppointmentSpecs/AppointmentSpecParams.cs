@@ -8,11 +8,6 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
 {
     public class AppointmentSpecParams
     {
-        public AppointmentSpecParams(string? s, int id)
-        {
-            search = s ?? string.Empty;
-            Id = id;
-        }
         private string? search;
         public int Id { get; set; }
         public string? Search

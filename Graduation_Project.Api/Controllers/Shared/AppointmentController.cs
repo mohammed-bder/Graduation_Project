@@ -421,7 +421,14 @@ namespace Graduation_Project.Api.Controllers.Shared
         {
             // get doctor id
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
-            var appointmentSpec = new AppointmentsForDoctorSearchSpecifications(new AppointmentSpecParams(name, doctorId));
+            var appointmentSpec = new AppointmentsForDoctorSearchSpecifications
+            (
+                new AppointmentSpecParams
+                {
+                    Id = doctorId,
+                    Search = name // This automatically sets FirstNameSearch and LastNameSearch
+                }
+            );
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
             if (appointments.IsNullOrEmpty())
