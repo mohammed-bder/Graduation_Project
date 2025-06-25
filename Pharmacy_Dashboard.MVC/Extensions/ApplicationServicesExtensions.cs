@@ -32,6 +32,10 @@ namespace Pharmacy_Dashboard.MVC.Extensions
 
             services.AddScoped(typeof(IFileUploadService), typeof(FileUploadService));
 
+            services.AddScoped<INotificationService,NotificationService>();
+
+            services.AddScoped<IFcmService, FcmNotificationService>();
+
             return services;
         }
     }
