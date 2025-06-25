@@ -55,6 +55,8 @@ namespace Pharmacy_Dashboard.MVC
 
             builder.Services.AddIdentityServices(builder.Configuration);
 
+            builder.Services.AddSignalR();
+
 
             builder.Services.AddSession(options =>
             {

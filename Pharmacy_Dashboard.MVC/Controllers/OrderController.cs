@@ -90,7 +90,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateOrder(UpdatedOrderParams updatedOrder)
         {
-            PharmacyOrder order = new PharmacyOrder();
+            PharmacyOrder? order = new PharmacyOrder();
 
             if (updatedOrder.OrderStatus == OrderStatus.Confirmed)
             {
@@ -118,6 +118,9 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     if (medicineStockDictionary.TryGetValue(medicinePharmacyOrder.MedicineId, out var pharmacyMedicineStock))
                         pharmacyMedicineStock.Quantity -= medicinePharmacyOrder.Quantity;
                 }
+
+                // Update Order Status
+                order.Status = OrderStatus.Completed;
 
                 // Increase Patient Points
                 await _patientService.UpdatePoints(order.PatientId, Points.CompletedOrder);
