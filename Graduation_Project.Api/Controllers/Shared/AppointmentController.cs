@@ -416,6 +416,38 @@ namespace Graduation_Project.Api.Controllers.Shared
         }
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("get-by-name")]
+        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetPatientAppointmentsAsync(string name)
+        {
+            // get doctor id
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            var appointmentSpec = new AppointmentsForDoctorSearchSpecifications(new AppointmentSpecParams(name, doctorId));
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
+
+            if (appointments.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404, "No appointments found for this Doctor."));
+            }
+
+            // Convert to DTOs for cleaner response
+            var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
+
+            var groupedAppointments = appointmentDtos
+            .GroupBy(a => a.AppointmentDate) // Group by date first
+            .ToDictionary(
+                g => g.Key, // Date as JSON key (yyyy-MM-dd)
+                g => g.GroupBy(a => a.AppointmentTime) // Then group by time
+                .ToDictionary(
+                    a => a.Key, // Time as JSON key (HH:mm:ss)
+                    a => a.First() // Use the first appointment in that time slot
+                )
+            );
+
+            return Ok(groupedAppointments);
+        }
+
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("get-todays-appointment")]
         public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetTodayAppointmentsAsync(DateOnly? month = null)
         {
