@@ -6,33 +6,221 @@
 }
 
 <div class="form-steps">
-    <!-- Left side (Sidebar) -->
+    <!-- Sidebar -->
     <div class="sidebar">
-        <img src="~/assets/images/avatar-placeholder.jpg" alt="Logo" class="logo" />
-        <div class="steps">
-            <div class="step active">Email Sent!</div>
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg" alt="Logo" class="logo" />
+        <h2 class="sidebar-title">Email Sent!</h2>
+        <p class="sidebar-desc">We’ve sent a password reset link to your email address.</p>
+        <div class="sidebar-divider"></div>
+        <ul class="sidebar-features">
+            <li><span class="sidebar-icon">🔒</span> Secure Recovery</li>
+            <li><span class="sidebar-icon">⚡</span> Fast Process</li>
+            <li><span class="sidebar-icon">💊</span> Pharmacy Tools</li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="mailto:support@pharmacy.com" class="sidebar-support">Need help?</a>
         </div>
     </div>
 
-    <!-- Right side (Form) -->
+    <!-- Form Panel -->
     <div class="right-panel text-center">
-        <h2>Check Your Email</h2>
-
+        <h2 class="header-txt">Check Your Email</h2>
         <p>@message</p>
 
-        <div class="mt-4 text-center">
-            <div class="mb-3">
-                <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="btn-custom btn-secondary">Open Your Inbox</a>
-            </div>
-
-            <div style="margin-top: 40px !important" >
-                <a asp-action="Login" class="btn-custom btn-primary">Back to Login</a>
+        <div class="action-row">
+            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="btn-custom btn-primary w-100 mb-3 open-inbox-btn">
+                <span class="material-icons" style="vertical-align:middle;margin-right:6px;">mail</span>
+                Open Your Inbox
+            </a>
+            <div class="links-row">
+                <a asp-action="Login" class="action-link">
+                    <span class="material-icons" style="font-size:1em;vertical-align:middle;">login</span>
+                    Back to Login
+                </a>
             </div>
         </div>
 
+        <div class="divider my-3"><span>or</span></div>
 
         <div class="mt-2">
-            <p>Didn't receive the email? <a asp-action="@resendAction">Try again</a></p>
+            <p>
+                Didn't receive the email?
+                <a asp-action="@resendAction" class="action-link">
+                    <span class="material-icons" style="font-size:1em;vertical-align:middle;">refresh</span>
+                    Try again
+                </a>
+            </p>
         </div>
     </div>
 </div>
+
+<style>
+.header-txt {
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar {
+    background: linear-gradient(135deg, #1e2a5a 80%, #3a4a8c 100%);
+    color: #fff;
+    padding: 40px 30px 30px 30px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-height: 600px;
+    box-shadow: 2px 0 16px rgba(30,42,90,0.08);
+}
+
+.sidebar .logo {
+    width: 150px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.sidebar-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.sidebar-desc {
+    font-size: 1.05rem;
+    color: #e0e6f7;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.sidebar-divider {
+    width: 60px;
+    height: 3px;
+    background: #0073ff;
+    border-radius: 2px;
+    margin: 0 auto 18px auto;
+}
+
+.sidebar-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    width: 100%;
+}
+
+.sidebar-features li {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: #c9d6ff;
+}
+
+.sidebar-icon {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.sidebar-support {
+    color: #b3c6ff;
+    font-size: 0.97rem;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.sidebar-support:hover {
+    color: #fff;
+}
+
+.action-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.btn-custom.btn-primary.w-100 {
+    width: 90% !important;
+    margin-bottom: 16px;
+}
+
+.links-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.97rem;
+}
+
+.open-inbox-btn {
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(90deg, #0073ff 60%, #1e90ff 100%);
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 2px 8px rgba(30,42,90,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.open-inbox-btn:hover, .open-inbox-btn:focus {
+    background: linear-gradient(90deg, #0056b3 60%, #0073ff 100%);
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(30,42,90,0.12);
+    text-decoration: none;
+}
+
+.action-link {
+    color: #1e90ff !important;
+    text-decoration: none;
+    transition: color 0.2s, text-decoration 0.2s;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-link:hover, .action-link:focus {
+    color: #0056b3 !important;
+    text-decoration: underline;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #bbb;
+    font-size: 1.1em;
+    user-select: none;
+    margin: 1.5rem 0;
+}
+
+.divider span {
+    background: #fff;
+    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.divider:before, .divider:after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #e0e6f7;
+    margin: 0 8px;
+}
+
+</style>
+
