@@ -5,6 +5,7 @@ using Graduation_Project.Api.ErrorHandling;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -71,6 +72,7 @@ namespace Graduation_Project.Api.Controllers.OrderControllers
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
+
                 var order = new PharmacyOrder()
                 {
                     PharmacyId = orderDto.PharmacyId,
@@ -82,6 +84,7 @@ namespace Graduation_Project.Api.Controllers.OrderControllers
 
                 var newOrder = await _unitOfWork.Repository<PharmacyOrder>().AddWithSaveAsync(order);
 
+                decimal? totalPrice = 0;
                 var medicinePharmacyOrders = new Collection<MedicinePharmacyOrder>();
                 foreach (var item in orderDto.MedicinesDictionary)
                 {
@@ -91,7 +94,14 @@ namespace Graduation_Project.Api.Controllers.OrderControllers
                         PharmacyOrderId = newOrder.Id,
                         Quantity = item.Value,
                     });
+
+                    totalPrice += _unitOfWork.Repository<Medicine>().GetByConditionAsync(m => m.Id == item.Key).Result?.Price * item.Value;
                 }
+
+                order.TotalPrice = totalPrice ?? 0;
+
+                _unitOfWork.Repository<PharmacyOrder>().Update(order);
+                await _unitOfWork.Repository<PharmacyOrder>().SaveAsync();
 
                 await _unitOfWork.Repository<MedicinePharmacyOrder>().AddRangeAsync(medicinePharmacyOrders);
                 await _unitOfWork.Repository<MedicinePharmacyOrder>().SaveAsync();

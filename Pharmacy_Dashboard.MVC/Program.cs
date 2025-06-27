@@ -20,27 +20,27 @@ namespace Pharmacy_Dashboard.MVC
 
             /****************************** Connection String ********************************/
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-
-
-            /****************************** Global Connection String ********************************/
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             //});
 
             //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             //});
+
+
+            /****************************** Global Connection String ********************************/
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            });
+
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            });
 
             #endregion
 
@@ -49,6 +49,8 @@ namespace Pharmacy_Dashboard.MVC
             builder.Services.AddApplicationServices();
 
             builder.Services.AddIdentityServices(builder.Configuration);
+
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 

@@ -1,5 +1,6 @@
 ﻿@using Graduation_Project.Core.Enums
-@model Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels.OrdersListViewModel
+@using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels
+@model OrdersListViewModel
 
 <div class="col-lg-12 mb-4">
     <div class="card h-100">
@@ -43,7 +44,7 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table">
                 <table class="table table-striped table-hover table-sm">
                     <thead class="table-light">
                         <tr>
@@ -142,7 +143,6 @@
         border-spacing: 0;
         table-layout: fixed;
         width: 100%;
-        overflow-x: auto;
     }
 
         .table thead {

@@ -7,6 +7,10 @@
     <ActiveDebugProfile>http</ActiveDebugProfile>
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
+<<<<<<< HEAD
     <NameOfLastUsedPublishProfile>E:\.NET Web Developer\Graduation Project\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy2.pubxml</NameOfLastUsedPublishProfile>
+=======
+    <NameOfLastUsedPublishProfile>E:\Projects\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy1.pubxml</NameOfLastUsedPublishProfile>
+>>>>>>> 91c61e85ea3dff19f7622a8a4081041fb4d335f2
   </PropertyGroup>
 </Project>
