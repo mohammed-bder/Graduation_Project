@@ -3,22 +3,56 @@
 @{
     ViewData["Title"] = "Edit Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var message = TempData["ProfileSaved"] as string ?? "Profile updated successfully!";
 }
 
 <!-- Include Leaflet CSS/JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Confirmation Modal -->
+@*
+        <div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmSaveModalLabel">Confirm Save</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to save the changes?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmSaveBtn">Yes, Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+*@
+
+ @if (message != null)
+ {
+     <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; min-width: 300px;"> 
+         <i class="bi bi-check-circle-fill me-2"></i>
+         @message 
+         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+     </div> 
+ }
+
+
+
+
+
 <div class="container mt-5">
     <div class="card shadow p-4">
         <h2 class="text-center mb-4">Edit Pharmacist Profile</h2>
-
         <!-- Profile Image -->
         <form id="profileForm" asp-action="EditProfile" method="post" enctype="multipart/form-data">
             <!-- Profile Image -->
             <div class="d-flex justify-content-center mb-4">
                 <div class="position-relative" style="width: 160px; height: 160px;">
-                    <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? Url.Content("https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500") : Model.PictureUrl)"
+                    <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? Url.Content("/assets/images/avatar-placeholder.jpg") : Model.PictureUrl)"
                          class="rounded-circle border border-3 shadow border-primary w-100 h-100"
                          alt="Profile" id="profileImage" style="object-fit: cover;">
 
@@ -91,16 +125,25 @@
     </div>
 </div>
 
+<script>
+    setTimeout(() => {
+        const alert = document.querySelector(".alert");
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 4000); // auto-close after 4 seconds
+</script>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById('profileImage').src = e.target.result;
+                    document.getElementById('profileImage').src = e.target.result ;
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -150,6 +193,8 @@
                     PhoneNumber: phoneNumber,
                     Id: id
                 });
+
+
             });
 
             // Manually update the form data with dynamic contacts
@@ -210,5 +255,18 @@
                 alert("Geolocation is not supported by this browser.");
             }
         }
+
+        // document.getElementById("profileForm").onsubmit = function (event) {
+        //     event.preventDefault();
+        //     var confirmModal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));
+        //     confirmModal.show();
+
+        //     // On confirm, submit the form
+        //     document.getElementById('confirmSaveBtn').onclick = function () {
+        //         confirmModal.hide();
+        //         document.getElementById("profileForm").submit();
+        //     };
+        // };
+
     </script>
 }

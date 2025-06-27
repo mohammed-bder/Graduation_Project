@@ -1,4 +1,4 @@
-﻿namespace Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels
+﻿namespace Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels
 {
     public class OrdersListViewModel
     {

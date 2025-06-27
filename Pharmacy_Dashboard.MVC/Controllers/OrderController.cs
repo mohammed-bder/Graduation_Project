@@ -1,10 +1,17 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.Enums;
+using Graduation_Project.Core.IServices;
+using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Pharmacies;
+using Graduation_Project.Core.Specifications.MedicineSpecifications;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
+using Graduation_Project.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels;
+using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels;
+using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -12,17 +19,24 @@ namespace Pharmacy_Dashboard.MVC.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPatientService _patientService;
+        //private readonly INotificationService _notificationService;
 
-        public OrderController(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderController(IUnitOfWork unitOfWork, IMapper mapper, IPatientService patientService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _patientService = patientService;
+            //_notificationService = notificationService;
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         public async Task<IActionResult> Index(OrderPageParams orderPageParams)/*(int pageNumber = 1, int pharmacyId = 1, OrderStatus? orderStatusFilter = null, DateTime? dateFilter = null)*/
         {
             // TODO : get registerd pharmacy Id
+            var pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId));
+
             if (!ModelState.IsValid)
             {
                 return View(new OrdersListViewModel
@@ -35,7 +49,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             }
 
             int pageSize = 20;
-            var ordersSpecs = new OrdersSpecifications(orderPageParams.pharmacyId, orderPageParams.pageNumber, pageSize, orderPageParams.orderStatusFilter, orderPageParams.dateFilter);
+            var ordersSpecs = new OrdersSpecifications(pharmacyId, orderPageParams.pageNumber, pageSize, orderPageParams.orderStatusFilter, orderPageParams.dateFilter);
             var orders = await _unitOfWork.Repository<PharmacyOrder>().GetAllWithSpecAsync(ordersSpecs);
             var count = await _unitOfWork.Repository<PharmacyOrder>().GetCountAsync(new OrdersSpecifications(1, orderPageParams.orderStatusFilter, orderPageParams.dateFilter));
 
@@ -76,28 +90,44 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateOrder(UpdatedOrderParams updatedOrder)
         {
-            var medicinesDic = new Dictionary<int, int>();
+            PharmacyOrder? order = new PharmacyOrder();
 
-            // load order from db 
-            var order = await _unitOfWork.Repository<PharmacyOrder>().GetAsync(updatedOrder.Id);
-
-            // update its status and delivery date
-            order.Status = updatedOrder.OrderStatus;
             if (updatedOrder.OrderStatus == OrderStatus.Confirmed)
-                order.DeliverDate = updatedOrder.DeliveryDate;
+            {
+                // load order from db 
+                order = await _unitOfWork.Repository<PharmacyOrder>().GetAsync(updatedOrder.Id);
 
-            // if status will be delivered
-            // Decrease the medicines from stock table 
+                // update its status and delivery date
+                order.Status = updatedOrder.OrderStatus;
+
+                order.DeliverDate = updatedOrder.DeliveryDate;
+            }
+
+            // if status will be delivered ==> Decrease the medicines from stock table 
             if (updatedOrder.OrderStatus == OrderStatus.Completed)
-                // get medicines,quantity from the order
-                foreach (var item in order.MedicinePharmacyOrders)
+            {
+                // get the order from db
+                var orderSpecs = new OrderWithMedicinesQuantitySpecs(updatedOrder.Id);
+                order = await _unitOfWork.Repository<PharmacyOrder>().GetWithSpecsAsync(orderSpecs);
+
+                var medicineStockDictionary = order.Pharmacy.pharmacyMedicineStocks.ToDictionary(p => p.MedicineId);
+
+                // get medicines,quantity from the order (MedicinePharmacyOrder Table)
+                foreach (var medicinePharmacyOrder in order.MedicinePharmacyOrders)
                 {
-                    medicinesDic.Add(item.MedicineId, item.Quantity);
+                    if (medicineStockDictionary.TryGetValue(medicinePharmacyOrder.MedicineId, out var pharmacyMedicineStock))
+                        pharmacyMedicineStock.Quantity -= medicinePharmacyOrder.Quantity;
                 }
 
-                // Decrease it from the stock
+                // Update Order Status
+                order.Status = OrderStatus.Completed;
 
+                // Increase Patient Points
+                await _patientService.UpdatePoints(order.PatientId, Points.CompletedOrder);
+                // push notifications
+                //await _notificationService.SendNotificationAsync(order.Patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
 
+            }
 
             // save it 
             _unitOfWork.Repository<PharmacyOrder>().Update(order);
