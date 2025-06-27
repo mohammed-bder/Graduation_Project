@@ -13,9 +13,9 @@ namespace Graduation_Project.Core.Specifications.PharmacySpecifications
         public StockForPharmacyWithMedicineSpecification(StockSpecParams specParams) 
             : base(pm => 
                 (pm.PharmacyId == specParams.pharmacyId)
-            &&
+                &&
                 (
-            string.IsNullOrEmpty(specParams.Search) ||
+                    string.IsNullOrEmpty(specParams.Search) ||
                     pm.Medicine.Name_en.ToLower().StartsWith(specParams.Search)
                 )
             )

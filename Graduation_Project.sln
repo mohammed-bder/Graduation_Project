@@ -11,11 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graduation_Project.Service"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graduation_Project.Api", "Graduation_Project.Api\Graduation_Project.Api.csproj", "{9497BCC5-3566-4B24-A5FC-B68B4D0A4EAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pharmacy_Dashboard.MVC", "Pharmacy_Dashboard.MVC\Pharmacy_Dashboard.MVC.csproj", "{BA5065F7-D331-4A38-B86D-1DEE870FD626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pharmacy_Dashboard.MVC", "Pharmacy_Dashboard.MVC\Pharmacy_Dashboard.MVC.csproj", "{BA5065F7-D331-4A38-B86D-1DEE870FD626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Secretary_Dashboard.MVC", "Secretary_Dashboard.MVC\Secretary_Dashboard.MVC.csproj", "{319E14EB-7979-4D17-95BA-BA27D77B69F3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin_Dashboard.MVC", "Admin_Dashboard.MVC\Admin_Dashboard.MVC.csproj", "{3D387890-3BC1-4ECF-A985-908016192DBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Secretary_Dashboard.MVC", "Secretary_Dashboard.MVC\Secretary_Dashboard.MVC.csproj", "{319E14EB-7979-4D17-95BA-BA27D77B69F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +45,6 @@ Global
 		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{319E14EB-7979-4D17-95BA-BA27D77B69F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D387890-3BC1-4ECF-A985-908016192DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D387890-3BC1-4ECF-A985-908016192DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D387890-3BC1-4ECF-A985-908016192DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D387890-3BC1-4ECF-A985-908016192DBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

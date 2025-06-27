@@ -64,6 +64,7 @@ namespace Pharmacy_Dashboard.MVC
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
