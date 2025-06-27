@@ -19,13 +19,15 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService)
+        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService , SignInManager<AppUser> signInManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            this._signInManager = signInManager;
         }
 
         /****************************************** Edit Profile Info ******************************************/
@@ -134,11 +136,29 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     ModelState.AddModelError(string.Empty, "Failed to update profile. Please try again.");
                     return View(model);
                 }
-
+                
                 TempData["ProfileSaved"] = "Profile updated successfully!";
-                return RedirectToAction("EditProfile");
-            }
+                var user = await _userManager.GetUserAsync(User);
 
+                //// Remove old claim 
+                //var existingClaim = (await _userManager.GetClaimsAsync(user))
+                //                     .FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+                //if (existingClaim != null)
+                //{
+                //    await _userManager.RemoveClaimAsync(user, existingClaim);
+                //}
+
+                //// Add updated claim
+                //await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, model.PharmacyName));
+
+                //// أهم خطوة: تحديث الكوكي (المستخدم)
+                //await _signInManager.SignOutAsync(); // ضروري تعمل SignOut الأول
+                //await _signInManager.SignInAsync(user, isPersistent: false); // بعدها تسجله تاني عشان الكوكي يشيل القيمة الجديدة
+
+
+                return RedirectToAction("EditProfile");
+                }
             return View(model);
         }
     }

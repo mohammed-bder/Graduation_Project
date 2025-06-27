@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Graduation_Project.Core.Constants
+@using Microsoft.AspNetCore.Identity
+                        @using System.Security.Claims
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -45,51 +50,20 @@
                             <i class="fas fa-shopping-cart fa-fw me-2"></i> Order
                         </a>
                     </li>
-                    @* <li class="nav-item"> *@
-                    @*     <a class="nav-link" asp-area="" asp-controller="Dispenser" asp-action="Index"> *@
-                    @*         <i class="fas fa-syringe fa-fw me-2"></i> Dispenser <i class="fas fa-chevron-down fa-xs ms-auto"></i> *@
-                    @*     </a> *@
-                        
-                    @* </li> *@
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">
-                            <i class="fas fa-box fa-fw me-2"></i> Product
-                        </a>
-                    </li>
-                    @* <li class="nav-item"> *@
-                    @*     <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index"> *@
-                    @*         <i class="fas fa-chart-pie fa-fw me-2"></i> Reports <i class="fas fa-chevron-down fa-xs ms-auto"></i> *@
-                    @*     </a> *@
-                    @* </li> *@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Stock" asp-action="Index">
                             <i class="fas fa-boxes fa-fw me-2"></i> Stock
                         </a>
                     </li>
-                  
+
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Customer" asp-action="Index">
-                            <i class="fas fa-user-friends fa-fw me-2"></i> Customer
+                        <a class="nav-link" asp-controller="Pharmacist" asp-action="EditProfile">
+                            <i class="fas fa-user-edit fa-fw me-2"></i> Edit Profile
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">
-                            <i class="fas fa-industry fa-fw me-2"></i> Manufacturer <i class="fas fa-chevron-down fa-xs ms-auto"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Index">
-                            <i class="fas fa-users fa-fw me-2"></i> Employee
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Index">
+                        <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="EditProfile">
                             <i class="fas fa-cog fa-fw me-2"></i> Settings
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"  asp-controller="Pharmacist" asp-action="EditProfile">
-                            <i class="fas fa-cog fa-fw me-2"></i> Edit Profile
                         </a>
                     </li>
                 </ul>
@@ -98,40 +72,90 @@
 
         <div class="main-content-wrapper">
             <header class="header">
-                <div class="header-left">
-                    <button class="sidebar-toggle-btn-header" id="sidebarToggleHeader">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="search-bar">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="form-control search-input" placeholder="Search...">
-                    </div>
+                <div class="header-left d-flex align-items-center gap-2">
+                    <img src="~/assets/images/avatar-placeholder.jpg" alt="Balto Logo" style="width: 40px; height: 40px; object-fit: contain;" class="rounded-circle shadow-sm border border-primary border-2">
+                    <span class="fw-bold fs-4 text-primary" style="letter-spacing: 1px; font-family: 'Cairo', sans-serif;">
+
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            
+                           
+                            <div class="welcome-message">
+                                Welcome @User.FindFirstValue(ClaimTypes.Name)
+                            </div>
+                        }
+                    </span>
+                   
                 </div>
+
                 <div class="header-right ms-auto">
                     <div class="nav-item dropdown me-3">
-                        <a class="nav-link text-secondary" href="#" id="navbarDropdownNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge bg-danger badge-notification">3</span>
+                        <a class="nav-link position-relative text-secondary" href="#" id="navbarDropdownNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell fs-5"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                3
+                                <span class="visually-hidden">unread notifications</span>
+                            </span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownNotifications">
-                            <li><a class="dropdown-item" href="#">Notification 1</a></li>
-                            <li><a class="dropdown-item" href="#">Notification 2</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">View All</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3 p-0 overflow-hidden" style="min-width: 280px;" aria-labelledby="navbarDropdownNotifications">
+                            <li>
+                                <h6 class="dropdown-header bg-light fw-bold text-dark">Notifications</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="#">
+                                    <i class="fas fa-envelope-open-text text-primary me-2"></i>
+                                    <span>New message from John</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="#">
+                                    <i class="fas fa-user-plus text-success me-2"></i>
+                                    <span>New user registered</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item text-center text-primary py-2 fw-semibold" href="#">
+                                    View All Notifications
+                                </a>
+                            </li>
                         </ul>
                     </div>
+
                     <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle user-profile" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="~/assets/images/avatar-placeholder.jpg" alt="User Avatar" class="avatar me-2"> <span class="user-name">Mohamed Belal <i class="fas fa-chevron-down fa-xs ms-1"></i></span>
-                            <span class="user-role d-block">Admin</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 py-1 px-2 rounded user-profile" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="position-relative">
+                                <img src="~/assets/images/avatar-placeholder.jpg"
+                                     alt="User Avatar"
+                                     class="rounded-circle border border-2 border-primary shadow-sm"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
+                            </div>
+                            <div class="d-none d-md-block text-start">
+                                <span class="fw-semibold text-dark">Mohamed Belal <i class="fas fa-chevron-down fa-xs ms-1 text-muted"></i></span><br />
+                                <small class="text-muted">Admin</small>
+                            </div>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user fa-fw me-2"></i> Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog fa-fw me-2"></i> Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" asp-action="SignOut" asp-controller="Account"><i class="fas fa-sign-out-alt fa-fw me-2"></i> Logout</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3 mt-2" aria-labelledby="navbarDropdownUser" style="min-width: 220px;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" asp-controller="Pharmacist" asp-action="EditProfile">
+                                    <i class="fas fa-user fa-fw me-2 text-primary"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" asp-controller="Pharmacist" asp-action="EditProfile">
+                                    <i class="fas fa-cog fa-fw me-2 text-warning"></i> Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2 text-danger" asp-action="SignOut" asp-controller="Account">
+                                    <i class="fas fa-sign-out-alt fa-fw me-2"></i> Logout
+                                </a>
+                            </li>
                         </ul>
                     </div>
+
                 </div>
             </header>
 

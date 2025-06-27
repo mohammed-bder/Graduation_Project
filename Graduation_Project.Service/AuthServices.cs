@@ -83,6 +83,7 @@ namespace Graduation_Project.Service
                     var pharmacistSpecs = new PharmacistByAppUserIdSpecs(user.Id);
                     var pharmacist = await _unitOfWork.Repository<Pharmacy>().GetWithSpecsAsync(pharmacistSpecs);
                     authClams.Add(new Claim(Identifiers.PharmacyId, pharmacist.Id.ToString()));
+                    authClams.Add(new Claim( ClaimTypes.Name,pharmacist.Name.ToString()));
                     break;
 
 
