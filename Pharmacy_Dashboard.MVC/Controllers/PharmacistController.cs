@@ -138,7 +138,6 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 TempData["ProfileSaved"] = "Profile updated successfully!";
                 return RedirectToAction("EditProfile");
             }
-
             return View(model);
         }
     }
