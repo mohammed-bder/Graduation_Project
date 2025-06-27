@@ -9,6 +9,7 @@ using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Graduation_Project.Core.Specifications.PatientSpecifications;
+using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,11 @@ namespace Graduation_Project.Service
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserService _userService;
 
-        public AuthServices(IConfiguration configuration,IUnitOfWork unitOfWork , UserManager<AppUser> userManager, IUserService userService)
+        public AuthServices(IConfiguration configuration,
+            IUnitOfWork unitOfWork ,
+            UserManager<AppUser> userManager,
+            IUserService userService
+            )
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
@@ -71,7 +76,17 @@ namespace Graduation_Project.Service
                     var patient = await _unitOfWork.Repository<Patient>().GetWithSpecsAsync(patientSpecs);
                     authClams.Add(new Claim(Identifiers.PatientId, patient.Id.ToString()));
                     break;
-                
+
+
+                case nameof(UserRoleType.Pharmacist):
+                    //Get Pharmacist From Pharmacist Table in business DB
+                    var pharmacistSpecs = new PharmacistByAppUserIdSpecs(user.Id);
+                    var pharmacist = await _unitOfWork.Repository<Pharmacy>().GetWithSpecsAsync(pharmacistSpecs);
+                    authClams.Add(new Claim(Identifiers.PharmacyId, pharmacist.Id.ToString()));
+                    authClams.Add(new Claim( ClaimTypes.Name,pharmacist.Name.ToString()));
+                    break;
+
+
                 default:
                     break;
             }

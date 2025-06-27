@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy_Dashboard.MVC.ViewModel.Stock;
+using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -38,7 +40,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 PageSize = pageSize,
                 Search = Search,
                 Sort = sort,
-                pharmacyId = 1 // Replace with actual logic if dynamic
+                pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId)) // Replace with actual logic if dynamic
             };
 
             // Get all PharmacyMedicine records for a specific Pharmacy
@@ -70,7 +72,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             ViewBag.MedicineList = new SelectList(medicines, "Id", "Name_en");
 
             // If you're assigning to a specific pharmacy, set this ID (could also come from auth context)
-            var pharmacyId = 1; // Replace with actual logic if dynamic
+            var pharmacyId = int.Parse( User.FindFirstValue(Identifiers.PharmacyId)); // Replace with actual logic if dynamic
             ViewBag.PharmacyId = pharmacyId;
 
             return View();

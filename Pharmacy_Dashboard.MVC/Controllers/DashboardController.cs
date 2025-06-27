@@ -1,9 +1,15 @@
 ﻿using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.IRepositories;
+using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.PharmacySpecifications;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.ViewModel.Dashboard;
+using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -11,56 +17,65 @@ namespace Pharmacy_Dashboard.MVC.Controllers
     public class DashboardController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
 
         // Inject your data service here (e.g., IPharmacyDataService)
         // private readonly IPharmacyDataService _dataService;
         // public DashboardController(IPharmacyDataService dataService) { _dataService = dataService; }
 
         public DashboardController(
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            UserManager<AppUser> userManager
+
             )
         {
             this._unitOfWork = unitOfWork;
+            this._userManager = userManager;
         }
 
 
         // TODO: Auth this end point
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         public async Task<IActionResult> Index()
         {
             // TODO: get pharmacy id of registered pharmacy
 
+            var pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId));
+
+            //var pharmacyId = 1;
+
             var _orderRepo = _unitOfWork.Repository<PharmacyOrder>();
 
             // 1. get total Pending orders
-            var pharmacyPendingOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: true);
+            var pharmacyPendingOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: pharmacyId, isOnlyPending: true);
             var totalPendingOrderFromDb = await _orderRepo.GetCountAsync(pharmacyPendingOrderCountSpec);
 
 
             // 2. get total pharmacy orders
-            var pharmacyOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: false);
+            var pharmacyOrderCountSpec = new PharmacyOrderSpecification(pharmacyID: pharmacyId, isOnlyPending: false);
             var totalOrderFromDb =   await _orderRepo.GetCountAsync(pharmacyOrderCountSpec);
 
 
             // 3. get total profit
-            var pharmacyTotalProfitSpec = new GetPharmacyTotalProfitSpecification(pharmacyID: 1 );
+            var pharmacyTotalProfitSpec = new GetPharmacyTotalProfitSpecification(pharmacyID: pharmacyId);
             var totalProfitFromDB = await _orderRepo.GetSumAsync(pharmacyTotalProfitSpec, po => po.TotalPrice);
 
 
 
             // 4. get total number of  out of stock
             var _pharmacyMedicineStockRepo =  _unitOfWork.Repository<PharmacyMedicineStock>();
-            var pharmacyMedicineLowStockCountSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: 1);
+            var pharmacyMedicineLowStockCountSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: pharmacyId);
             var lowStockMedicineCountFromDB = await _pharmacyMedicineStockRepo.GetCountAsync(pharmacyMedicineLowStockCountSpec);
 
 
 
             // 5. get out of stock ======> list
-            var pharmacyMedicineLowStockSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: 1);
+            var pharmacyMedicineLowStockSpec = new PharmacyMedicineLowStockSpecification(pharmacyID: pharmacyId);
             var lowStockMedicineListFromDB = await _pharmacyMedicineStockRepo.GetFirstWithSpecAsync(pharmacyMedicineLowStockSpec , 8);
 
             
             // 6. get Pending orders ======> list
-            var pharmacyPendingOrderSpec = new PharmacyOrderSpecification(pharmacyID: 1 , isOnlyPending: true);
+            var pharmacyPendingOrderSpec = new PharmacyOrderSpecification(pharmacyID: pharmacyId, isOnlyPending: true);
             var pharmacyPendingOrderListFromDB =await _orderRepo.GetFirstWithSpecAsync(pharmacyPendingOrderSpec , 8);
             
 

@@ -162,12 +162,12 @@
             const div = document.createElement("div");
             div.className = "input-group mb-2 contact-input";
             div.innerHTML = `
-                                <input type="hidden" name="PharmacyContacts[${index}].Id" value="0" />
-                                <input type="text" name="PharmacyContacts[${index}].PhoneNumber" class="form-control" />
-                                <button type="button" class="btn btn-outline-danger" onclick="removeContact(this)">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            `;
+                                        <input type="hidden" name="PharmacyContacts[${index}].Id" value="0" />
+                                        <input type="text" name="PharmacyContacts[${index}].PhoneNumber" class="form-control" />
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeContact(this)">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    `;
             container.appendChild(div);
         }
 
@@ -222,9 +222,9 @@
             }
         }
 
-            function openConfirmModal() {
-                document.getElementById("confirmModal").style.display = "flex";
-            }
+        function openConfirmModal() {
+            document.getElementById("confirmModal").style.display = "flex";
+        }
 
     </script>
 }

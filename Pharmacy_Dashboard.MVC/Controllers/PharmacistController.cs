@@ -19,13 +19,15 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService)
+        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService , SignInManager<AppUser> signInManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            this._signInManager = signInManager;
         }
 
         /****************************************** Edit Profile Info ******************************************/
@@ -134,7 +136,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     ModelState.AddModelError(string.Empty, "Failed to update profile. Please try again.");
                     return View(model);
                 }
-
+                
                 TempData["ProfileSaved"] = "Profile updated successfully!";
                 return RedirectToAction("EditProfile");
             }

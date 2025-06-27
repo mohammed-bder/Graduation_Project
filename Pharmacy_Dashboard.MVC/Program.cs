@@ -1,9 +1,14 @@
 using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Repository.Data;
 using Graduation_Project.Repository.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Pharmacy_Dashboard.MVC.Extensions;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Pharmacy_Dashboard.MVC
 {
@@ -52,6 +57,32 @@ namespace Pharmacy_Dashboard.MVC
 
             builder.Services.AddSignalR();
 
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+                    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]))
+                };
+            });
             var app = builder.Build();
 
             #region Update-Database auto 
@@ -106,11 +137,37 @@ namespace Pharmacy_Dashboard.MVC
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            #region Auth
+            app.UseSession();
+
+
+            // rebuild User from JWT in session
+            app.Use(async (context, next) =>
+            {
+                var token = context.Session.GetString("JWTToken");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(token);
+
+                    var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+                    var principal = new ClaimsPrincipal(identity);
+
+                    context.User = principal;
+                }
+
+                await next();
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization(); 
+            #endregion
+
+
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}");
 
             #endregion
 
