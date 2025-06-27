@@ -10,7 +10,7 @@ using Graduation_Project.Core.Specifications.PharmacySpecifications;
 using Graduation_Project.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy_Dashboard.MVC.ViewModels.OrderViewModels;
+using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels;
 using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
