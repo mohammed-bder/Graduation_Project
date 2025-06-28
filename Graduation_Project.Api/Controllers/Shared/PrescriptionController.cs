@@ -113,7 +113,7 @@ namespace Graduation_Project.Api.Controllers.Shared
                 // Update Points
                 await _patientService.UpdatePoints(prescriptionFromUser.PatientId, Points.CompletedAppointment);
                 // push notifications
-                await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New Prescription From Doctor {doctor.FirstName}", "New Prescription");
+                await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New Prescription From Doctor {doctor.FirstName + " " + doctor.LastName}", "New Prescription");
                 await _notificationService.SendNotificationAsync(createdPrescription.Patient.ApplicationUserId, $"New {Points.CompletedAppointment} Points", "New Points");
 
                 return Ok(electornicPrescriptionResponse);

@@ -19,6 +19,9 @@ namespace Graduation_Project.Api.DTO.Pharmacies
 
         [Required(ErrorMessage = "MedicinesDictionary is required.")]
         public Dictionary<int, int>? MedicinesDictionary { get; set; }
+
+        [Required(ErrorMessage = "TotalPrice is required.")]
+        public int TotalPrice { get; set; }
     }
 
 }

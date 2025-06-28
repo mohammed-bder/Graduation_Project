@@ -254,6 +254,27 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(patient);
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("HomeCards")]
+        public async Task<ActionResult<DoctorCountDto>> GetDoctorCards()
+        {
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+
+            var spec = new DoctorWithCardsSpecs(doctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(spec);
+            if (doctor is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Doctor not found"));
+
+            var doctorCountDto = new DoctorCountDto
+            {
+                TotalFavourite = doctor.Favorites.Count(),
+                TotalReviews = doctor.Feedbacks.Count(),
+                TotalAppointments = doctor.Appointments.Count()
+            };
+
+            return Ok(doctorCountDto);
+        }
+
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
         {
             if (regionId == null && governorateId == null)

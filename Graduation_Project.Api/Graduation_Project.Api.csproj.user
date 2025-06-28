@@ -5,8 +5,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
+<<<<<<< HEAD
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
     <NameOfLastUsedPublishProfile>E:\.NET Web Developer\Graduation Project\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\Balto-API - Web Deploy5.pubxml</NameOfLastUsedPublishProfile>
+=======
+>>>>>>> 84cc3a815c7016c1d8d8f1005d05fd47a2e3d2cf
   </PropertyGroup>
 </Project>

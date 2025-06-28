@@ -11,7 +11,8 @@ namespace Graduation_Project.Api.DTO.Shared
         [Required]
         public DateOnly AppointmentDate { get; set; }
         [Required]
-        public TimeOnly AppointmentTime { get; set; }
+        public string AppointmentTime { get; set; }
+        // public TimeOnly AppointmentTime { get; set; }
     }
 
 }

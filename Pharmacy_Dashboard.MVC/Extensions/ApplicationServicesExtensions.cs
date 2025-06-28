@@ -27,10 +27,16 @@ namespace Pharmacy_Dashboard.MVC.Extensions
             services.AddAutoMapper(typeof(MappingProfiles));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            
 
             services.AddScoped(typeof(IEmailService), typeof(EmailService));
+            //services.AddScoped(typeof(INotificationService), typeof(NotificationService));
 
             services.AddScoped(typeof(IFileUploadService), typeof(FileUploadService));
+
+            services.AddScoped<INotificationService,NotificationService>();
+
+            services.AddScoped<IFcmService, FcmNotificationService>();
 
             return services;
         }

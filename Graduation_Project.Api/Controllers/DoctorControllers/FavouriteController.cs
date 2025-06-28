@@ -136,5 +136,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             return Ok(new ApiResponse(StatusCodes.Status200OK, "Removed Successfully"));
         }
+
+
+     
     }
 }

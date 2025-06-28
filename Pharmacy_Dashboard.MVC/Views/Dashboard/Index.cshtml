@@ -84,11 +84,10 @@
                             <thead>
                                 <tr>
                                     <th>Medicine name</th>
-                                    <th>ActiveSubstance</th>
+                                    <th style="width: 200px;">ActiveSubstance</th>
                                     <th>Quantity</th>
                                     <th>Price</th>
-                                    @* <th>Chart</th>  *@
-                                    @* <th>Return</th>  *@
+              
                                 </tr>
                             </thead>
                             <tbody>
@@ -97,11 +96,13 @@
                                 {
                                     <tr>
                                         <td> @lowStock.Name_en </td>
-                                        <td> @lowStock.ActiveSubstance </td>
+
+                                        <td style="width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="@lowStock.ActiveSubstance">
+                                            @lowStock.ActiveSubstance
+                                        </td>
+                                        
                                         <td> @lowStock.Quantity </td>
                                         <td> @lowStock.Price $</td>
-                                        @* <td><i class="fas fa-chart-line text-success"></i></td>  *@
-                                        @* <td><i class="fas fa-redo text-primary"></i></td>  *@
                                     </tr>
                                 }
                            
