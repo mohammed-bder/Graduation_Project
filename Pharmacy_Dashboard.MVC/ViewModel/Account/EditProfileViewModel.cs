@@ -8,6 +8,7 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
         public string Email { get; set; }
 
         [StringLength(30, ErrorMessage = "Pharmacy name must be less than 100 characters")]
+        [Display(Name = "Pharmacy Name")]
         public string PharmacyName { get; set; }
         public List<PharmacyContactViewModel>? PharmacyContacts { get; set; } = new();
 

@@ -2,8 +2,13 @@
 
 namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 {
-    public class ResetPasswordViewModel
+    public class ChangePasswordViewModel
     {
+        [Required(ErrorMessage = "Current Password is required.")]
+        [Display(Name = "Current Password")]
+        [DataType(DataType.Password)]
+        public string CurrentPassword { get; set; }
+
         [Required(ErrorMessage = "New Password is required.")]
         [Display(Name = "New Password")]
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,15}$",
@@ -12,11 +17,11 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
         [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [Required(ErrorMessage = "Confirm Password is required.")]
+        [Required(ErrorMessage = "Confirm New Password is required.")]
         [Display(Name = "Confirm New Password")]
-        [Compare(nameof(NewPassword), ErrorMessage = "The new password and confirmation password do not match.")]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmNewPassword { get; set; }
 
     }
 }

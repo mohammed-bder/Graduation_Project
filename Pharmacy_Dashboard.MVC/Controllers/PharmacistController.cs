@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Models.SendingEmail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
@@ -31,6 +33,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         }
 
         /****************************************** Edit Profile Info ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         public async Task<IActionResult> EditProfile()
         {
             var pharmacistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -50,6 +53,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileViewModel model)
         {
