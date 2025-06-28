@@ -1,19 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-<<<<<<< HEAD
-    <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
-    <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
-<<<<<<< HEAD
-    <NameOfLastUsedPublishProfile>D:\4th Computer\GraduationProject\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\site18581-WebDeploy3.pubxml</NameOfLastUsedPublishProfile>
-=======
-    <NameOfLastUsedPublishProfile>E:\.NET Web Developer\Graduation Project\Graduation_Project\Graduation_Project.Api\Properties\PublishProfiles\Balto-API - Web Deploy5.pubxml</NameOfLastUsedPublishProfile>
-=======
->>>>>>> 84cc3a815c7016c1d8d8f1005d05fd47a2e3d2cf
->>>>>>> 8ff5aaf5142d8aa5ef455d2c8f88c36158e471f4
   </PropertyGroup>
 </Project>
