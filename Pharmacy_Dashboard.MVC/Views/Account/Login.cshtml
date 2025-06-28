@@ -5,58 +5,250 @@
 }
 
 <form asp-action="Login">
-
     <div class="form-steps">
         <!-- Left side (Sidebar) -->
         <div class="sidebar">
-            <img src="~/assets/images/avatar-placeholder.jpg" alt="Logo" class="logo" />
-            <div class="steps">
-                <div class="step active">Welcome Back!</div>
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg" alt="App Logo" class="logo" />
+            <h2 class="sidebar-title">Welcome Back!</h2>
+            <p class="sidebar-desc">Sign in to access your dashboard and manage your pharmacy efficiently.</p>
+            <div class="sidebar-divider"></div>
+            <ul class="sidebar-features">
+                <li><span class="sidebar-icon">🔒</span> Secure Login</li>
+                <li><span class="sidebar-icon">⚡</span> Fast Access</li>
+                <li><span class="sidebar-icon">💊</span> Pharmacy Tools</li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="mailto:graduation.balto@gmail.com" class="sidebar-support">Need help?</a>
             </div>
         </div>
 
         <!-- Right side (Form) -->
         <div class="right-panel">
-            <h2>Login to Your Account</h2>
+            <h2 class="header-txt">Login to Your Account</h2>
 
-            <div asp-validation-summary="All"></div>
-
+            <div asp-validation-summary="All" class="text-danger"></div>
             @if (TempData["Success"] != null)
             {
-                <div class="alert alert-success alert-dismissible fade show text-center shadow-sm py-3 px-4 rounded-3" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    @TempData["Success"]
-                    <button type="button" class="btn-close position-absolute end-0 me-3 mt-1" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="custom-alert-success" role="alert">
+                    <span class="custom-alert-icon">&#10003;</span>
+                    <span>@TempData["Success"]</span>
+                    <button type="button" class="custom-alert-close" onclick="this.parentElement.style.display='none';" aria-label="Close">&times;</button>
                 </div>
             }
 
             <div class="input-group">
                 <label>Email</label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" placeholder="example@example.com" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="input-group">
                 <label>Password</label>
-                <input asp-for="Password" type="password" class="form-control" />
+                <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <div class="input-group">
-                <input asp-for="RememberMe" type="checkbox" />
-                <label asp-for="RememberMe">Remember Me</label>
+            <div class="input-group remember-me-row">
+                <input asp-for="RememberMe" type="checkbox" id="rememberMe" />
+                <label asp-for="RememberMe" for="rememberMe" class="ms-2 mb-0">Remember Me</label>
             </div>
 
-            <input type="submit" class="btn-custom btn-primary" value="Login" />
-
-            <div class="text-center">
-                <p>Don't have an account? <a asp-action="SignUp">Register here</a></p>
-                <p><a asp-action="ForgetPassword">Forgot Password?</a></p>
+            <div class="action-row">
+                <input type="submit" class="btn-custom btn-primary w-100" value="Login" />
+                <div class="links-row">
+                    <a asp-action="ForgetPassword" class="action-link">Forgot Password?</a>
+                    <span class="divider">|</span>
+                    <a asp-action="SignUp" class="action-link">Register here</a>
+                </div>
             </div>
         </div>
     </div>
 
 </form>
+<style>
+
+.header-txt 
+{
+    display:flex ;
+    justify-content: center;
+}
+.sidebar {
+    background: linear-gradient(135deg, #1e2a5a 80%, #3a4a8c 100%);
+    color: #fff;
+    padding: 40px 30px 30px 30px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-height: 600px;
+    box-shadow: 2px 0 16px rgba(30,42,90,0.08);
+}
+
+.sidebar .logo {
+    width: 150px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.sidebar-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.sidebar-desc {
+    font-size: 1.05rem;
+    color: #e0e6f7;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.sidebar-divider {
+    width: 60px;
+    height: 3px;
+    background: #0073ff;
+    border-radius: 2px;
+    margin: 0 auto 18px auto;
+}
+
+.sidebar-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    width: 100%;
+}
+
+.sidebar-features li {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: #c9d6ff;
+}
+
+.sidebar-icon {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.sidebar-support {
+    color: #b3c6ff;
+    font-size: 0.97rem;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.sidebar-support:hover {
+    color: #fff;
+}
+
+.action-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.btn-custom.btn-primary.w-100 {
+    width: 100% !important;
+    margin-bottom: 16px;
+}
+
+.links-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.97rem;
+}
+
+.action-link {
+    color: #1e90ff !important;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.action-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline;
+}
+
+.divider {
+    color: #bbb;
+    font-size: 1.1em;
+    user-select: none;
+}
+
+.custom-alert-success {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #e6f9f0 60%, #d0f5e8 100%);
+    color: #218838;
+    border: 1.5px solid #b2e2cd;
+    border-radius: 8px;
+    padding: 16px 24px;
+    margin-bottom: 18px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(33,136,56,0.07);
+    position: relative;
+    animation: fadeInDown 0.7s;
+    min-height: 48px;
+}
+.custom-alert-icon {
+    font-size: 1.5em;
+    margin-right: 12px;
+    color: #28a745;
+}
+.custom-alert-close {
+    background: none;
+    border: none;
+    color: #218838;
+    font-size: 1.3em;
+    font-weight: bold;
+    position: absolute;
+    right: 8px;
+    top: 10px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.custom-alert-close:hover {
+    opacity: 1;
+}
+
+
+input::placeholder,
+textarea::placeholder {
+    color: #6c757d; 
+    font-size: 0.95rem; 
+    font-style: italic; 
+    opacity: 0.85; 
+    transition: color 0.3s;
+}
+
+input:focus::placeholder,
+textarea:focus::placeholder {
+    color: #bbb; 
+}
+
+
+
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

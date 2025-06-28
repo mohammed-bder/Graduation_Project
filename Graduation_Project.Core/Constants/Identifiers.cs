@@ -11,7 +11,7 @@ namespace Graduation_Project.Core.Constants
         public const string DoctorId = "DoctorId";
         public const string PatientId = "PatientId";
         public const string SecretaryId = "SecretaryId";
-        public const string PharmacistId = "PharmacistId";
+        public const string PharmacyId = "PharmacyId";
     }
 
     public static class PharmacyConstants

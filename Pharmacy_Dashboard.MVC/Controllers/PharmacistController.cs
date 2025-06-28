@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Constants;
+using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Identity;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Models.SendingEmail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
@@ -19,16 +21,19 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService)
+        public PharmacistController(IUnitOfWork unitOfWork , UserManager<AppUser> userManager , IMapper mapper , IFileUploadService fileUploadService , SignInManager<AppUser> signInManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
+            this._signInManager = signInManager;
         }
 
         /****************************************** Edit Profile Info ******************************************/
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         public async Task<IActionResult> EditProfile()
         {
             var pharmacistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -48,6 +53,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileViewModel model)
         {
@@ -134,10 +140,10 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     ModelState.AddModelError(string.Empty, "Failed to update profile. Please try again.");
                     return View(model);
                 }
-
-                return RedirectToAction("Index", "Dashboard");
+                
+                TempData["ProfileSaved"] = "Profile updated successfully!";
+                return RedirectToAction("EditProfile");
             }
-
             return View(model);
         }
     }

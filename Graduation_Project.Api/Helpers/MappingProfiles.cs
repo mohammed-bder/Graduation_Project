@@ -226,7 +226,8 @@ namespace Graduation_Project.APIs.Helpers
             CreateMap<ScheduleException, ScheduleExceptionFromDatabaseDto>();
 
             /****************************************** Appointment ******************************************/
-            CreateMap<BookAppointmentDto, Appointment>();
+            CreateMap<BookAppointmentDto, Appointment>()
+                .ForMember(dest => dest.AppointmentTime, opt => opt.Ignore()); ;
 
             CreateMap<Appointment, AppointmentDto>()
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => $"{src.Patient.FirstName} {src.Patient.LastName}"))
