@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.PharmacySpecifications
 {
-    public class PharmacyWithDistanceSpecification : BaseSpecifications<Pharmacy>
+    public class PharmacistByAppUserIdSpecs : BaseSpecifications<Pharmacy>
     {
-        public PharmacyWithDistanceSpecification() : base()
+        public PharmacistByAppUserIdSpecs(string id) : base(p => p.ApplicationUserID == id)
         {
-            Includes.Add(p => p.pharmacyContacts);
+            
         }
     }
 }

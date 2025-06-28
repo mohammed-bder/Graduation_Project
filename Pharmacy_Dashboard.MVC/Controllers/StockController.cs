@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core;
+using Graduation_Project.Core.Constants;
 using Graduation_Project.Core.Enums;
 using Graduation_Project.Core.Models.Pharmacies;
 using Graduation_Project.Core.Specifications.MedicineSpecifications;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy_Dashboard.MVC.ViewModel.Stock;
+using System.Security.Claims;
 
 namespace Pharmacy_Dashboard.MVC.Controllers
 {
@@ -24,8 +26,8 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             _mapper = mapper;
         }
 
-        // http://localhost:5152/Stock/Index
-        //[Authorize(Roles = nameof(UserRoleType.Pharmacist))]
+
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpGet]
         public async Task<IActionResult> Index(string Search, int pageIndex = 1, int pageSize = 10, string sort = "")
         {
@@ -38,7 +40,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                 PageSize = pageSize,
                 Search = Search,
                 Sort = sort,
-                pharmacyId = 1 // Replace with actual logic if dynamic
+                pharmacyId = int.Parse(User.FindFirstValue(Identifiers.PharmacyId)) // Replace with actual logic if dynamic
             };
 
             // Get all PharmacyMedicine records for a specific Pharmacy
@@ -58,7 +60,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
 
         }
 
-        // http://localhost:5152/Stock/Add
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpGet]
         public async Task<IActionResult> Add()
         {
@@ -70,12 +72,13 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             ViewBag.MedicineList = new SelectList(medicines, "Id", "Name_en");
 
             // If you're assigning to a specific pharmacy, set this ID (could also come from auth context)
-            var pharmacyId = 1; // Replace with actual logic if dynamic
+            var pharmacyId = int.Parse( User.FindFirstValue(Identifiers.PharmacyId)); // Replace with actual logic if dynamic
             ViewBag.PharmacyId = pharmacyId;
 
             return View();
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpGet]
         public async Task<IActionResult> SearchMedicines(string term)
         {
@@ -91,7 +94,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             return Json(medicines);
         }
 
-
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpPost]
         public async Task<IActionResult> Add(AddPharmacyMedicineViewModel model)
         {
@@ -125,7 +128,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             return RedirectToAction("Index");
         }
 
-        // http://localhost:5152/PharmacyMedicineStock/Edit/16
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -142,7 +145,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
             return View("Edit", viewModel);
         }
 
-        // POST: /PharmacyMedicineStock/Edit/5
+        [Authorize(Roles = nameof(UserRoleType.Pharmacist))]
         [HttpPost]
         public async Task<IActionResult> SaveEdit(PharmacyStockEditViewModel model)
         {

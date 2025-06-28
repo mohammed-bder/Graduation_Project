@@ -70,5 +70,15 @@ namespace Graduation_Project.Service
             };
             return patientInfo;
         }
+
+        public async Task UpdatePoints(int PatientId, int Points)
+        {
+            // get patient from db
+            var patient = await _unitOfWork.Repository<Patient>().GetAsync(PatientId);
+            patient.Points += Points;
+            // Update its points
+            _unitOfWork.Repository<Patient>().Update(patient);
+            await _unitOfWork.Repository<Patient>().SaveAsync();
+        }
     }
 }

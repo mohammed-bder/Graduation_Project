@@ -9,6 +9,7 @@ using Graduation_Project.Core.Models;
 using Graduation_Project.Core.Specifications;
 using Graduation_Project.Core.Specifications.DoctorSpecifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Graduation_Project.Repository
 {
@@ -137,6 +138,5 @@ namespace Graduation_Project.Repository
             return await dbContext.Set<T>().Where(expression).ToListAsync();
         }
 
-       
     }
 }

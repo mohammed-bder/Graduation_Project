@@ -1,0 +1,418 @@
+﻿@using Graduation_Project.Core.Enums
+@using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels
+@model OrderCardViewModel
+
+<style>
+    /* General Card Styles */
+    .order-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        margin-top: 40px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+        .order-card h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+    .section {
+        margin-bottom: 30px;
+    }
+
+    /* Button Styling */
+    .btn {
+        padding: 8px 18px; /* Reduced padding for compact buttons */
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        border: none; /* Removed border to make the buttons look clean */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        /* Hover Effect */
+        .btn:hover {
+            transform: translateY(-2px); /* subtle hover effect */
+        }
+
+        /* Action Buttons Layout (Confirm & Cancel) */
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        /* Buttons styling */
+        .action-buttons .btn {
+            width: 40%; /* Decrease the width of each button */
+            padding: 8px 14px; /* Reduced padding for more compact buttons */
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Confirm Button Styling */
+        .action-buttons .btn-confirm {
+            background-color: #28a745; /* Trendy green */
+            color: white;
+        }
+
+            .action-buttons .btn-confirm:hover {
+                background-color: #218838;
+                transform: translateY(-2px); /* Subtle hover effect */
+            }
+
+        /* Cancel Button Styling */
+        .action-buttons .btn-cancel {
+            background-color: #dc3545; /* Trendy red */
+            color: white;
+        }
+
+            .action-buttons .btn-cancel:hover {
+                background-color: #c82333;
+                transform: translateY(-2px); /* Subtle hover effect */
+            }
+
+    /* Modal Styling */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(3px);
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        margin: auto;
+        padding: 30px;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.4s ease-in-out;
+    }
+
+        .modal-content .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+            .modal-content .close:hover {
+                color: #000;
+            }
+
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 12px 16px;
+        font-size: 1.1rem;
+    }
+
+    .table thead th {
+        background-color: #e9f1ff;
+        font-weight: 600;
+    }
+
+    tfoot td {
+        background-color: #f8f9fa;
+        border-top: 2px solid #dee2e6;
+    }
+
+    /* Order Status Styling */
+    .order-status {
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        width: fit-content;
+        margin: 10px auto;
+        text-align: center;
+        color: white;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        /* Status Colors */
+        .order-status.pending {
+            background-color: #ffc107; /* Yellow */
+        }
+
+        .order-status.confirmed {
+            background-color: #28a745; /* Green */
+        }
+
+        .order-status.cancelled {
+            background-color: #dc3545; /* Red */
+        }
+
+        /* Subtle hover effect */
+        .order-status:hover {
+            transform: scale(1.05); /* Slight scaling on hover */
+        }
+
+    /* For text status inside order-status */
+    .order-status-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+</style>
+
+<div class="container">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <div class="order-card">
+        <!-- Section 1: Order Info -->
+        <div class="section">
+            <div class="section-header text-center">
+                <div class="mb-3">
+                    <span class="fw-bold fs-4">Order #@Model.Id</span>
+                </div>
+                <div class="order-status @GetStatusClass(Model.Status)">
+                    <span class="order-status-text fs-4 fw-bold">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Patient Name</label>
+                    <input type="text" class="form-control" value="@Model.PatientName" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" value="@Model.PatientPhone" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Delivery Address</label>
+                    <input type="text" class="form-control" value="@Model.DeliveryAddress" disabled />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Order Date</label>
+                    <input type="text" class="form-control" value="@Model.OrderDate.ToString("yyyy-MM-dd")" disabled />
+                </div>
+                @if (Model.Status == OrderStatus.Confirmed && Model.DeliveryDate != null)
+                {
+                    <div class="col-md-6">
+                        <label class="form-label">Delivery Date</label>
+                        <input type="text" class="form-control" value="@Model.DeliveryDate?.ToString("yyyy-MM-dd")" disabled />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Section 2: Medicines -->
+        <div class="section">
+            <h5 class="mb-3">Medicines</h5>
+            @if (Model.OrderMedicines != null && Model.OrderMedicines.Any())
+            {
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Name</th>
+                                <th style="width: 30%;">Quantity</th>
+                                <th style="width: 30%;">Unit Price ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var med in Model.OrderMedicines)
+                            {
+                                <tr>
+                                    <td>@med.Name</td>
+                                    <td>@med.Quantity</td>
+                                    <td>$@med.UnitPrice.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="d-flex justify-content-between px-2">
+                                        <span class="fw-bold">Total Price:</span>
+                                        <span class="text-success fw-bold">$@Model.TotalPrice.ToString("F2")</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No medicines listed.</p>
+            }
+        </div>
+
+        <!-- Section 3: Status + Actions -->
+        <div class="section">
+            <!-- Minimized Status Button in the Center -->
+
+
+            <!-- Buttons centered under the status -->
+            <div class="action-buttons mt-3">
+                @if (Model.Status == OrderStatus.Pending)
+                {
+                    <button type="button" class="btn btn-confirm" onclick="openDeliveryDateModal(@Model.Id)">
+                        <i class="fas fa-check"></i> Confirm
+                    </button>
+                    <button type="button" class="btn btn-cancel" onclick="openCancelModal(@Model.Id)">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                }
+                else if (Model.Status == OrderStatus.Confirmed)
+                {
+                    <button type="button" class="btn btn-success" onclick="openDeliveredModal(@Model.Id)">
+                        <i class="fas fa-truck"></i> Delivered
+                    </button>
+                    <button type="button" class="btn btn-cancel" onclick="openCancelModal(@Model.Id)">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                }
+                else
+                {
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delivery Date Modal -->
+<div id="deliveryDateModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close" id="closeDeliveryModal">&times;</span>
+        <h4 class="mb-3">Confirm Order</h4>
+        <p class="text-muted">Enter delivery date:</p>
+
+        <form method="post" asp-action="UpdateOrder">
+            <input type="hidden" name="Id" id="modalOrderId" />
+            <input type="hidden" name="OrderStatus" value="Confirmed" />
+            <input type="date" name="DeliveryDate" class="form-control my-3" required />
+            <div class="text-end">
+                <button type="submit" class="btn btn-success px-4">Confirm</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Delivered Modal -->
+<div id="deliveredModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close" id="closeDeliveredModal">&times;</span>
+        <h4 class="mb-3">Mark as Delivered</h4>
+        <p class="text-muted">Are you sure you want to mark this order as delivered?</p>
+
+        <form method="post" asp-action="UpdateOrder">
+            <input type="hidden" name="Id" id="deliveredOrderId" />
+            <input type="hidden" name="OrderStatus" value="Completed" />
+            <div class="text-end">
+                <button type="submit" class="btn btn-success px-4">Confirm Delivery</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close" id="closeCancelModal">&times;</span>
+        <h4 class="mb-3">Cancel Order</h4>
+        <p class="text-muted">Are you sure you want to cancel this order?</p>
+
+        <form method="post" asp-action="UpdateOrder">
+            <input type="hidden" name="Id" id="cancelOrderId" />
+            <input type="hidden" name="OrderStatus" value="Cancelled" />
+            <div class="text-end">
+                <button type="submit" class="btn btn-danger px-4">Cancel Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Open Delivery Date Modal for Confirming an Order
+    function openDeliveryDateModal(orderId) {
+        document.getElementById('modalOrderId').value = orderId;
+        document.getElementById('deliveryDateModal').style.display = 'flex';
+    }
+
+    // Open Cancel Order Modal
+    function openCancelModal(orderId) {
+        document.getElementById('cancelOrderId').value = orderId;
+        document.getElementById('cancelModal').style.display = 'flex';
+    }
+
+    // Open Delivered Order Modal
+    function openDeliveredModal(orderId) {
+        document.getElementById('deliveredOrderId').value = orderId;
+        document.getElementById('deliveredModal').style.display = 'flex';
+    }
+
+    // Close Delivery Date Modal
+    document.getElementById('closeDeliveryModal').onclick = function () {
+        document.getElementById('deliveryDateModal').style.display = 'none';
+    };
+
+    // Close Cancel Order Modal
+    document.getElementById('closeCancelModal').onclick = function () {
+        document.getElementById('cancelModal').style.display = 'none';
+    };
+
+    // Close Delivered Order Modal
+    document.getElementById('closeDeliveredModal').onclick = function () {
+        document.getElementById('deliveredModal').style.display = 'none';
+    };
+
+    // Close Modal on clicking outside
+    window.onclick = function (e) {
+        if (e.target.id === "deliveryDateModal")
+            document.getElementById("deliveryDateModal").style.display = "none";
+        if (e.target.id === "cancelModal")
+            document.getElementById("cancelModal").style.display = "none";
+        if (e.target.id === "deliveredModal")
+            document.getElementById("deliveredModal").style.display = "none";
+    };
+</script>
+
+@functions {
+    public string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Confirmed => "bg-primary text-white",
+            OrderStatus.Completed => "bg-success text-white",
+            OrderStatus.Cancelled => "bg-danger text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+}

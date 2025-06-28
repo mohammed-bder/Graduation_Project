@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Graduation_Project.Core.Models.Pharmacies;
 using Pharmacy_Dashboard.MVC.ViewModel.Account;
+using Pharmacy_Dashboard.MVC.ViewModel.OrderViewModels;
 using Pharmacy_Dashboard.MVC.ViewModel.Stock;
 
 namespace Pharmacy_Dashboard.MVC.Helpers
@@ -40,6 +41,20 @@ namespace Pharmacy_Dashboard.MVC.Helpers
             CreateMap<PharmacyMedicineStock, PharmacyStockViewModel>()
                 .ForMember(dest => dest.MedicineName, opt => opt.MapFrom(src => src.Medicine.Name_en))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Medicine.Price));
+
+            // ========================================== Pharmacy Order ==========================================
+            CreateMap<PharmacyOrder, OrderContent>()
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FirstName + " " + src.Patient.LastName));
+
+            CreateMap<MedicinePharmacyOrder, OrderMedicine>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.MedicineId))
+                .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Medicine.Price))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Medicine.Name_en));
+
+            CreateMap<PharmacyOrder, OrderCardViewModel>()
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FirstName + " " + src.Patient.LastName))
+                .ForMember(dest => dest.PatientPhone, opt => opt.MapFrom(src => src.Patient.PhoneNumber))
+                .ForMember(dest => dest.OrderMedicines, opt => opt.MapFrom(src => src.MedicinePharmacyOrders));
         }
     }
 }

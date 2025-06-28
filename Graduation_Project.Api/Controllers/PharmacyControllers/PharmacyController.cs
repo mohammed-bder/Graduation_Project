@@ -22,6 +22,11 @@ using Graduation_Project.Api.Attributes;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Filters;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Graduation_Project.Repository.Identity;
+using System.Collections.ObjectModel;
 
 namespace Graduation_Project.Api.Controllers.PharmacyControllers
 {
@@ -109,7 +114,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
         {
             const double maxDistance = 10;
             // 1- Include pharmacy contact with pharmacy 
-            var spec = new PharmacyWithDistanceSpecification();
+            var spec = new PharmacyWithItsContactsSpecification();
             var pharmacies = await _unitOfWork.Repository<Pharmacy>().GetAllWithSpecAsync(spec);
 
             if(pharmacies is null || !pharmacies.Any())
@@ -132,7 +137,7 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetMedicineFromPrescription/{prescriptionId:int}")]
-        public async Task<ActionResult<List<MedicineDTO>>> GetMedicineFromPrescription(int prescriptionId)
+        public async Task<ActionResult<List<SearchMedicinesResponseDTO>>> GetMedicineFromPrescription(int prescriptionId)
         {
             // get prescription info includeing medicinePrescription then include medicine
             var prescriptionSpecs = new PrescriptionWithMedicinesSpecification(prescriptionId);
@@ -140,14 +145,15 @@ namespace Graduation_Project.Api.Controllers.PharmacyControllers
             if (prescription is null)
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No prescription found."));
 
-            // map to medicineDTO
-            var medicines = _mapper.Map<List<MedicineDTO>>(prescription.MedicinePrescriptions);
+            var medicines = _mapper.Map<List<SearchMedicinesResponseDTO>>(prescription.MedicinePrescriptions);
 
             if (medicines is null || !medicines.Any())
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No medicines found."));
 
             return Ok(medicines);
         }
+
+        
     }
 }
 
