@@ -69,7 +69,7 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + " " + src.LastName
                 ))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Patient, PatientForProfileToReturnDto>>());
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.PictureUrl));
                 
 
             CreateMap<PatientForProfileDto, PatientForProfileToReturnDto>();

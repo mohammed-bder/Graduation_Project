@@ -21,7 +21,7 @@ namespace Pharmacy_Dashboard.MVC.Helpers
             /****************************************** Mapping for Pharmacy Edit info ******************************************/
             CreateMap<Pharmacy, EditProfileViewModel>()
                 .ForMember(dest => dest.PharmacyName, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Pharmacy , EditProfileViewModel>>())
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.ProfilePictureUrl))
                 .ForMember(dest => dest.PharmacyContacts, opt => opt.MapFrom(src => src.pharmacyContacts.Select(c => new PharmacyContactViewModel
                 {
                     Id = c.Id,
