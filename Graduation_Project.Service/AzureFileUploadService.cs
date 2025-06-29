@@ -128,7 +128,7 @@ namespace Graduation_Project.Service
                     ContentType = "image/jpeg"
                 });
 
-                string fileUrl = blobClient.Uri.ToString();
+                string fileUrl = $"{containerClient.Name}/{blobName}";
                 return (true, "File uploaded successfully.", fileUrl);
             }
             catch (Exception ex)
