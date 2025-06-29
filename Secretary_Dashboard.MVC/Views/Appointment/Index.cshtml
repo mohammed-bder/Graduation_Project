@@ -1,0 +1,75 @@
+﻿@using Graduation_Project.Core.Models.Doctors
+<link href="~/css/Apointment.css" rel="stylesheet" />
+@model IReadOnlyList<Appointment>
+
+
+@* <h3 class="m-4">
+    Appointments on @(((DateTime)ViewBag.SelectedDate).ToString("yyyy-MM-dd"))
+</h3>
+
+<form method="get" class="mb-4">
+    <div class="input-group" style="max-width: 350px;">
+        <input type="date" name="date" class="form-control"
+               value="@(((DateTime)ViewBag.SelectedDate).ToString("yyyy-MM-dd"))" />
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form> *@
+<div class="d-flex justify-content-between align-items-center flex-wrap" style="margin-top:30px">
+    <h3 class="mt-5">
+        Appointments on @(((DateTime)ViewBag.SelectedDate).ToString("yyyy-MM-dd"))
+    </h3>
+
+    <form method="get" class="d-flex mt-5 " style="max-width: 350px;">
+        <input type="date" name="date" class="form-control me-2" value="@(((DateTime)ViewBag.SelectedDate).ToString("yyyy-MM-dd"))" />
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+</div>
+
+
+<!---Start Appoitmnets Table-->
+
+<div class="container mt-4" style="background-color:whitesmoke">
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle ">
+            <thead class="cTableHead">
+                <tr>
+                    <th >Patient ID</th>
+                    <th >Patient Name</th>
+                    <th >Time</th>
+                    <th >Status</th>
+                    <th >Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- Example Row -->
+                    @foreach (var appointment in Model)
+                    {
+                        var statusName = Enum.GetName(typeof(AppointmentStatus), appointment.Status);
+                    var badgeClass = appointment.Status == AppointmentStatus.Confirmed ? "My-Green" : "My-Success";
+
+                        <tr>
+                            <td>@appointment.PatientId</td>
+                            <td>@appointment.Patient.FirstName @appointment.Patient.LastName</td>
+                            <td>@appointment.AppointmentTime</td>
+
+                            <!--   -->
+                            <td>
+                                <span class="badge @badgeClass">
+                                        @statusName
+                                </span>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-sm me-2 " style="background-color:#42cde2">Send Notifcation</button>
+                                <button class="btn btn-sm btn-danger">Cancel</button>
+                            </td>
+                        </tr>
+                    }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- End Table  -->

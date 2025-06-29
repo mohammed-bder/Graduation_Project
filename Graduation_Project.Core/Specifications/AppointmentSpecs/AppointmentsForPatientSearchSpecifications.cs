@@ -7,6 +7,24 @@ using System.Threading.Tasks;
 
 namespace Graduation_Project.Core.Specifications.AppointmentSpecs
 {
+
+
+    /*
+     Purpose: Fetches appointments for a patient from a specific date up to a month later.
+
+     Includes:
+     
+     -Doctor
+     
+     -Doctor's specialty (nested include)
+     
+     Ordering: By date and then time.
+     
+     Relation: Extends BaseSpecifications<Appointment> and used when showing upcoming appointments for patients.
+
+
+     
+     */
     public class AppointmentsForPatientSearchSpecifications: BaseSpecifications<Appointment>
     {
         public AppointmentsForPatientSearchSpecifications(int patientId, DateOnly startDate)
