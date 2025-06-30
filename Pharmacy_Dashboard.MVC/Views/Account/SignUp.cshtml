@@ -29,6 +29,11 @@
             <div id="step1">
                 <h2 class=" header-txt">Your Personal Information</h2>
                 <div class="input-group">
+                    <label>Name</label>
+                    <input asp-for="FullName" class="form-control" placeholder="Enter Your Name" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="input-group">
                     <label>Email</label>
                     <input asp-for="Email" class="form-control" placeholder="example@example.com" />
                     <span asp-validation-for="Email" class="text-danger"></span>

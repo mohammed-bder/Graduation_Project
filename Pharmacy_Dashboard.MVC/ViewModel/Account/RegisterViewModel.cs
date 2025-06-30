@@ -5,6 +5,12 @@ namespace Pharmacy_Dashboard.MVC.ViewModel.Account
 {
 	public class RegisterViewModel
 	{
+		// enter full name 
+		[Required(ErrorMessage = "Full Name is required.")]
+		[StringLength(100, ErrorMessage = "Full Name cannot exceed 30 characters.")]
+		[Display(Name = "Name")]
+		public string FullName { get; set; }
+
 		[Required(ErrorMessage = "Email is required")]
 		[EmailAddress(ErrorMessage = "Invalid email address")]
         [RegularExpression("^(?!\\d)[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
