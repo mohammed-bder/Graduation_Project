@@ -40,7 +40,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             var spec = new SecretaryByAppuserIdSpecification(id);
             var secretary = await _unitOfWork.Repository<Secretary>().GetWithSpecsAsync(spec);
 
-            var doctor = secretary.doctors.FirstOrDefault();
+            var doctor = secretary.clinic.Doctor;
 
 
 
