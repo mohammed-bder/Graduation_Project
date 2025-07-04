@@ -4,6 +4,7 @@ using Graduation_Project.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250703213857_clinic-secretary relation")]
+    partial class clinicsecretaryrelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,12 +213,12 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<string>("PictureUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("clinicId")
+                    b.Property<int>("clininId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("clinicId")
+                    b.HasIndex("clininId")
                         .IsUnique();
 
                     b.ToTable("secretaries");
@@ -354,6 +357,9 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.Property<double?>("Rating")
                         .HasColumnType("float");
 
+                    b.Property<int?>("SecretaryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SlotDurationMinutes")
                         .HasColumnType("int");
 
@@ -363,6 +369,8 @@ namespace Graduation_Project.Repository.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActivePolicyId");
+
+                    b.HasIndex("SecretaryId");
 
                     b.HasIndex("SpecialtyId");
 
@@ -1290,7 +1298,7 @@ namespace Graduation_Project.Repository.Data.Migrations
                 {
                     b.HasOne("Graduation_Project.Core.Models.Clinics.Clinic", "clinic")
                         .WithOne("Secretary")
-                        .HasForeignKey("Graduation_Project.Core.Models.Clinics.Secretary", "clinicId")
+                        .HasForeignKey("Graduation_Project.Core.Models.Clinics.Secretary", "clininId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1357,6 +1365,10 @@ namespace Graduation_Project.Repository.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ActivePolicyId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Graduation_Project.Core.Models.Clinics.Secretary", null)
+                        .WithMany("doctors")
+                        .HasForeignKey("SecretaryId");
 
                     b.HasOne("Graduation_Project.Core.Models.Doctors.Specialty", "Specialty")
                         .WithMany("Doctors")
@@ -1679,6 +1691,11 @@ namespace Graduation_Project.Repository.Data.Migrations
             modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Region", b =>
                 {
                     b.Navigation("clinics");
+                });
+
+            modelBuilder.Entity("Graduation_Project.Core.Models.Clinics.Secretary", b =>
+                {
+                    b.Navigation("doctors");
                 });
 
             modelBuilder.Entity("Graduation_Project.Core.Models.Doctors.Doctor", b =>

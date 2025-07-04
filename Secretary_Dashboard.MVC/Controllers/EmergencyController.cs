@@ -16,7 +16,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             if (!string.IsNullOrWhiteSpace(message))
             {
                 // Store it in DB or send it via notifications
-                _notificationService.BroadcastToWaitingPatients(message);
+                //_notificationService.BroadcastToWaitingPatients(message);
 
                 TempData["Success"] = "Emergency message sent.";
             }
