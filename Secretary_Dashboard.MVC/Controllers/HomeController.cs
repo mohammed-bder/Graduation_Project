@@ -29,7 +29,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             this.signInManager = signInManager;
         }
     
-        public async Task<IActionResult> index()
+        public async Task<IActionResult> Index()
         {
             
 
