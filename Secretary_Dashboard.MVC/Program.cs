@@ -20,27 +20,27 @@ namespace Secretary_Dashboard.MVC
 
             /****************************** Connection String ********************************/
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-
-
-            /****************************** Global Connection String ********************************/
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             //});
 
             //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
             //{
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             //});
+
+
+            /****************************** Global Connection String ********************************/
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentDbGlobal"));
+            });
+
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DeploymentIdentityDbGlobal"));
+            });
 
             #endregion
 
@@ -49,6 +49,13 @@ namespace Secretary_Dashboard.MVC
             builder.Services.AddApplicationServices();
 
             builder.Services.AddIdentityServices(builder.Configuration);
+            builder.Services.AddSession( options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            }
+            );
 
             var app = builder.Build();
 
@@ -103,12 +110,12 @@ namespace Secretary_Dashboard.MVC
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             #endregion
 

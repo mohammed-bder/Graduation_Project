@@ -30,7 +30,8 @@
         //public ICollection<DoctorClinic> DoctorClinics { get; set; } // Navigation property: a clinic can have multiple doctors
         //public ICollection<Appointment>? Appointments { get; set; } // Navigation property: a clinic can have multiple doctors
         public ICollection<TherapySession>? therapySessions { get; set; } // Navigation property: a clinic can have multiple doctors
-        public ICollection<ClincSecretary>? clincSecretarys { get; set; } // Navigation property: a clinic can have multiple Secretary
+        //public ICollection<ClincSecretary>? clincSecretarys { get; set; } // Navigation property: a clinic can have multiple Secretary
+        public Secretary? Secretary { get; set; } // Navigation property: a clinic can have one Secretary
 
         public ICollection<ClinicPictures>? ClinicPictures { get; set; } 
     }

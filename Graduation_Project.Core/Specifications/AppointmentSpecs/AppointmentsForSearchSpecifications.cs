@@ -7,6 +7,20 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Graduation_Project.Core.Specifications.AppointmentSpecs
 {
+
+    /*
+     Purpose: Fetches upcoming appointments for a doctor within the next month that are either confirmed or pending.
+
+     Includes:
+     
+     -Patient
+     
+     Ordering: By date and then time.
+     
+     Relation: Helps secretaries or doctors view their upcoming appointments.
+     
+     */
+
     public class AppointmentsForSearchSpecifications : BaseSpecifications<Appointment>
     {
         public AppointmentsForSearchSpecifications(int doctorId, DateOnly date)

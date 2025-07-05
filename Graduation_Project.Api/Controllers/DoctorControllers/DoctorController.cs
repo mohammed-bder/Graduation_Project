@@ -105,9 +105,21 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
 
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail is null || string.IsNullOrEmpty(userEmail))
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "User Not Found"));
+
+            var appUser = await _userManager.FindByEmailAsync(userEmail);
+            if(appUser is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "User not found"));
+
+            appUser.FullName = doctorDtoFromRequest.FullName;
+            await _userManager.UpdateAsync(appUser);
+
+
            var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
-            doctorForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+            doctorForProfileToReturnDto.Email = userEmail;
 
             return Ok(doctorForProfileToReturnDto);
 
@@ -252,6 +264,27 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 return NotFound(new ApiResponse(StatusCodes.Status404NotFound));
 
             return Ok(patient);
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("HomeCards")]
+        public async Task<ActionResult<DoctorCountDto>> GetDoctorCards()
+        {
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+
+            var spec = new DoctorWithCardsSpecs(doctorId);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(spec);
+            if (doctor is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Doctor not found"));
+
+            var doctorCountDto = new DoctorCountDto
+            {
+                TotalFavourite = doctor.Favorites.Count(),
+                TotalReviews = doctor.Feedbacks.Count(),
+                TotalAppointments = doctor.Appointments.Count()
+            };
+
+            return Ok(doctorCountDto);
         }
 
         private IReadOnlyList<Doctor>? FilteredDoctors(IReadOnlyList<Doctor> doctors, int? regionId, int? governorateId)
