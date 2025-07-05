@@ -20,25 +20,25 @@ namespace Secretary_Dashboard.MVC.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
-        public async Task<IActionResult> index()
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var user = await userManager.FindByEmailAsync(email);
-            var id = user.Id; // from identity table
+        //public async Task<IActionResult> index()
+        //{
+        //    var email = User.FindFirstValue(ClaimTypes.Email);
+        //    var user = await userManager.FindByEmailAsync(email);
+        //    var id = user.Id; // from identity table
 
-            var spec = new SecretaryByAppuserIdSpecification(id);
-            var secretary = await _unitOfWork.Repository<Secretary>().GetWithSpecsAsync(spec);
+        //    var spec = new SecretaryByAppuserIdSpecification(id);
+        //    var secretary = await _unitOfWork.Repository<Secretary>().GetWithSpecsAsync(spec);
 
-            var doctor = secretary.doctors.FirstOrDefault();
+        //    var doctor = secretary.doctors.FirstOrDefault();
 
 
 
-            // Get Today Appointments For Table
-            var specs = new AllDoctorAppointmentsSpecification(doctor.Id);
+        //    // Get Today Appointments For Table
+        //    var specs = new AllDoctorAppointmentsSpecification(doctor.Id);
 
-            var Todayappointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(specs); // included with patients details
+        //    var Todayappointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(specs); // included with patients details
 
-            return View(Todayappointments);
-        }
+        //    return View(Todayappointments);
+        //}
     }
 }

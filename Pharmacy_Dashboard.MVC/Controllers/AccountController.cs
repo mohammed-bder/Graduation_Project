@@ -65,7 +65,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
         public async Task<IActionResult> SignUp(RegisterViewModel model)
         {
             if(ModelState.IsValid) 
-            {
+            { 
                 var user = await _userService.UserExistsAsync(model.Email);
                 if(user is null)
                 {
@@ -74,7 +74,7 @@ namespace Pharmacy_Dashboard.MVC.Controllers
                     {
                         UserName = model.Email.Split("@")[0],
                         Email = model.Email,
-                        FullName = model.Email.Split("@")[0],
+                        FullName = model.FullName,
                     };
                     var result = await _userManager.CreateAsync(newUser, model.Password);
 
@@ -86,8 +86,6 @@ namespace Pharmacy_Dashboard.MVC.Controllers
 
                     // Add the user to the "Pharmacy" role
                     await _userManager.AddToRoleAsync(newUser, UserRoleType.Pharmacist.ToString());
-
-
 
                     // Validate and upload the LicenseImage
                     if(model.ImageFile is not null && model.ImageFile.Length > 0)

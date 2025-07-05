@@ -105,9 +105,21 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             _unitOfWork.Repository<Doctor>().Update(doctor);
             await _unitOfWork.Repository<Doctor>().SaveAsync();
 
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail is null || string.IsNullOrEmpty(userEmail))
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "User Not Found"));
+
+            var appUser = await _userManager.FindByEmailAsync(userEmail);
+            if(appUser is null)
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "User not found"));
+
+            appUser.FullName = doctorDtoFromRequest.FullName;
+            await _userManager.UpdateAsync(appUser);
+
+
            var  doctorForProfileToReturnDto = _mapper.Map<Doctor, DoctorForProfileToReturnDto>(doctor);
 
-            doctorForProfileToReturnDto.Email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+            doctorForProfileToReturnDto.Email = userEmail;
 
             return Ok(doctorForProfileToReturnDto);
 
