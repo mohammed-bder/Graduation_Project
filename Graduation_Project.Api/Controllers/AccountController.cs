@@ -130,7 +130,7 @@ namespace Graduation_Project.Api.Controllers
                     Role = role,
                     Speciality = doctor.Specialty.Name_en,
                     Description = doctor.Description,
-                    PictureUrl = !String.IsNullOrEmpty(doctor.PictureUrl) ? $"{_configuration["AzureStorageUrl"]}{doctor.PictureUrl}" : string.Empty,
+                    PictureUrl = !(string.IsNullOrEmpty(doctor.PictureUrl)) ? $"{_configuration["AzureStorageUrl"]}/{doctor.PictureUrl}" : string.Empty,
                     RefreshToken = refreshToken.Token,
                     RefreshTokenExpiration = refreshToken.ExpiresOn,
                     IsAuthenticated = true
@@ -146,7 +146,7 @@ namespace Graduation_Project.Api.Controllers
                     Email = user.Email,
                     Token = token,
                     Role = role,
-                    PictureUrl = !String.IsNullOrEmpty(patient.PictureUrl) ? $"{_configuration["AzureStorageUrl"]}{patient.PictureUrl}" : string.Empty,
+                    PictureUrl = !(string.IsNullOrEmpty(patient.PictureUrl)) ? $"{_configuration["AzureStorageUrl"]}/{patient.PictureUrl}" : string.Empty,
                     BloodType = patient.BloodType,
                     Points = patient.Points,
                     Age = patient.DateOfBirth != null ? DateTime.Now.Year - patient.DateOfBirth.Value.Year : null,
