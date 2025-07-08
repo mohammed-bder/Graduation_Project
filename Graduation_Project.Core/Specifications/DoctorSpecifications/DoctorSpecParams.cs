@@ -43,6 +43,7 @@ namespace Graduation_Project.Core.Specifications.DoctorSpecifications
         public Gender? Gender { get; set; }
         public string? FirstNameSearch { get; private set; }
         public string? LastNameSearch { get; private set; }
+        public string? lang { get; set; }
 
         // ProcessSearch Method
         private void ProcessSearch()
