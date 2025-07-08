@@ -144,12 +144,12 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("DoctorWithFilter")]
-        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
+        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams, [FromQuery] string? lang = "en")
         {
-            if (specParams.lang.ToLower() != "ar" && specParams.lang.ToLower() != "en")
-            {
-                return BadRequest(new ApiResponse(400, "Invalid Language"));
-            }
+            if (lang.ToLower() != "ar" && lang.ToLower() != "en")
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Language Not Supported"));
+            
+
             IReadOnlyList<Doctor>? doctors;
             int count;
             if (specParams.RegionId.HasValue || specParams.GovernorateId.HasValue)
@@ -176,7 +176,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
 
             var data = _mapper.Map<IReadOnlyList<SortingDoctorDto>>(doctors, opts =>
             {
-                opts.Items["lang"] = specParams.lang ?? "en";
+                opts.Items["lang"] = lang ?? "en";
                 opts.Items["AvailabilityFilter"] = specParams.Availability;
             });
 
@@ -191,9 +191,8 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         public async Task<ActionResult<DoctorDetailsDto>> GetDoctorDetailsDuringAppointment(int id , [FromQuery] string? lang = "en")
         {
             if (lang.ToLower() != "ar" && lang.ToLower() != "en")
-            {
-                return BadRequest(new ApiResponse(400, "Invalid Language"));
-            }
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Language Not Supported"));
+
 
             //Get Doctor From Doctor Table in business DB
             DoctorDetailsSpecs doctorSpecification = new DoctorDetailsSpecs(id);
