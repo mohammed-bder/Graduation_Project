@@ -27,7 +27,7 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
             : base(a =>
                 a.DoctorId == doctorId &&
                 a.AppointmentDate == date &&
-                (a.Status == AppointmentStatus.Confirmed || a.Status == AppointmentStatus.Pending) // Only booked appointments
+                (a.Status == AppointmentStatus.Confirmed || a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Completed) // Only booked appointments
             )
         {
             Includes.Add(a => a.Patient); // Include patient details

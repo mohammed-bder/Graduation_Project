@@ -440,15 +440,16 @@ namespace Graduation_Project.Api.Controllers.Shared
             var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
 
             var groupedAppointments = appointmentDtos
-            .GroupBy(a => a.AppointmentDate) // Group by date first
-            .ToDictionary(
-                g => g.Key, // Date as JSON key (yyyy-MM-dd)
-                g => g.GroupBy(a => a.AppointmentTime) // Then group by time
+                .GroupBy(a => a.AppointmentDate)
+                .OrderByDescending(g => g.Key)
                 .ToDictionary(
-                    a => a.Key, // Time as JSON key (HH:mm:ss)
-                    a => a.First() // Use the first appointment in that time slot
-                )
-            );
+                    g => g.Key, // Format date as string
+                    g => g.OrderBy(a => a.AppointmentTime)
+                        .ThenBy(a => a.Status == "Pending" ? 0 :
+                                    a.Status == "Confirmed" ? 1 :
+                                    a.Status == "Completed" ? 2 : 3)
+                        .ToList()
+                );
 
             return Ok(groupedAppointments);
         }
@@ -481,14 +482,11 @@ namespace Graduation_Project.Api.Controllers.Shared
             var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
 
             var groupedAppointments = appointmentDtos
-                .GroupBy(a => a.AppointmentTime)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderBy(appt => appt.Status == "Pending" ? 0 :
-                                           appt.Status == "Confirmed" ? 1 :
-                                           appt.Status == "Completed" ? 2 : 3)
-                          .ToList()
-                );
+                .OrderBy(a => a.AppointmentTime)
+                .ThenBy(appt => appt.Status == "Pending" ? 0 :
+                                appt.Status == "Confirmed" ? 1 :
+                                appt.Status == "Completed" ? 2 : 3)
+                .ToList();
 
             return Ok(groupedAppointments);
         }
