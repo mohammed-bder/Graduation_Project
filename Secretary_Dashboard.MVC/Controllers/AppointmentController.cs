@@ -21,29 +21,29 @@ namespace Secretary_Dashboard.MVC.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
-        //public async Task<IActionResult>  Index(DateTime? date)
-        //{
-        //    var targetDate = date ?? DateTime.Today;
-        //    var dateOnly = DateOnly.FromDateTime(targetDate);
+        public async Task<IActionResult> Index(DateTime? date)
+        {
+            var targetDate = date ?? DateTime.Today;
+            var dateOnly = DateOnly.FromDateTime(targetDate);
 
 
 
-        //    var email = User.FindFirstValue(ClaimTypes.Email);
-        //    var user = await userManager.FindByEmailAsync(email);
-        //    var id = user.Id; // from identity table
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await userManager.FindByEmailAsync(email);
+            var id = user.Id; // from identity table
 
-        //    var spec = new SecretaryByAppuserIdSpecification(id);
-        //    var secretary = await _unitOfWork.Repository<Secretary>().GetWithSpecsAsync(spec);
+            var spec = new SecretaryByAppuserIdSpecification(id);
+            var secretary = await _unitOfWork.Repository<Secretary>().GetWithSpecsAsync(spec);
 
-        //    var doctor = secretary.doctors.FirstOrDefault();
+            var doctor = secretary.clinic.Doctor;
 
-        //    // Get Today Appointments For Table
-        //    var specs = new AllDoctorGenericAppointmentsSpecification(doctor.Id, targetDate);
+            // Get Today Appointments For Table
+            var specs = new AllDoctorGenericAppointmentsSpecification(doctor.Id, targetDate);
 
-        //    var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(specs); // included with patients details
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(specs); // included with patients details
 
-        //    ViewBag.SelectedDate = targetDate;
-        //    return View(appointments);
-        //}
+            ViewBag.SelectedDate = targetDate;
+            return View(appointments);
+        }
     }
 }

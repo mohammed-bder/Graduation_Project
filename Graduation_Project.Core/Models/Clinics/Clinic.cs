@@ -9,9 +9,6 @@
         //public double Longitude { get; set; }  // Longitude coordinate
 
         public string? Address { get; set; }     //  Address or location of the clinic
-
-
-        public ClinicType? Type { get; set; }
         // Relationships
         public int RegionId { get; set; }
         public Region Region { get; set; }

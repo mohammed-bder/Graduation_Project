@@ -142,10 +142,14 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             return Ok(ratingAndReviews);
         }
 
-        //[Authorize(Roles = nameof(UserRoleType.Patient))]
+        [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("DoctorWithFilter")]
-        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams)
+        public async Task<ActionResult<Pagination<SortingDoctorDto>>> GetDoctorsAsync([FromQuery] DoctorSpecParams specParams, [FromQuery] string? lang = "en")
         {
+            if (lang.ToLower() != "ar" && lang.ToLower() != "en")
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Language Not Supported"));
+            
+
             IReadOnlyList<Doctor>? doctors;
             int count;
             if (specParams.RegionId.HasValue || specParams.GovernorateId.HasValue)
@@ -171,7 +175,11 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
             }
 
             var data = _mapper.Map<IReadOnlyList<SortingDoctorDto>>(doctors, opts =>
-                opts.Items["AvailabilityFilter"] = specParams.Availability);
+            {
+                opts.Items["lang"] = lang ?? "en";
+                opts.Items["AvailabilityFilter"] = specParams.Availability;
+            });
+
             return Ok(new Pagination<SortingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
@@ -180,8 +188,12 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("GetDetailsDuringAppointment/{id:int}")]
         [ServiceFilter(typeof(ExistingIdFilter<Doctor>))]
-        public async Task<ActionResult<DoctorDetailsDto>> GetDoctorDetailsDuringAppointment(int id)
+        public async Task<ActionResult<DoctorDetailsDto>> GetDoctorDetailsDuringAppointment(int id , [FromQuery] string? lang = "en")
         {
+            if (lang.ToLower() != "ar" && lang.ToLower() != "en")
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Language Not Supported"));
+
+
             //Get Doctor From Doctor Table in business DB
             DoctorDetailsSpecs doctorSpecification = new DoctorDetailsSpecs(id);
             var doctor = await _unitOfWork.Repository<Doctor>().GetWithSpecsAsync(doctorSpecification);
@@ -198,7 +210,7 @@ namespace Graduation_Project.Api.Controllers.DoctorControllers
                 IsFavourite = await CheckFavouriteDoctor(PatientId, doctor.Id)  // check in favourite table 
             };
 
-            doctorDetailsDto = _mapper.Map(doctor, doctorDetailsDto);
+            doctorDetailsDto = _mapper.Map(doctor, doctorDetailsDto ,opts => opts.Items["lang"] = lang ?? "en");
 
             return Ok(doctorDetailsDto);
         }
