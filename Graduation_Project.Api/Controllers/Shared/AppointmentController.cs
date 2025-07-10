@@ -408,7 +408,7 @@ namespace Graduation_Project.Api.Controllers.Shared
                     return BadRequest(new ApiResponse(400, "Error canceling the appointment"));
                 }
 
-                return Ok(new ApiResponse(200, "Appointment successfully canceled and refunded."));
+                return Ok(new ApiResponse(200, "Appointment successfully cancelled and refunded."));
             }
             catch (Exception ex)
             {
@@ -547,7 +547,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             {
                 return NotFound(new ApiResponse(404, "No appointments found for this Day."));
             }
-            var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
+            var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
 
             var sortedAppointments = appointmentDtos
                 .OrderBy(a => a.AppointmentTime)
