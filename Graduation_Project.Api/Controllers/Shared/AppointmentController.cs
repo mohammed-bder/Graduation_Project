@@ -2,6 +2,7 @@
 using Graduation_Project.Api.DTO.Doctors;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.ErrorHandling;
+using Graduation_Project.Api.Helpers;
 using Graduation_Project.Api.Filters;
 using Graduation_Project.Core;
 using Graduation_Project.Core.Common;
@@ -350,7 +351,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
 
             var PatientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
-            if(appointment.PatientId != PatientId)
+            if (appointment.PatientId != PatientId)
             {
                 return Unauthorized(new ApiResponse(401, "This Appointment Doesnt belong to this Patient"));
             }
@@ -417,7 +418,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("get-by-name")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetPatientAppointmentsAsync(string name)
+        public async Task<ActionResult<Dictionary<string, List<AppointmentDto>>>> GetPatientAppointmentsAsync(string name)
         {
             // get doctor id
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
@@ -457,7 +458,7 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Doctor))]
         [HttpGet("get-todays-appointment")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, AppointmentDto>>>> GetTodayAppointmentsAsync(DateOnly? day = null)
+        public async Task<ActionResult<List<AppointmentDto>>> GetTodayAppointmentsAsync(DateOnly? day = null)
         {
             var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
             // Define the query specification for today's appointments
@@ -468,11 +469,11 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
             else
             {
-                requiredDay = DateOnly.FromDateTime(DateTime.Today);
+                requiredDay = DateHelper.GetTodayInEgypt();
             }
             var appointmentSpec = new AppointmentsForSearchSpecifications(doctorId, requiredDay);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
-            
+
             if (appointments.IsNullOrEmpty())
             {
                 return NotFound(new ApiResponse(404, "No appointments found for this Day."));
@@ -490,10 +491,10 @@ namespace Graduation_Project.Api.Controllers.Shared
 
             return Ok(groupedAppointments);
         }
-        
+
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("get-all-appointments")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<string, List<AppointmentForPatientDto>>>>> GetAllAppointmentsAsync(DateOnly? day = null)
+        public async Task<ActionResult<Dictionary<string, List<AppointmentDto>>>> GetAllAppointmentsAsync(DateOnly? day = null)
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
             // Define the query specification for today's appointments
@@ -504,7 +505,7 @@ namespace Graduation_Project.Api.Controllers.Shared
             }
             else
             {
-                requiredDay = DateOnly.FromDateTime(DateTime.Today);
+                requiredDay = DateHelper.GetTodayInEgypt();
             }
             var appointmentSpec = new AppointmentsForPatientSearchSpecifications(patientId, requiredDay);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
@@ -522,15 +523,64 @@ namespace Graduation_Project.Api.Controllers.Shared
                 .ToDictionary(
                     g => g.Key,
                     g => g.OrderBy(appt => appt.Status == "Pending" ? 0 :
-                                           appt.Status == "Confirmed" ? 1 :
-                                           appt.Status == "Completed" ? 2 : 3)
-                          .ToList()
+                        appt.Status == "Confirmed" ? 1 :
+                        appt.Status == "Completed" ? 2 : 3)
+                    .ToList()
                 );
 
             return Ok(groupedAppointments);
         }
 
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("get-current")]
+        public async Task<ActionResult<List<AppointmentForPatientDto>>> GetCurrentPatient()
+        {
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            DateOnly today = DateHelper.GetTodayInEgypt();
 
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync
+            (
+                new AppointmentsForDoctorCurrentSpecifications(doctorId, today, TimeOnly.FromDateTime(DateHelper.GetNowInEgypt()))
+            );
+
+            if (appointments.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404, "No appointments found for this Day."));
+            }
+            var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
+
+            var sortedAppointments = appointmentDtos
+                .OrderBy(a => a.AppointmentTime)
+                .ThenBy(appt => appt.Status == "Pending" ? 0 : 1)
+                .ToList();
+
+            return Ok(sortedAppointments);
+        }
+
+        [Authorize(Roles = nameof(UserRoleType.Doctor))]
+        [HttpGet("get-completed-and-cancelled")]
+        public async Task<ActionResult<List<AppointmentDto>>> GetCompleteAndCancelledPatient([FromQuery]bool cancelled = false)
+        {
+            var doctorId = int.Parse(User.FindFirstValue(Identifiers.DoctorId));
+            DateOnly today = DateHelper.GetTodayInEgypt();
+
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync
+            (
+                new AppointmentsForDoctorCompletedSpecifications(doctorId, today, cancelled)
+            );
+
+            if (appointments.IsNullOrEmpty())
+            {
+                return NotFound(new ApiResponse(404, cancelled
+                    ? "No cancelled appointments found."
+                    : "No completed appointments found."));
+            }
+            var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
+            var sortedAppointments = appointmentDtos
+                .OrderByDescending(a => a.AppointmentTime) // descending by time
+                .ToList();
+
+            return Ok(sortedAppointments);
+        }
     }
 }
-
