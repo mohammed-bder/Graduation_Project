@@ -494,19 +494,11 @@ namespace Graduation_Project.Api.Controllers.Shared
 
         [Authorize(Roles = nameof(UserRoleType.Patient))]
         [HttpGet("get-all-appointments")]
-        public async Task<ActionResult<Dictionary<string, List<AppointmentDto>>>> GetAllAppointmentsAsync(DateOnly? day = null)
+        public async Task<ActionResult<Dictionary<string, List<AppointmentDto>>>> GetAllAppointmentsAsync()
         {
             var patientId = int.Parse(User.FindFirstValue(Identifiers.PatientId));
             // Define the query specification for today's appointments
-            DateOnly requiredDay;
-            if (day.HasValue)
-            {
-                requiredDay = day.Value;
-            }
-            else
-            {
-                requiredDay = DateHelper.GetTodayInEgypt();
-            }
+            DateOnly requiredDay = requiredDay = DateHelper.GetTodayInEgypt();
             var appointmentSpec = new AppointmentsForPatientSearchSpecifications(patientId, requiredDay);
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentSpec);
 
@@ -519,13 +511,19 @@ namespace Graduation_Project.Api.Controllers.Shared
             var appointmentDtos = _mapper.Map<List<AppointmentForPatientDto>>(appointments);
 
             var groupedAppointments = appointmentDtos
-                .GroupBy(a => a.AppointmentTime)
+                .GroupBy(a => a.AppointmentDate)
                 .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderBy(appt => appt.Status == "Pending" ? 0 :
-                        appt.Status == "Confirmed" ? 1 :
-                        appt.Status == "Completed" ? 2 : 3)
-                    .ToList()
+                    dateGroup => dateGroup.Key,
+                    dateGroup => dateGroup
+                        .GroupBy(a => a.AppointmentTime)
+                        .ToDictionary(
+                            timeGroup => timeGroup.Key,
+                            timeGroup => timeGroup
+                                .OrderBy(appt => appt.Status == "Pending" ? 0 :
+                                                 appt.Status == "Confirmed" ? 1 :
+                                                 appt.Status == "Completed" ? 2 : 3)
+                                .ToList()
+                        )
                 );
 
             return Ok(groupedAppointments);

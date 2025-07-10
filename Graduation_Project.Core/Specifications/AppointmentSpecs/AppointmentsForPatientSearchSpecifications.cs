@@ -30,8 +30,7 @@ namespace Graduation_Project.Core.Specifications.AppointmentSpecs
     {
         public AppointmentsForPatientSearchSpecifications(int patientId, DateOnly date)
             : base(a =>
-                a.PatientId == patientId &&
-                a.AppointmentDate == date
+                a.PatientId == patientId
             )
         {
             Includes.Add(a => a.Doctor); // ✅ Includes Doctor
