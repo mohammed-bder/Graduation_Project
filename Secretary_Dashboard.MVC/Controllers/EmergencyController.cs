@@ -46,7 +46,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             if (recipientGroup == "Today's Patients")
             {
                 var appointmentsSpec = new AppointmentsWithPatientsForTodaySpecification(today);
-                var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentsSpec);
+                var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentsSpec); //return appointments included with patients
 
                 patients = appointments
                     .Select(a => a.Patient)
@@ -61,7 +61,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             else
             {
                 TempData["Error"] = "Please select a valid recipient group.";
-                return RedirectToAction("emergency");
+                return RedirectToAction("index");
             }
 
             // إنشاء الإشعار

@@ -56,10 +56,10 @@
                 @if (Model != null && i > 0 && i - 1 < Model.Count())
                 {
 
-                    <div class="widget-26-job-category indicator-wrap bg-soft-danger">
+@*                     <div class="widget-26-job-category indicator-wrap bg-soft-danger">
                         <i class="indicator bg-danger"></i>
                         <span>Exit</span>
-                    </div>
+                    </div> *@
                     <form class="tag-badge bg-soft-info" method="post" asp-controller="Home" asp-action="Exit">
                         <input type="hidden" name="id" value="@Model[i - 1].Id" />
                         <p></p>

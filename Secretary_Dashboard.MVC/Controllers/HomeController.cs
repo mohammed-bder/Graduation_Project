@@ -59,56 +59,7 @@ namespace Secretary_Dashboard.MVC.Controllers
         }
         public async Task<IActionResult> Exit(int Id)
         {
-            /*
 
-            //Get Appointment From DB
-            var PatientAppointmentForSpecificDoctorSPEC = new PatientAppointmentForSpecificDoctorSpecification(Id);
-
-            Appointment ConfirmedAppointment = await _unitOfWork.Repository<Appointment>().GetWithSpecsAsync(PatientAppointmentForSpecificDoctorSPEC);
-
-
-            // change Status of appointment and save into DB 
-            ConfirmedAppointment.Status = AppointmentStatus.Completed;
-              var CompletedAppointment = ConfirmedAppointment;
-            //await _unitOfWork.Repository<Appointment>().SaveAsync();
-
-            // Add Completed appointment to CompletedPatientsList(Previous List)
-            List<Appointment> CompletedPatientsList = new List<Appointment>();
-
-            CompletedPatientsList.Add(CompletedAppointment);  //have complete appointment come from view 
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            TempData["PreviousAppointments"] = JsonSerializer.Serialize(CompletedPatientsList,options) ;
-
-            List<Appointment> appointments = new();
-
-            if (TempData.ContainsKey("PreviousAppointments"))
-            {
-                var json = TempData["PreviousAppointments"] as string;
-
-                if (!string.IsNullOrEmpty(json))
-                {
-
-                    var option = new JsonSerializerOptions
-                    {
-                        ReferenceHandler = ReferenceHandler.Preserve
-                    };
-
-                     appointments = JsonSerializer.Deserialize<List<Appointment>>(TempData["PreviousAppointments"] as string, option);
-                }
-            }
-
-            ViewData["PreviousAppointments"] = appointments;
-
-            return RedirectToAction("index");
-
-            */
-            //*********************************************//
             //Get Appointment From DB included with patient
             var PatientAppointmentForSpecificDoctorSPEC = new PatientAppointmentForSpecificDoctorSpecification(Id);
             
