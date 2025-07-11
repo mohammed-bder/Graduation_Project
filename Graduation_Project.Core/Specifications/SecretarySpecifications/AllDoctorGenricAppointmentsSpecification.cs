@@ -24,7 +24,7 @@ namespace Graduation_Project.Core.Specifications.SecretarySpecifications
         public AllDoctorGenericAppointmentsSpecification(int Doctorid,DateTime targetDate) 
         : base(A =>
         A.AppointmentDate == DateOnly.FromDateTime(targetDate) &&
-        A.DoctorId == Doctorid  ) // مواعيد النهاردة بس
+        A.DoctorId == Doctorid  ) 
         {
             Includes.Add(a => a.Patient); // Include patient details
             AddOrderBy(a => a.AppointmentDate); // Order by date
