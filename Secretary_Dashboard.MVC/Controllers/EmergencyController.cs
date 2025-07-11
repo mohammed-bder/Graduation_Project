@@ -7,6 +7,7 @@ using Graduation_Project.Core.Models.Notifications;
 using Graduation_Project.Core.Models.Patients;
 using Graduation_Project.Core.Specifications.SecretarySpecifications;
 using Graduation_Project.Repository;
+using Graduation_Project.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -18,10 +19,12 @@ namespace Secretary_Dashboard.MVC.Controllers
     public class EmergencyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly NotificationService _notificationService;
 
-        public EmergencyController(IUnitOfWork unitOfWork)
+        public EmergencyController(IUnitOfWork unitOfWork, NotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         public IActionResult index()
@@ -30,7 +33,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> SendEmergencyNotice(string message, string recipientGroup)
+        public async Task<IActionResult> SendEmergencyNotice(string message, string recipientGroup, List<string> UserIds)
         {
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -48,38 +51,30 @@ namespace Secretary_Dashboard.MVC.Controllers
                 var appointmentsSpec = new AppointmentsWithPatientsForTodaySpecification(today);
                 var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentsSpec); //return appointments included with patients
 
-                patients = appointments
-                    .Select(a => a.Patient)
-                    .Where(p => p != null)
-                    .DistinctBy(p => p.Id)
-                    .ToList();
+                var patientsUserIds = appointments.Select(a => a.Patient.ApplicationUserId).Distinct();
+
+                foreach (string id in patientsUserIds)
+                {
+                    await _notificationService.SendNotificationAsync(id, message,"Appointment Remender");
+                }
+
             }
             else if (recipientGroup == "All Patients")
             {
                 patients = (List<Patient>)await _unitOfWork.Repository<Patient>().GetAllAsync();
+
+                var patientsUserIds = patients.Select(p => p.ApplicationUserId).Distinct();
+
+                foreach (string id in patientsUserIds)
+                {
+                    await _notificationService.SendNotificationAsync(id, message, "Appointment Remender");
+                }
             }
             else
             {
                 TempData["Error"] = "Please select a valid recipient group.";
                 return RedirectToAction("index");
             }
-
-            // إنشاء الإشعار
-            var notification = new Notification
-            {
-                Title = "🚨 Emergency Alert",
-                Message = message,
-                CreatedDate = DateTime.Now,
-                Recipients = patients.Select(p => new NotificationRecipient
-                {
-                    RecipientType = RecipientType.Patient,
-                    IsRead = false,
-                    UserId = null // لأنه مش مرتبط بـ AppUser
-                }).ToList()
-            };
-
-            await _unitOfWork.Repository<Notification>().AddAsync(notification);
-            await _unitOfWork.CompleteAsync();
 
             TempData["Success"] = "Emergency notification sent successfully.";
             return RedirectToAction("index");
