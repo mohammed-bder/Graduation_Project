@@ -57,6 +57,9 @@ namespace Secretary_Dashboard.MVC
             }
             );
 
+            builder.Services.AddSignalR();
+
+
             var app = builder.Build();
 
             #region Update-Database auto 
