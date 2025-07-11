@@ -9,6 +9,8 @@ using Graduation_Project.Api.DTO.Patients;
 using Graduation_Project.Api.DTO.Pharmacies;
 using Graduation_Project.Api.DTO.Shared;
 using Graduation_Project.Api.Helpers;
+using Graduation_Project.Api.Helpers.Resolvers;
+using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Service.HelperModels;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
@@ -96,20 +98,16 @@ namespace Graduation_Project.APIs.Helpers
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ))
-                .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src =>
-                    src.Specialty != null ? src.Specialty.Name_en : null
-                ))
+                .ForMember(dest => dest.Specialty, opt => opt.MapFrom<SpecialtyNameResolver>())
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom<GovernNameResolver>())
+                .ForMember(dest => dest.Region, opt => opt.MapFrom<RegionNameResolver>())
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver<Doctor, SortingDoctorDto>>())
-                .ForMember(dest => dest.Region, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Region.Name_en))
-                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Clinic == null ? null : src.Clinic.Governorate.Name_en))
                 .ForMember(dest => dest.Availability, opt => opt.MapFrom<AvailabilityResolver>());
 
             /****************************************** Mapping for Doctor From Patient ******************************************/
 
             CreateMap<Doctor, DoctorDetailsDto>()
-               .ForMember(dest => dest.Speciality, opt => opt.MapFrom(src =>
-                    src.Specialty != null ? src.Specialty.Name_en : null
-                ))
+               .ForMember(dest => dest.Specialty, opt => opt.MapFrom<SpecialtyNameResolverForAppointmentDetails>())
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
                     src.FirstName + ' ' + src.LastName
                 ))
