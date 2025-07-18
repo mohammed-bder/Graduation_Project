@@ -1,4 +1,5 @@
 using Graduation_Project.Core;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Clinics;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
@@ -13,6 +14,7 @@ using System.Numerics;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Secretary_Dashboard.MVC.Controllers
 {
@@ -21,12 +23,14 @@ namespace Secretary_Dashboard.MVC.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
+        private readonly INotificationService _notification;
 
-        public HomeController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        public HomeController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager , INotificationService notification)
         {
             _unitOfWork = unitOfWork;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            _notification = notification;
         }
     
         public async Task<IActionResult> Index()
@@ -71,7 +75,39 @@ namespace Secretary_Dashboard.MVC.Controllers
             await _unitOfWork.Repository<Appointment>().SaveAsync();
             return RedirectToAction("index");
         }
+        public async Task<IActionResult> SendReminder(string ApplicationUserId)
+        {
 
+            if (ApplicationUserId == null)
+            {
+                TempData["Error"] = "Patient information not found.";
+                return RedirectToAction("Index");
+            }
+
+
+            await _notification.SendNotificationAsync(ApplicationUserId, "Your Turn Is the Next", "Appointment Reminder");
+            TempData["Success"] = "Notification sent successfully.";
+            return RedirectToAction("index");
+        }
+
+        public async Task<IActionResult> Cancel(int AppointmentId)
+        {
+
+            var _Appoinmtent = await _unitOfWork.Repository<Appointment>().GetAsync(AppointmentId);
+
+            if (_Appoinmtent is null)
+            {
+                TempData["Error"] = "No confirmed appointment found for today.";
+                return RedirectToAction("Index");
+            }
+            _Appoinmtent.Status = AppointmentStatus.Cancelled;
+
+            await _unitOfWork.CompleteAsync();
+
+            TempData["Success"] = "Appointment cancelled successfully.";
+            return RedirectToAction("Index");
+
+        }
 
     }
 }

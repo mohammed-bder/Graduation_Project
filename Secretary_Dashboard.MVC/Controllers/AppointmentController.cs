@@ -2,6 +2,7 @@
 using Graduation_Project.Core.Models.Clinics;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
+using Graduation_Project.Core.Specifications.AppointmentSpecs;
 using Graduation_Project.Core.Specifications.SecretarySpecifications;
 using Graduation_Project.Repository;
 using Microsoft.AspNetCore.Identity;
@@ -44,6 +45,43 @@ namespace Secretary_Dashboard.MVC.Controllers
 
             ViewBag.SelectedDate = targetDate;
             return View(appointments);
+        }
+
+
+        public async Task<IActionResult> MarkAsCompleted(int AppointmentId)
+        {
+            //Get Appointment From DB included with patient
+            var PatientAppointmentForSpecificDoctorSPEC = new PatientAppointmentForSpecificDoctorSpecification(AppointmentId);
+
+            Appointment ConfirmedAppointment = await _unitOfWork.Repository<Appointment>().GetWithSpecsAsync(PatientAppointmentForSpecificDoctorSPEC);
+            // change Status of appointment and save into DB 
+            ConfirmedAppointment.Status = AppointmentStatus.Completed;
+            //var CompletedAppointment = ConfirmedAppointment;
+            // Save to DB
+            await _unitOfWork.Repository<Appointment>().SaveAsync();
+            return RedirectToAction("index");
+        }
+
+
+
+
+        public async Task<IActionResult> Cancel(int AppointmentId)
+        {
+
+            var _Appoinmtent = await _unitOfWork.Repository<Appointment>().GetAsync(AppointmentId);
+
+            if (_Appoinmtent is null)
+            {
+                TempData["Error"] = "No confirmed appointment found for today.";
+                return RedirectToAction("Index");
+            }
+            _Appoinmtent.Status = AppointmentStatus.Cancelled;
+
+            await _unitOfWork.CompleteAsync();
+
+            TempData["Success"] = "Appointment cancelled successfully.";
+            return RedirectToAction("Index");
+
         }
     }
 }

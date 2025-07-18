@@ -11,7 +11,12 @@
 
 }
 
-
+@if (!(string.IsNullOrEmpty(TempData["Message"] as string)))
+{
+    <div class="alert alert-info">
+        @TempData["Message"]
+    </div>
+}
 <!-- ------------- QUEUE ------------- -->
 
 @{
@@ -57,16 +62,12 @@
                 @if (Model != null && i > 0 && i - 1 < Model.Count())
                 {
 
-@*                     <div class="widget-26-job-category indicator-wrap bg-soft-danger">
-                        <i class="indicator bg-danger"></i>
-                        <span>Exit</span>
-                    </div> *@
-                    <form class="tag-badge bg-soft-info" method="post" asp-controller="Home" asp-action="Exit">
-                        <input type="hidden" name="id" value="@Model[i - 1].Id" />
+                    <form class="tag-badge Mint-Green" method="post" asp-controller="Home" asp-action="Exit">
+                        <input type="hidden" name="Id" value="@Model[i - 1].Id" />
                         <p></p>
                         <br />
-                        <span class="dot dot-blue "></span>
-                        <button type="submit" class="Exit btn bg-soft-danger" style="color:black;">Exit</button>
+                        <span class="dot dot-white "></span>
+                        <button type="submit" class="Exit btn " style="color:black; font-weight:500">Exit</button>
                     </form>
                 }
             </div>
@@ -84,6 +85,34 @@
                         <p class="mb-1 fw-semibold">@Model[i].Patient.FirstName @Model[i].Patient.LastName</p>
                         <p>@Model[i].Patient.PhoneNumber</p>
                     </div>
+
+
+                    /*         Buttons           */
+                    <div class="d-flex  justify-content-center gap-1 mt-3 ">
+
+                        <form class="tag-badge bg-soft-info" method="get">
+                            <span class="dot dot-blue "></span>
+                            <button type="submit" name="action" value="enter" class="btn " style="color:black;">Enter</button>
+                        </form>
+
+
+
+                        <form method="post" class="tag-badge bg-soft-success" asp-action="SendReminder">
+                            <input type="hidden" name="ApplicationUserId" value="@Model[i].Patient.ApplicationUserId" />  
+                            <span class="dot dot-green "></span>
+                            <button type="submit" class="btn  ">Send Notification</button>
+                        </form>
+
+
+                        <form method="post" class="tag-badge bg-soft-danger" asp-action="Cancel">
+                            <input type="hidden" name="AppointmentId" value="@Model[i].Id" /> 
+                            <span class="dot dot-coral "></span>
+                            <button type="submit" class="btn ">Cancel</button>
+                        </form>
+                    </div>
+
+
+
                 }
                 else
                 {
@@ -97,27 +126,7 @@
             }
             <br />
 
-            <div class="d-flex  justify-content-center gap-1 mt-3 ">
-
-                <form class="tag-badge bg-soft-info" method="get">
-                    <span class="dot dot-blue "></span>
-                    <button type="submit" name="action" value="enter" class="btn " style="color:black;">Enter</button>
-                </form>
-                <div class="tag-badge bg-soft-success">
-                    <span class="dot dot-green "></span>
-                    <button class="btn  btn-sm tag-badge ">Send Notification</button>
-                </div>
-                
-                @* <div class="tag-badge  bg-soft-Secondary">
-                    <span class="dot dot-navy "></span>
-                    <button class="btn  btn-sm tag-badge">Reschedule</button>
-                </div> *@
-
-                <div class="tag-badge bg-soft-danger">
-                    <span class="dot dot-coral "></span>
-                    <button class="btn  btn-sm tag-badge">Cancel</button>
-                </div>
-            </div>
+            
 
         </div>
         <!-----------------------------Comming----------------------------------->
@@ -152,15 +161,21 @@
 </section>
 
 
+<div class="button-container container">
+    <a asp-controller="Queue" asp-action="index" class="custom-btn small-btn">Show All Queue</a>
+</div>
+
+
+
+
 <!-- ------------- BOTTOM BUTTONS ------------- -->
-<section class="container mb-5">
-    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
-        <button class="Magic btn  flex-fill">Magic</button>
-        <a asp-controller="Queue" asp-action="index" class="btn ShowAllQueue brand-blue text-white flex-fill text-black">Show All Queue</a>
+@* <section class="container mb-5 "> 
+    <div >
+        <a asp-controller="Queue" asp-action="index" class="btn ShowAllQueue brand-blue text-black btn-right">Show All Queue</a>
     </div>
-</section>
+</section> *@
 <!-- -------------End BOTTOM BUTTONS ------------- -->
-<hr/>
+
 
 <!---Start Appoitmnets Table-->
 <div class="container mt-4" style="background-color:whitesmoke">
@@ -181,8 +196,14 @@
                 @foreach (var appointment in AllTodayAppointments )    
                 {
                     var statusName = Enum.GetName(typeof(AppointmentStatus), appointment.Status);
-                    var badgeClass = appointment.Status == AppointmentStatus.Confirmed ? "My-Green" : "bg-primary";
+@*                     var badgeClass = appointment.Status == AppointmentStatus.Confirmed ? "My-Green" : "Main-Green"; *@
+                    var badgeClass = appointment.Status switch
+                    {
+                        AppointmentStatus.Confirmed => "My-Green",
+                        AppointmentStatus.Completed => "Main-Green",
 
+                        _ => "My-Red"
+                    };
                     <tr>
                         <td>@appointment.PatientId</td>
                         <td>@appointment.Patient.FirstName @appointment.Patient.LastName</td>
@@ -195,8 +216,14 @@
                             </span>
                         </td>
                         <td>
-@*                             <button class="btn btn-sm me-2 " style="background-color:#42cde2">Reschedule</button> *@
-                            <button class="btn btn-sm btn-danger ">Cancel</button>
+
+                            <form asp-action="Cancel" method="post" style="display:inline;">
+                                <input type="hidden" name="AppointmentId" value="@appointment.Id" />
+                                <button type="submit" class="btn btn-danger">
+                                    Cancel
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                 }

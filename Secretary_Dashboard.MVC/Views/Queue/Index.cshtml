@@ -1,8 +1,18 @@
 ﻿@using Graduation_Project.Core.Models.Doctors
 @model IReadOnlyList<Appointment>
 
+
+
+
 <div class="container my-5">
 
+
+    @if (!(string.IsNullOrEmpty(TempData["Message"] as string)))
+    {
+        <div class="alert alert-info">
+            @TempData["Message"]
+        </div>
+    }
     @{
         DateTime? selectedDate = ViewBag.SelectedDate as DateTime?;
         string dateValue = selectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd");
@@ -61,10 +71,10 @@
                         var status = Enum.GetName(typeof(AppointmentStatus), appointment.Status);
                         var badgeClass = appointment.Status switch
                         {
-                            AppointmentStatus.Confirmed => "bg-success",
-                            AppointmentStatus.Completed => "bg-secondary",
+                            AppointmentStatus.Confirmed => "My-Green",
+                            AppointmentStatus.Completed => "Main-Green",
 
-                            _ => "bg-warning"
+                            _ => "My-Red"
                         };
 
 
@@ -76,14 +86,22 @@
                             <td><span class="badge text-white @badgeClass">@status</span></td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
+
                                     <form asp-action="MarkAsCompleted" method="post">
-                                        <input type="hidden" name="id" value="@appointment.Id" />
-                                        <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                                        <input type="hidden" name="AppointmentId" value="@appointment.Id" />
+                                        <button type="submit" class="btn My-Green text-white btn-sm" style=" font-weight:500 ">Complete</button>
                                     </form>
-                                    <form asp-action="CancelAppointment" method="post">
-                                        <input type="hidden" name="id" value="@appointment.Id" />
-                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+
+                                    <form asp-action="SendReminder" method="post">
+                                        <input type="hidden" name="ApplicationUserId" value="@appointment.Patient.ApplicationUserId" />
+                                        <button type="submit" class="btn text-white Baby-Blue btn-sm" style="font-weight:500">Send Notification</button>
                                     </form>
+
+                                    <form asp-action="Cancel" method="post">
+                                        <input type="hidden" name="AppointmentId" value="@appointment.Id" />
+                                        <button type="submit" class="btn My-Red text-white  btn-sm" style="font-weight:500">Cancel</button>
+                                    </form>
+
                                 </div>
                             </td>
                         </tr>

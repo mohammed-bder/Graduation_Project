@@ -25,6 +25,8 @@ namespace Secretary_Dashboard.MVC.Extensions
 
             //services.AddScoped(typeof(GenericNoBaseEntityRepository<>));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IFcmService, FcmNotificationService>();
 
             return services;
         }

@@ -1,10 +1,13 @@
+/* ------------------------------------------------------------------
+   Base font?size
+------------------------------------------------------------------*/
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
-
-
-
+/* ------------------------------------------------------------------
+   Soft?color helpers   (unchanged)
+------------------------------------------------------------------*/
 .bg-soft-base {
     background-color: #e1f5f7;
 }
@@ -24,89 +27,188 @@ html {
 .bg-soft-info {
     background-color: #d7efff;
 }
+
 .bg-soft-Secondary {
     background-color: #78cbc3;
 }
+
 .My-Success {
     background-color: #3092d3;
 }
 
+.Main-Green {
+    background-color: #186A83;
+}
+.Mint-Green {
+    background-color: #39b87d;
+}
+.My-Red {
+   background-color: #e24154;
+}
+.Baby-Blue {
+    background-color: #1f89ab;
+}
+/* Hover colour tweaks for the buttons that live inside those pills */
+.bg-soft-success button:hover {
+    background-color: #d1f6f2;
+    color: #155724;
+}
+
+.bg-soft-danger button:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.bg-soft-info button:hover {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+
+
+/* ------------------------------------------------------------------
+   Pill container that wraps a coloured dot + the button
+------------------------------------------------------------------*/
 .tag-badge {
     display: inline-flex;
     align-items: center;
     padding: 6px 15px;
     border-radius: 999px;
-  
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI',sans-serif;
     font-size: 14px;
     color: black;
     font-weight: 500;
-    gap: 0px;
-    height:35px;
+    gap: 0;
+    height: 35px;
+    /* ?? NEW: smooth hover / press effects */
+    transition: transform .2s ease, box-shadow .2s ease;
 }
 
+    .tag-badge:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 8px rgba(0,0,0,.12);
+    }
+
+    .tag-badge:active {
+        transform: scale(.97);
+    }
+
+    /* status dots (unchanged) */
     .tag-badge .dot {
         width: 13px;
-        height:13px;
+        height: 13px;
         border-radius: 50%;
         display: inline-block;
     }
-    .dot-blue{
-       
-        background-color:blue;
-    }
-    .dot-Red{
-       
-        background-color:red;
-    }
-    .dot-navy{
-       
-        background-color:#f10202;
-    }
-    .dot-green{
-       
-        background-color:forestgreen;
-    }
-    .dot-coral{
-       
-        background-color:coral;
-    }
 
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.dot-blue {
+    background-color: blue;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.dot-Red {
+    background-color: red;
 }
 
+.dot-navy {
+    background-color: #f10202;
+}
+
+.dot-green {
+    background-color: forestgreen;
+}
+
+.dot-coral {
+    background-color: coral;
+}
+.dot-white {
+    background-color: white;
+}
+
+/* ------------------------------------------------------------------
+   ?? NEW: Button reset & interaction inside the pill
+------------------------------------------------------------------*/
+.tag-badge .btn {
+    border: none;
+    outline: none;
+    background: transparent; /* lets the pill’s colour show through */
+    padding: 0 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: color .2s ease;
+}
+
+    /* Remove Bootstrap’s default blue glow just for these buttons */
+    .tag-badge .btn:focus,
+    .tag-badge .btn:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Custom focus / click frame that hugs the whole button text area */
+    .tag-badge .btn:focus-visible,
+    .tag-badge .btn:focus {
+        box-shadow: 0 0 0 3px rgba(24,106,131,.45);
+        border-radius: 4px; /* keeps it slightly rounded */
+    }
+
+    /* Subtle text?colour change on hover so users know it’s clickable */
+    .tag-badge .btn:hover {
+        color: #000;
+        text-decoration: none;
+    }
+
+/* ------------------------------------------------------------------
+   Responsive root font (unchanged)
+------------------------------------------------------------------*/
+@media (min-width:768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+/* ------------------------------------------------------------------
+   OPTIONAL: turn off Bootstrap’s universal focus ring everywhere.
+   Comment these back in if you still need focus rings on inputs etc.
+------------------------------------------------------------------*/
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: none;
+}
+
+/* ------------------------------------------------------------------
+   Layout / branding (unchanged)
+------------------------------------------------------------------*/
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
-}
-.NAV-Main-Color {
-    background-color: #186A83 !important;
+    margin-bottom: 60px;
+    background-color: whitesmoke;
 }
 
-.cBRAND
-{
-    font-size:25PX;
-    font-weight:400;
-    color:white;
+.NAV-Main-Color {
+    background-color: #0f5c6b /*#186A83*/ !important;
 }
+
+.cBRAND {
+/*    font-size: 25px;
+    font-weight: 400;
+    color: white;*/
+    max-height: 50px; /* Adjust height */
+    width: auto; /* Maintain aspect ratio */
+}
+
 .cQueue {
     background-color: #186A83 !important;
-    padding: 0px !important;
+    padding: 0 !important;
     margin: 0 !important;
-
 }
+
 .cBackground {
     background-color: #e0f4f7 !important;
 }
@@ -114,15 +216,53 @@ body {
 /* Table */
 .cTableHead {
     background-color: #186A83 !important;
-    color:white;
-    font-weight:200;
-
-
+    color: white;
+    font-weight: 200;
 }
+
 .My-Green {
     background-color: #22b3a5;
 }
+
 .cEmergency {
-    font-weight: 700; 
-    color:red !important;  
+    font-weight: 700;
+    color: red !important;
+}
+.btn-right {
+    float: right;
+}
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3px; /* optional spacing */
+}
+
+.custom-btn {
+    background-color: #b0d7db;
+    color: black;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Smaller padding, font-size for a small button */
+.small-btn {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.custom-btn:hover {
+    background-color: #9ac7cd;
+}
+/* Limit logo size */
+.logo-img {
+    max-height: 170px;
+    width: 110px;
+}
+.navbar-brand:focus {
+    outline: none;
+    box-shadow: none;
 }
