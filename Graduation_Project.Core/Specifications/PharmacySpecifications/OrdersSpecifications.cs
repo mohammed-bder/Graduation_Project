@@ -12,7 +12,7 @@ namespace Graduation_Project.Core.Specifications.PharmacySpecifications
                 : base(O =>
                             O.PharmacyId == pharmacyId &&
                             (!orderStatus.HasValue || O.Status == orderStatus) &&
-                            (!dateFilter.HasValue || O.OrderDate >= dateFilter.Value)
+                            (!dateFilter.HasValue || O.OrderDate <= dateFilter.Value)
                 )
 
         {
