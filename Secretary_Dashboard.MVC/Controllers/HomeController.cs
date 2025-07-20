@@ -1,4 +1,5 @@
 using Graduation_Project.Core;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Clinics;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
@@ -13,6 +14,7 @@ using System.Numerics;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Secretary_Dashboard.MVC.Controllers
 {
@@ -21,12 +23,14 @@ namespace Secretary_Dashboard.MVC.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
+        private readonly INotificationService _notification;
 
-        public HomeController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        public HomeController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager , INotificationService notification)
         {
             _unitOfWork = unitOfWork;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            _notification = notification;
         }
     
         public async Task<IActionResult> Index()
@@ -59,56 +63,7 @@ namespace Secretary_Dashboard.MVC.Controllers
         }
         public async Task<IActionResult> Exit(int Id)
         {
-            /*
 
-            //Get Appointment From DB
-            var PatientAppointmentForSpecificDoctorSPEC = new PatientAppointmentForSpecificDoctorSpecification(Id);
-
-            Appointment ConfirmedAppointment = await _unitOfWork.Repository<Appointment>().GetWithSpecsAsync(PatientAppointmentForSpecificDoctorSPEC);
-
-
-            // change Status of appointment and save into DB 
-            ConfirmedAppointment.Status = AppointmentStatus.Completed;
-              var CompletedAppointment = ConfirmedAppointment;
-            //await _unitOfWork.Repository<Appointment>().SaveAsync();
-
-            // Add Completed appointment to CompletedPatientsList(Previous List)
-            List<Appointment> CompletedPatientsList = new List<Appointment>();
-
-            CompletedPatientsList.Add(CompletedAppointment);  //have complete appointment come from view 
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            TempData["PreviousAppointments"] = JsonSerializer.Serialize(CompletedPatientsList,options) ;
-
-            List<Appointment> appointments = new();
-
-            if (TempData.ContainsKey("PreviousAppointments"))
-            {
-                var json = TempData["PreviousAppointments"] as string;
-
-                if (!string.IsNullOrEmpty(json))
-                {
-
-                    var option = new JsonSerializerOptions
-                    {
-                        ReferenceHandler = ReferenceHandler.Preserve
-                    };
-
-                     appointments = JsonSerializer.Deserialize<List<Appointment>>(TempData["PreviousAppointments"] as string, option);
-                }
-            }
-
-            ViewData["PreviousAppointments"] = appointments;
-
-            return RedirectToAction("index");
-
-            */
-            //*********************************************//
             //Get Appointment From DB included with patient
             var PatientAppointmentForSpecificDoctorSPEC = new PatientAppointmentForSpecificDoctorSpecification(Id);
             
@@ -120,7 +75,39 @@ namespace Secretary_Dashboard.MVC.Controllers
             await _unitOfWork.Repository<Appointment>().SaveAsync();
             return RedirectToAction("index");
         }
+        public async Task<IActionResult> SendReminder(string ApplicationUserId)
+        {
 
+            if (ApplicationUserId == null)
+            {
+                TempData["Error"] = "Patient information not found.";
+                return RedirectToAction("Index");
+            }
+
+
+            await _notification.SendNotificationAsync(ApplicationUserId, "Your Turn Is the Next", "Appointment Reminder");
+            TempData["Success"] = "Notification sent successfully.";
+            return RedirectToAction("index");
+        }
+
+        public async Task<IActionResult> Cancel(int AppointmentId)
+        {
+
+            var _Appoinmtent = await _unitOfWork.Repository<Appointment>().GetAsync(AppointmentId);
+
+            if (_Appoinmtent is null)
+            {
+                TempData["Error"] = "No confirmed appointment found for today.";
+                return RedirectToAction("Index");
+            }
+            _Appoinmtent.Status = AppointmentStatus.Cancelled;
+
+            await _unitOfWork.CompleteAsync();
+
+            TempData["Success"] = "Appointment cancelled successfully.";
+            return RedirectToAction("Index");
+
+        }
 
     }
 }

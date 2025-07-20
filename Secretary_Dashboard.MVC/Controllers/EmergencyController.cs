@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Core;
 using Graduation_Project.Core.Enums;
+using Graduation_Project.Core.IServices;
 using Graduation_Project.Core.Models.Clinics;
 using Graduation_Project.Core.Models.Doctors;
 using Graduation_Project.Core.Models.Identity;
@@ -19,9 +20,9 @@ namespace Secretary_Dashboard.MVC.Controllers
     public class EmergencyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public EmergencyController(IUnitOfWork unitOfWork, NotificationService notificationService)
+        public EmergencyController(IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _notificationService = notificationService;
@@ -49,7 +50,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             if (recipientGroup == "Today's Patients")
             {
                 var appointmentsSpec = new AppointmentsWithPatientsForTodaySpecification(today);
-                var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentsSpec);
+                var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(appointmentsSpec); //return appointments included with patients
 
                 var patientsUserIds = appointments.Select(a => a.Patient.ApplicationUserId).Distinct();
 
@@ -73,7 +74,7 @@ namespace Secretary_Dashboard.MVC.Controllers
             else
             {
                 TempData["Error"] = "Please select a valid recipient group.";
-                return RedirectToAction("emergency");
+                return RedirectToAction("index");
             }
 
             TempData["Success"] = "Emergency notification sent successfully.";

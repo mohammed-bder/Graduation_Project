@@ -1,9 +1,9 @@
 ﻿<div class="card border-danger p-4 mt-5">
-    <h4 class="text-danger fw-bold mb-3  ">🚨 Emergency Broadcast</h4>
+    <h4 class="text-danger fw-bold mb-3  ">🚨 Alert Notification</h4>
 
     <form method="post" asp-action="SendEmergencyNotice">
         <div class="mb-3">
-            <label for="message" class="form-label">Emergency Message</label>
+@*             <label for="message" class="form-label">Emergency Message</label> *@
             <textarea id="message" name="message" class="form-control" rows="4" placeholder="e.g. Due to an emergency, please remain seated and wait for further instructions."></textarea>
         </div>
         <div>
@@ -14,6 +14,6 @@
         </div>
 
 
-        <button type="submit" class="btn btn-danger mt-2 ">Send</button>
+        <button type="submit" class="btn btn-danger mt-2" style="width:120px">Send</button>
     </form>
 </div>
