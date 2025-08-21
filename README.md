@@ -1,5 +1,4 @@
-# Balto – Smart Platform for Comprehensive Medical Management
-
+### *<h1 align="center">✨Balto – Smart Platform for Comprehensive Medical Management✨</h1>*
 Balto is a full-stack, role-based medical platform designed to streamline interactions between patients, doctors, secretaries, and pharmacies. Built with scalability, security, and user-centric design in mind, Balto brings together modern web and mobile technologies to support smarter healthcare delivery.
 
 ---
@@ -106,5 +105,11 @@ Explore the API endpoints and test live using Postman:
 3. Use Visual Studio or VS Code and configure `appsettings.json` as per your environment
 4. Run the database migrations
 5. Run the application and explore role-based dashboards
+---
+## 📝Feedback
 
+If you have any feedback, please reach out to us at MelioTech@gmail.com
 
+## ⚖️License
+
+[MIT](https://choosealicense.com/licenses/mit/)
